@@ -46,25 +46,25 @@ public static class RoomManager
     }
 
     // 尝试向房间添加玩家
-    public static bool AddPlayer(int roomId, string nickname, byte team, int playerType)
+    public static byte AddPlayer(int roomId, string nickname, byte team, int playerType, SessionGroup client)
     {
         var room = GetRoom(roomId);
 
         if (room == null || string.IsNullOrEmpty(nickname))
-            return false;
+            return 255;
 
         // 去重：严格区分大小写
         if (_playerRoomMap.ContainsKey(nickname))
-            return false;
+            return 255;
 
         // 存储原始昵称
-        byte added = room.TryAddPlayer(nickname, team, playerType);
+        byte added = room.TryAddPlayer(nickname, team, playerType, client);
         if (added != 255)
         {
             _playerRoomMap[nickname] = roomId;
-            return true;
+            return added;
         }
-        return false;
+        return 255;
     }
 
     public static int GetPlayerSlotId(int roomId, string nickname)

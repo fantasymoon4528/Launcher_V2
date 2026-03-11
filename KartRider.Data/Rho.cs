@@ -660,6 +660,53 @@ namespace RHOParser
                                 }
                             }
                         }
+                        if (fullName == $"zeta_/{regionCode}/content/channel.xml")
+                        {
+                            Console.WriteLine(fullName);
+                            DateTime now = DateTime.Now;
+                            byte[] data = packFileInfo.GetData();
+                            byte i = 0;
+                            using (MemoryStream stream = new MemoryStream(data))
+                            {
+                                XDocument doc = XDocument.Load(stream);
+
+                                // 遍历所有Channel节点
+                                foreach (var channel in doc.Descendants("Channel"))
+                                {
+                                    XAttribute openPeriodAttr = channel.Attribute("openPeriod");
+
+                                    var channelValue = new Channel
+                                    {
+                                        Name = channel.Attribute("name").Value,
+                                        CreateSpeed = byte.Parse(channel.Attribute("createSpeed").Value),
+                                        GameType = byte.Parse(channel.Attribute("gameType").Value),
+                                    };
+
+                                    // 情况1：无openPeriod属性 → 直接加入结果
+                                    if (openPeriodAttr == null)
+                                    {
+                                        GameSupport.Channels.TryAdd(i++, channelValue);
+                                        continue;
+                                    }
+
+                                    // 情况2：有openPeriod属性 → 判断时间范围
+                                    string openPeriod = openPeriodAttr.Value;
+                                    string[] periodParts = openPeriod.Split('~');
+                                    // 解析开始时间（格式：yyyy-MM-ddTHH:mm:ss）
+                                    if (periodParts.Length != 2 || !DateTime.TryParse(periodParts[0], out DateTime startTime))
+                                    {
+                                        Console.WriteLine($"警告：{channelValue.Name} 的openPeriod格式错误，跳过该节点：{openPeriod}");
+                                        continue;
+                                    }
+
+                                    // 当前时间 >= 开始时间 → 加入结果（*表示无结束时间）
+                                    if (now >= startTime)
+                                    {
+                                        GameSupport.Channels.TryAdd(i++, channelValue);
+                                    }
+                                }
+                            }
+                        }
                     }
                     foreach (PackFolderInfo packFolderInfo2 in packFolderInfo1.GetFoldersInfo())
                         packFolderInfoQueue.Enqueue(packFolderInfo2);

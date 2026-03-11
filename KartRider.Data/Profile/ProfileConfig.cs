@@ -134,8 +134,6 @@ namespace Profile
         public byte AttackType { get; set; } = 0;
 
         public uint Track { get; set; } = 0;
-
-        public string Client { get; set; } = "";
     }
 
     public class RiderItemData

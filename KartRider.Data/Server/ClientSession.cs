@@ -9,7 +9,6 @@ using RHOParser;
 using RiderData;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -84,25 +83,13 @@ namespace KartRider
                             outPacket.WriteString("https://www.tiancity.com/agreement");
                             this.Parent.Client.Send(outPacket);
                         }
+                        MultyPlayer.UserNOs[Adler32Helper.GenerateAdler32_ASCII(packet.Nickname, 0)] = packet.Nickname;
                     }
-                    long dTicks = MultyPlayer.GetUpTime();
-                    long timeTicks = packet.TimeTicks + 10000;
-                    if (MultyPlayer.diff.ContainsKey(packet.Nickname))
-                    {
-                        MultyPlayer.diff[packet.Nickname] = timeTicks == 10000 ? 0 : dTicks - timeTicks;
-                    }
-                    else
-                    {
-                        MultyPlayer.diff.Add(packet.Nickname, timeTicks == 10000 ? 0 : dTicks - timeTicks);
-                    }
-                    Console.WriteLine($"[{packet.Nickname}] diff = {MultyPlayer.diff[packet.Nickname]}");
-                    ProfileService.ProfileConfigs[packet.Nickname].Rider.Client = clientId;
-                    ProfileService.Save(packet.Nickname);
                     return;
                 }
                 if (hash != Adler32Helper.GenerateAdler32(Encoding.ASCII.GetBytes("PcReportRaidOccur"), 0) && hash != Adler32Helper.GenerateAdler32(Encoding.ASCII.GetBytes("PqGameReportMyBadUdp"), 0))
                 {
-                    if (hash == Adler32Helper.GenerateAdler32_ASCII("GrRiderTalkPacket", 0) || hash == Adler32Helper.GenerateAdler32_ASCII("PqEnterMagicHatPacket", 0) || hash == Adler32Helper.GenerateAdler32_ASCII("LoPingRequestPacket", 0) || hash == Adler32Helper.GenerateAdler32_ASCII("PqAddTimeEventInitPacket", 0) || hash == Adler32Helper.GenerateAdler32_ASCII("PqCountdownBoxPeriodPacket", 0))
+                    if (hash == Adler32Helper.GenerateAdler32_ASCII("PqEnterMagicHatPacket", 0) || hash == Adler32Helper.GenerateAdler32_ASCII("LoPingRequestPacket", 0) || hash == Adler32Helper.GenerateAdler32_ASCII("PqAddTimeEventInitPacket", 0) || hash == Adler32Helper.GenerateAdler32_ASCII("PqCountdownBoxPeriodPacket", 0))
                     {
                         return;
                     }
@@ -110,7 +97,7 @@ namespace KartRider
                     {
                         return;
                     }
-                    else if (hash == Adler32Helper.GenerateAdler32_ASCII("PqBlockWordLogPacket", 0) || hash == Adler32Helper.GenerateAdler32_ASCII("PqWriteActionLogPacket", 0) || hash == Adler32Helper.GenerateAdler32_ASCII("PqAddTimeEventTimerPacket", 0) || hash == Adler32Helper.GenerateAdler32_ASCII("VipPlaytimeCheck", 0))
+                    else if (hash == Adler32Helper.GenerateAdler32_ASCII("PqWriteActionLogPacket", 0) || hash == Adler32Helper.GenerateAdler32_ASCII("PqAddTimeEventTimerPacket", 0) || hash == Adler32Helper.GenerateAdler32_ASCII("VipPlaytimeCheck", 0))
                     {
                         //PqGetRecommandChatServerInfo = 라이더 챗
                         return;
@@ -252,42 +239,6 @@ namespace KartRider
                     }
                     else if (hash == Adler32Helper.GenerateAdler32_ASCII("PqGetRider", 0))
                     {
-                        // using (OutPacket outPacket = new OutPacket("PrSeasonGrandprixRewardPacket"))
-                        // {
-                        //     outPacket.WriteInt(0);
-                        //     this.Parent.Client.Send(outPacket);
-                        // }
-                        // using (OutPacket outPacket = new OutPacket("PrSeasonTierMatchingRewardPacket"))
-                        // {
-                        //     outPacket.WriteInt(0);
-                        //     this.Parent.Client.Send(outPacket);
-                        // }
-                        // using (OutPacket outPacket = new OutPacket("PrSeasonVersusModeRewardPacket"))
-                        // {
-                        //     outPacket.WriteInt(0);
-                        //     this.Parent.Client.Send(outPacket);
-                        // }
-                        // using (OutPacket outPacket = new OutPacket("PrSimGameRankRewardPacket"))
-                        // {
-                        //     outPacket.WriteInt(0);
-                        //     this.Parent.Client.Send(outPacket);
-                        // }
-                        // using (OutPacket outPacket = new OutPacket("PrAddTimeEventInitPacket"))
-                        // {
-                        //     outPacket.WriteHexString("6D F8 03 00 E8 B3 18 15 EF B3 17 15");
-                        //     outPacket.WriteInt(6);
-                        //     outPacket.WriteHexString("2F 7D A1 8B 28 57 BF 7E 3B 6D A8 52");
-                        //     outPacket.WriteInt(0);
-                        //     outPacket.WriteInt(0);
-                        //     outPacket.WriteHexString("6D F8 03 00");
-                        //     outPacket.WriteInt(0);
-                        //     outPacket.WriteInt(0);
-                        //     outPacket.WriteInt(0);
-                        //     outPacket.WriteUShort((ushort)RouterListener.DataTime()[0]);
-                        //     outPacket.WriteUShort((ushort)RouterListener.DataTime()[1]);
-                        //     outPacket.WriteInt(0);
-                        //     this.Parent.Client.Send(outPacket);
-                        // }
                         NewRider.LoadItemData(this.Parent, Nickname);
                         return;
                     }
@@ -353,15 +304,13 @@ namespace KartRider
                                 outPacket.WriteUInt(UserNO);
                                 outPacket.WriteString(Nickname);
                                 outPacket.WriteString(Nickname);
-                                outPacket.WriteUShort((ushort)RouterListener.DataTime()[0]);
-                                outPacket.WriteUShort((ushort)RouterListener.DataTime()[1]);
-                                GameSupport.GetRider(this.Parent, Nickname, outPacket);
+                                outPacket.WriteDateTime(DateTime.Now);
+                                GameSupport.GetRider(Nickname, outPacket);
                                 outPacket.WriteString(ProfileService.ProfileConfigs[Nickname].Rider.Card);
                                 outPacket.WriteUInt(ProfileService.ProfileConfigs[Nickname].Rider.RP);
                                 outPacket.WriteInt(0);
                                 outPacket.WriteByte(6);//Licenses
-                                outPacket.WriteUShort((ushort)RouterListener.DataTime()[0]);
-                                outPacket.WriteUShort((ushort)RouterListener.DataTime()[1]);
+                                outPacket.WriteDateTime(DateTime.Now);
                                 outPacket.WriteBytes(new byte[17]);
                                 outPacket.WriteShort(ProfileService.ProfileConfigs[Nickname].Rider.Emblem1);
                                 outPacket.WriteShort(ProfileService.ProfileConfigs[Nickname].Rider.Emblem2);
@@ -529,8 +478,7 @@ namespace KartRider
                             else
                                 outPacket.WriteInt(0);
                             outPacket.WriteUShort((ushort)ProfileService.ProfileConfigs[Nickname].Rider.Premium);
-                            outPacket.WriteUShort((ushort)RouterListener.DataTime()[0]);
-                            outPacket.WriteUShort((ushort)RouterListener.DataTime()[1]);
+                            outPacket.WriteDateTime(DateTime.Now);
                             outPacket.WriteInt(0);
                             this.Parent.Client.Send(outPacket);
                         }
@@ -585,7 +533,7 @@ namespace KartRider
                             outPacket.WriteInt();
                             outPacket.WriteShort();
                             outPacket.WriteString(Nickname);
-                            GameSupport.GetRider(this.Parent, Nickname, outPacket);
+                            GameSupport.GetRider(Nickname, outPacket);
                             outPacket.WriteUInt(ProfileService.ProfileConfigs[Nickname].Rider.RP);
                             outPacket.WriteBytes(new byte[29]);
                             outPacket.WriteString(ProfileService.ProfileConfigs[Nickname].Rider.ClubName);
@@ -862,8 +810,7 @@ namespace KartRider
                         short SN2 = iPacket.ReadShort();
                         using (OutPacket outPacket = new OutPacket("PrKartLevelUp"))
                         {
-                            outPacket.WriteUShort((ushort)RouterListener.DataTime()[0]);
-                            outPacket.WriteUShort((ushort)RouterListener.DataTime()[1]);
+                            outPacket.WriteDateTime(DateTime.Now);
                             outPacket.WriteInt(1);
                             outPacket.WriteShort(Kart);
                             outPacket.WriteShort(SN);
@@ -1360,8 +1307,7 @@ namespace KartRider
                         {
                             outPacket.WriteInt(0);
                             outPacket.WriteInt(0);
-                            outPacket.WriteUShort((ushort)RouterListener.DataTime()[0]);
-                            outPacket.WriteUShort((ushort)RouterListener.DataTime()[1]);
+                            outPacket.WriteDateTime(DateTime.Now);
                             outPacket.WriteInt(TimeAttack.MissionList.Count);
                             foreach (string Track in TimeAttack.MissionList)
                             {
@@ -1788,8 +1734,7 @@ namespace KartRider
                         {
                             outPacket.WriteInt(ProfileService.ProfileConfigs[Nickname].Rider.ClubCode);
                             outPacket.WriteString(ProfileService.ProfileConfigs[Nickname].Rider.ClubName);
-                            outPacket.WriteUShort((ushort)RouterListener.DataTime()[0]);
-                            outPacket.WriteUShort((ushort)RouterListener.DataTime()[1]);
+                            outPacket.WriteDateTime(DateTime.Now);
                             outPacket.WriteByte(5);
                             outPacket.WriteByte(1);
                             outPacket.WriteUInt(UserNO);
@@ -1828,8 +1773,7 @@ namespace KartRider
                                 outPacket.WriteInt(0);
                                 outPacket.WriteString(Nickname);
                                 outPacket.WriteInt(500);//成员数
-                                outPacket.WriteUShort((ushort)RouterListener.DataTime()[0]);
-                                outPacket.WriteUShort((ushort)RouterListener.DataTime()[1]);
+                                outPacket.WriteDateTime(DateTime.Now);
                                 outPacket.WriteString(ProfileService.ProfileConfigs[Nickname].Rider.ClubIntro);
                                 outPacket.WriteShort(0);
                                 outPacket.WriteInt(3000000);//周活跃度
@@ -1864,8 +1808,7 @@ namespace KartRider
                         {
                             outPacket.WriteInt(ProfileService.ProfileConfigs[Nickname].Rider.ClubCode);
                             outPacket.WriteString(ProfileService.ProfileConfigs[Nickname].Rider.ClubName);
-                            outPacket.WriteUShort((ushort)RouterListener.DataTime()[0]);
-                            outPacket.WriteUShort((ushort)RouterListener.DataTime()[1]);
+                            outPacket.WriteDateTime(DateTime.Now);
                             outPacket.WriteByte(5);
                             outPacket.WriteByte(1);
                             outPacket.WriteUInt(UserNO);
@@ -1890,13 +1833,10 @@ namespace KartRider
                                 outPacket.WriteShort(5);//职位
                                 outPacket.WriteUInt(3000000);//周活跃度
                                 outPacket.WriteUInt(3000000);//累计活跃度
-                                outPacket.WriteUShort((ushort)RouterListener.DataTime()[0]);
-                                outPacket.WriteUShort((ushort)RouterListener.DataTime()[1]);
+                                outPacket.WriteDateTime(DateTime.Now);
                                 outPacket.WriteHexString("FFFF0000");
-                                outPacket.WriteUShort((ushort)RouterListener.DataTime()[0]);
-                                outPacket.WriteUShort((ushort)RouterListener.DataTime()[1]);
-                                outPacket.WriteUShort((ushort)RouterListener.DataTime()[0]);
-                                outPacket.WriteUShort((ushort)RouterListener.DataTime()[1]);
+                                outPacket.WriteDateTime(DateTime.Now);
+                                outPacket.WriteDateTime(DateTime.Now);
                                 outPacket.WriteInt(0);
                             }
                             outPacket.WriteInt(ProfileService.ProfileConfigs[Nickname].Rider.ClubCode);
@@ -1906,18 +1846,14 @@ namespace KartRider
                             outPacket.WriteShort(5);//职位
                             outPacket.WriteUInt(3000000);//周活跃度
                             outPacket.WriteUInt(3000000);//累计活跃度
-                            outPacket.WriteUShort((ushort)RouterListener.DataTime()[0]);
-                            outPacket.WriteUShort((ushort)RouterListener.DataTime()[1]);
+                            outPacket.WriteDateTime(DateTime.Now);
                             outPacket.WriteHexString("FFFF0000");
-                            outPacket.WriteUShort((ushort)RouterListener.DataTime()[0]);
-                            outPacket.WriteUShort((ushort)RouterListener.DataTime()[1]);
-                            outPacket.WriteUShort((ushort)RouterListener.DataTime()[0]);
-                            outPacket.WriteUShort((ushort)RouterListener.DataTime()[1]);
+                            outPacket.WriteDateTime(DateTime.Now);
+                            outPacket.WriteDateTime(DateTime.Now);
                             outPacket.WriteInt(0);
                             outPacket.WriteInt(0);
                             outPacket.WriteHexString("D43C1B01ED7E0B00");
-                            outPacket.WriteUShort((ushort)RouterListener.DataTime()[0]);
-                            outPacket.WriteUShort((ushort)RouterListener.DataTime()[1]);
+                            outPacket.WriteDateTime(DateTime.Now);
                             outPacket.WriteInt(0);
                             outPacket.WriteHexString("22394703A87F0B00880AFB03A67F0B0000000000");
                             this.Parent.Client.Send(outPacket);
@@ -1940,13 +1876,10 @@ namespace KartRider
                                 outPacket.WriteShort(5);//职位
                                 outPacket.WriteUInt(3000000);//周活跃度
                                 outPacket.WriteUInt(3000000);//累计活跃度
-                                outPacket.WriteUShort((ushort)RouterListener.DataTime()[0]);
-                                outPacket.WriteUShort((ushort)RouterListener.DataTime()[1]);
+                                outPacket.WriteDateTime(DateTime.Now);
                                 outPacket.WriteHexString("FFFF0000");
-                                outPacket.WriteUShort((ushort)RouterListener.DataTime()[0]);
-                                outPacket.WriteUShort((ushort)RouterListener.DataTime()[1]);
-                                outPacket.WriteUShort((ushort)RouterListener.DataTime()[0]);
-                                outPacket.WriteUShort((ushort)RouterListener.DataTime()[1]);
+                                outPacket.WriteDateTime(DateTime.Now);
+                                outPacket.WriteDateTime(DateTime.Now);
                                 outPacket.WriteInt(0);
                             }
                             outPacket.WriteInt(300);
@@ -1957,13 +1890,10 @@ namespace KartRider
                             outPacket.WriteShort(5);//职位
                             outPacket.WriteUInt(3000000);//周活跃度
                             outPacket.WriteUInt(3000000);//累计活跃度
-                            outPacket.WriteUShort((ushort)RouterListener.DataTime()[0]);
-                            outPacket.WriteUShort((ushort)RouterListener.DataTime()[1]);
+                            outPacket.WriteDateTime(DateTime.Now);
                             outPacket.WriteHexString("FFFF0000");
-                            outPacket.WriteUShort((ushort)RouterListener.DataTime()[0]);
-                            outPacket.WriteUShort((ushort)RouterListener.DataTime()[1]);
-                            outPacket.WriteUShort((ushort)RouterListener.DataTime()[0]);
-                            outPacket.WriteUShort((ushort)RouterListener.DataTime()[1]);
+                            outPacket.WriteDateTime(DateTime.Now);
+                            outPacket.WriteDateTime(DateTime.Now);
                             outPacket.WriteInt(0);
                             outPacket.WriteInt(0);
                             outPacket.WriteHexString("22394703A87F0B00");
@@ -1976,8 +1906,7 @@ namespace KartRider
                         using (OutPacket outPacket = new OutPacket("PrCheckClubDirtyTimePacket"))
                         {
                             outPacket.WriteHexString("D43C1B01ED7E0B00");
-                            outPacket.WriteUShort((ushort)RouterListener.DataTime()[0]);
-                            outPacket.WriteUShort((ushort)RouterListener.DataTime()[1]);
+                            outPacket.WriteDateTime(DateTime.Now);
                             outPacket.WriteInt(0);
                             outPacket.WriteHexString("22394703A87F0B00880AFB03A67F0B0000000000000000000000000000000000");
                             this.Parent.Client.Send(outPacket);
@@ -1989,8 +1918,7 @@ namespace KartRider
                         using (OutPacket outPacket = new OutPacket("PrGetClubRecordPacket"))
                         {
                             outPacket.WriteHexString("00000000000000000000000000000000");
-                            outPacket.WriteUShort((ushort)RouterListener.DataTime()[0]);
-                            outPacket.WriteUShort((ushort)RouterListener.DataTime()[1]);
+                            outPacket.WriteDateTime(DateTime.Now);
                             outPacket.WriteInt(0);
                             this.Parent.Client.Send(outPacket);
                         }
@@ -2920,8 +2848,7 @@ namespace KartRider
                     {
                         using (OutPacket outPacket = new OutPacket("PrServerTime"))
                         {
-                            outPacket.WriteUShort((ushort)RouterListener.DataTime()[0]);
-                            outPacket.WriteUShort((ushort)RouterListener.DataTime()[1]);
+                            outPacket.WriteDateTime(DateTime.Now);
                             this.Parent.Client.Send(outPacket);
                         }
                         return;
@@ -2938,8 +2865,7 @@ namespace KartRider
                         using (OutPacket outPacket = new OutPacket("PrLogin"))
                         {
                             outPacket.WriteInt(0);
-                            outPacket.WriteUShort((ushort)RouterListener.DataTime()[0]);
-                            outPacket.WriteUShort((ushort)RouterListener.DataTime()[1]);
+                            outPacket.WriteDateTime(DateTime.Now);
                             outPacket.WriteUInt(UserNO);
                             outPacket.WriteString(Nickname); // UserID
                             outPacket.WriteByte(2);
@@ -3803,6 +3729,41 @@ namespace KartRider
                             outPacket.WriteInt(0);
                             this.Parent.Client.Send(outPacket);
                         }
+                        return;
+                    }
+                    else if (hash == Adler32Helper.GenerateAdler32_ASCII("PcGameRequestRelay", 0))
+                    {
+                        int roomId = RoomManager.TryGetRoomId(Nickname);
+                        var room = RoomManager.GetRoom(roomId);
+                        if (room == null)
+                        {
+                            return;
+                        }
+
+                        int val1 = iPacket.ReadInt();
+
+                        using (OutPacket outPacket = new OutPacket("GameRelayBroadcastingPacket"))
+                        {
+                            outPacket.WriteInt(0);
+                            outPacket.WriteInt(val1);
+                            this.Parent.Client.Send(outPacket);
+                        }
+                        return;
+                    }
+                    else if (hash == Adler32Helper.GenerateAdler32_ASCII("ChClientP2pAddrPacket", 0))
+                    {
+                        var ipAddressStr = $"{iPacket.ReadByte()}.{iPacket.ReadByte()}.{iPacket.ReadByte()}.{iPacket.ReadByte()}";
+                        Console.WriteLine($"{ipAddressStr}:{iPacket.ReadUShort()}");
+                        return;
+                    }
+                    else if (hash == Adler32Helper.GenerateAdler32_ASCII("ChClientUdpAddrPacket", 0))
+                    {
+                        var ipAddressStr = $"{iPacket.ReadByte()}.{iPacket.ReadByte()}.{iPacket.ReadByte()}.{iPacket.ReadByte()}";
+                        Console.WriteLine($"{ipAddressStr}:{iPacket.ReadUShort()}");
+                        return;
+                    }
+                    else if (hash == Adler32Helper.GenerateAdler32_ASCII("PqServerSideUdpBindCheck", 0))
+                    {
                         return;
                     }
                     else if (hash == Adler32Helper.GenerateAdler32_ASCII("PqQuestUX2ndForShutDownPacket", 0))

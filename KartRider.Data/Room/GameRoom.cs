@@ -11,16 +11,19 @@ public class GameRoom
     public int RoomId { get; }
     public string RoomName { get; set; }
     public uint track { get; set; } = 0;
+    public uint trackTemp { get; set; } = 0;
     public byte[] RoomUnkBytes { get; set; } = new byte[32];
-    public long StartTicks { get; set; } = 0;
-    public long EndTicks { get; set; } = 0;
+    public uint StartTicks { get; set; } = 0;
+    public uint EndTicks { get; set; } = 0;
     public byte SpeedType { get; set; } = 0;
     public byte GameType { get; set; } = 0;
+    public int RoomMaster { get; set; } = 0;
     public byte RandomTrackGameType { get; set; } = 0;
     public float redGauge { get; set; } = 0;
     public float blueGauge { get; set; } = 0;
     public byte Lock { get; set; } = 0;
     public string LockPwd { get; set; } = "";
+    public byte RelayType = 0; //0 - UDP 1 - TCP
     public Dictionary<int, uint> TimeData { get; set; } = new Dictionary<int, uint>();
     public Dictionary<int, int> Ranking { get; set; } = new Dictionary<int, int>();
 
@@ -95,7 +98,7 @@ public class GameRoom
     }
 
     // 尝试添加玩家（成功后自动检查是否需要删除房间）
-    public byte TryAddPlayer(string nickname, byte team, int playerType)
+    public byte TryAddPlayer(string nickname, byte team, int playerType, SessionGroup client)
     {
         if (team == 2)
         {
@@ -109,7 +112,8 @@ public class GameRoom
                         SlotId = i,
                         Nickname = nickname,
                         PlayerType = playerType,
-                        Team = team
+                        Team = team,
+                        Session = client
                     };
                     if (_slots[i] is Player player)
                     {
@@ -132,7 +136,8 @@ public class GameRoom
                         SlotId = i,
                         Nickname = nickname,
                         PlayerType = playerType,
-                        Team = team
+                        Team = team,
+                        Session = client
                     };
                     if (_slots[i] is Player player)
                     {
@@ -155,7 +160,8 @@ public class GameRoom
                         SlotId = i,
                         Nickname = nickname,
                         PlayerType = playerType,
-                        Team = team
+                        Team = team,
+                        Session = client
                     };
                     if (_slots[i] is Player player)
                     {
@@ -192,6 +198,11 @@ public class GameRoom
             _IDs.Remove(ai.ID);
         }
         _slots[slotId] = null; // 清空格子
+
+        if (GetPlayerCount() > 0)
+        {
+            MultyPlayer.GrSlotDataPacket(RoomId);
+        }
 
         // 如果移除的是玩家，检查剩余玩家数量
         if (removedMember is Player)
@@ -307,6 +318,7 @@ public class Player : RoomMember
     public string Nickname { get; set; } // 玩家昵称
     public int PlayerType { get; set; } // 玩家类型
     public byte Team { get; set; }
+    public SessionGroup Session { get; set; }
 }
 
 // AI类

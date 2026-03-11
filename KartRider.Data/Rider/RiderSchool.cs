@@ -30,8 +30,7 @@ namespace RiderData
             {
                 outPacket.WriteByte(catLevel);//라이센스 등급
                 outPacket.WriteByte(maxStep);//마지막 클리어
-                outPacket.WriteUShort((ushort)RouterListener.DataTime()[0]);
-                outPacket.WriteUShort((ushort)RouterListener.DataTime()[1]);
+                outPacket.WriteDateTime(DateTime.Now);
                 outPacket.WriteInt(0);
                 outPacket.WriteByte(0);
                 Parent.Client.Send(outPacket);
@@ -40,7 +39,7 @@ namespace RiderData
 
         public static void PrRiderSchoolPro(SessionGroup Parent)
         {
-            int remainder = (RouterListener.DataTime()[2] - 1) % evenProStep.Count + 1;
+            int remainder = (RouterListener.DataTime() - 1) % evenProStep.Count + 1;
             using (OutPacket oPacket = new OutPacket("PrRiderSchoolProPacket"))
             {
                 oPacket.WriteByte(1);//엠블럼 체크

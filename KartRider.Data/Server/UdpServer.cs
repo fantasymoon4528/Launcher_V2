@@ -3,6 +3,9 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
+using KartRider.Common.Utilities;
+using KartRider.IO.Packet;
+using KartRider_PacketName;
 
 namespace KartRider
 {
@@ -150,12 +153,91 @@ namespace KartRider
                 clientEP = new IPEndPoint(IPAddress.Any, 0);
                 receiveBuffer = _udpClient.EndReceive(ar, ref clientEP);
 
-                // 解析数据
-                string receiveData = BitConverter.ToString(receiveBuffer).Replace("-", " ");
-                // Console.WriteLine($"[{_serverName}] [{DateTime.Now:HH:mm:ss}] 客户端 {clientEP} 发送：{receiveData}");
+                try
+                {
+                    // 解析数据
+                    if (receiveBuffer.Length >= 16)
+                    {
+                        uint iv = BitConverter.ToUInt32(receiveBuffer, 0);
+                        uint otherChecksum = BitConverter.ToUInt32(receiveBuffer, receiveBuffer.Length - 4);
+                        byte[] packetData = new byte[receiveBuffer.Length - (4 + 4)];
+                        Buffer.BlockCopy(receiveBuffer, 4, packetData, 0, packetData.Length);
+                        Crypto.HashDecrypt(packetData, packetData.Length, iv);
+                        InPacket p = new InPacket(packetData);
 
-                // 响应客户端（Echo回显）
-                _udpClient.Send(receiveBuffer, receiveBuffer.Length, clientEP);
+                        uint accountID = p.ReadUInt();
+                        uint hash = p.ReadUInt();
+                        string nickname = MultyPlayer.UserNOs.TryGetValue(accountID, out string value) ? value : "Unknown";
+                        if (nickname == "Unknown" || nickname == "")
+                        {
+                            return;
+                        }
+                        MultyPlayer.Udps[nickname] = clientEP;
+
+                        int roomId = RoomManager.TryGetRoomId(nickname);
+                        var room = RoomManager.GetRoom(roomId);
+
+                        uint packetName = p.ReadUInt();
+                        var packetValue = (PacketName)packetName;
+                        //Console.WriteLine($"UDP - {rttivalue} from {ip.Address}:{ip.Port}");
+
+                        OutPacket outPacket = new OutPacket();
+                        if (packetValue == PacketName.PqUdpEcho)
+                        {
+                            outPacket.WriteUInt(accountID);
+                            outPacket.WriteUInt(hash);
+                            outPacket.WriteInt((int)PacketName.PrUdpEcho);
+
+                            outPacket.WriteInt(p.ReadInt());
+                            outPacket.WriteInt(p.ReadInt());
+                            BeginSend(outPacket, clientEP);
+                        }
+                        else if (packetValue == PacketName.PqUdpTimeSync)
+                        {
+                            outPacket.WriteUInt(accountID);
+                            outPacket.WriteUInt(hash);
+                            outPacket.WriteInt((int)PacketName.PrUdpTimeSync);
+
+                            outPacket.WriteInt(p.ReadInt());
+                            outPacket.WriteUInt(MultyPlayer.ConvertTick());
+                            BeginSend(outPacket, clientEP);
+                        }
+                        else if (packetValue == PacketName.GameSlotPacket)
+                        {
+                            if (room != null)
+                            {
+                                if (room.RelayType == 0) //UDP
+                                {
+                                    for (int i = 0; i < 8; i++)
+                                    {
+                                        if (RoomManager.TryGetSlotDetail(roomId, (byte)i) is Player player)
+                                        {
+                                            OutPacket oPacket = new OutPacket();
+
+                                            oPacket.WriteUInt(Adler32Helper.GenerateAdler32_ASCII(player.Nickname, 0));
+                                            oPacket.WriteUInt(hash);
+                                            oPacket.WriteInt((int)PacketName.GameSlotPacket);
+
+                                            oPacket.WriteBytes(p.ReadBytes(p.Available));
+                                            if (MultyPlayer.Udps.TryGetValue(player.Nickname, out IPEndPoint endPoint))
+                                            {
+                                                BeginSend(oPacket, endPoint);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine($"Unknown Packet on UDP : {packetValue}");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"[{_serverName}] 处理数据异常：{ex.Message}");
+                }
             }
             catch (ObjectDisposedException)
             {
@@ -172,6 +254,30 @@ namespace KartRider
                 {
                     BeginReceive();
                 }
+            }
+        }
+
+        public void BeginSend(OutPacket outPacket, IPEndPoint endPoint)
+        {
+            byte[] buffer = outPacket.ToArray();
+            try
+            {
+                if (buffer.Length >= 16)
+                {
+                    byte[] data = new byte[buffer.Length + 8];
+
+                    uint siv = (uint)(new Random((int)DateTime.Now.Ticks).Next());
+                    uint newHash = Crypto.HashEncrypt(buffer, buffer.Length, siv);
+                    Buffer.BlockCopy(BitConverter.GetBytes(siv), 0, data, 0, 4);
+                    Buffer.BlockCopy(BitConverter.GetBytes((uint)(siv ^ newHash ^ 1329075907U)), 0, data, data.Length - 4, 4);
+                    Buffer.BlockCopy(buffer, 0, data, 4, buffer.Length);
+
+                    _udpClient.Send(data, data.Length, endPoint);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
             }
         }
     }

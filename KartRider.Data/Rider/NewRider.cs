@@ -54,7 +54,7 @@ namespace RiderData
                 oPacket.WriteShort(ProfileService.ProfileConfigs[Nickname].Rider.Emblem1);
                 oPacket.WriteShort(ProfileService.ProfileConfigs[Nickname].Rider.Emblem2);
                 oPacket.WriteShort(0);
-                GameSupport.GetRider(Parent, Nickname, oPacket);
+                GameSupport.GetRider(Nickname, oPacket);
                 oPacket.WriteString(ProfileService.ProfileConfigs[Nickname].Rider.Card);
                 oPacket.WriteUInt(ProfileService.ProfileConfigs[Nickname].Rider.Lucci);
                 oPacket.WriteUInt(ProfileService.ProfileConfigs[Nickname].Rider.RP);

@@ -260,5 +260,19 @@ namespace KartRider.IO.Packet
 		{
 			this.WriteShort((short)value);
 		}
+
+		public void WriteDateTime(DateTime value)
+		{
+			if (value == DateTime.MinValue)
+			{
+				this.WriteShort(-1);
+				this.WriteShort(0);
+			}
+			else
+			{
+				this.WriteShort((short)(value - new DateTime(1900, 1, 1)).Days);
+				this.WriteShort((short)(value.Second / 4 + value.Minute * 15 + value.Hour * 900));
+			}
+		}
 	}
 }

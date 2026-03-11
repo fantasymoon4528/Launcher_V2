@@ -21,15 +21,15 @@ namespace KartRider
 
         public static SessionGroup MySession { get; set; }
 
-        public static int[] DataTime()
+        public static int DataTime()
         {
             DateTime dt = DateTime.Now;
-            DateTime time = new DateTime(1900, 1, 1, 0, 0, 0);
-            TimeSpan t = dt.Subtract(time);
-            double totalSeconds = dt.TimeOfDay.TotalSeconds / 4;
+            // DateTime time = new DateTime(1900, 1, 1, 0, 0, 0);
+            // TimeSpan t = dt.Subtract(time);
+            // double totalSeconds = dt.TimeOfDay.TotalSeconds / 4;
             int MonthCount = (dt.Year - 1900) * 12 + dt.Month;
             int oddMonthCount = (MonthCount + 1) / 2;
-            return new int[] { t.Days, (int)totalSeconds, oddMonthCount };
+            return oddMonthCount;
         }
 
         public static void OnAcceptSocket(IAsyncResult ar)
@@ -57,11 +57,9 @@ namespace KartRider
 
         public static void Start()
         {
-            // 示例：启动两个独立的UDP服务端
+            // 启动服务端
             var server1 = new UdpServer("服务端1", 39311);
             var server2 = new UdpServer("服务端2", 39312);
-
-            // 启动服务端
             server1.Start();
             server2.Start();
 

@@ -63,7 +63,6 @@ class MemoryModifier
         DataPacket packet = new DataPacket
         {
             Nickname = ProfileService.SettingConfig.Name,
-            TimeTicks = MultyPlayer.GetUpTime()
         };
 
         Process process = null;
