@@ -284,132 +284,13 @@ namespace KartRider
                         string nickname = iPacket.ReadString(false);
                         if (nickname == Nickname)
                         {
-                            //GameSupport.PrGetRiderInfo();
-                            using (OutPacket outPacket = new OutPacket("PrGetRiderInfo"))
-                            {
-                                outPacket.WriteByte(1);
-                                outPacket.WriteUInt(UserNO);
-                                outPacket.WriteString(Nickname);
-                                outPacket.WriteString(Nickname);
-                                outPacket.WriteDateTime(DateTime.Now);
-                                GameSupport.GetRider(Nickname, outPacket);
-                                outPacket.WriteString(ProfileService.ProfileConfigs[Nickname].Rider.Card);
-                                outPacket.WriteUInt(ProfileService.ProfileConfigs[Nickname].Rider.RP);
-                                outPacket.WriteInt(0);
-                                outPacket.WriteByte(6);//Licenses
-                                outPacket.WriteDateTime(DateTime.Now);
-                                outPacket.WriteBytes(new byte[17]);
-                                outPacket.WriteShort(ProfileService.ProfileConfigs[Nickname].Rider.Emblem1);
-                                outPacket.WriteShort(ProfileService.ProfileConfigs[Nickname].Rider.Emblem2);
-                                outPacket.WriteShort(0);
-                                outPacket.WriteString(ProfileService.ProfileConfigs[Nickname].Rider.RiderIntro);
-                                outPacket.WriteInt(ProfileService.ProfileConfigs[Nickname].Rider.Premium);
-                                outPacket.WriteByte(1);
-                                if (ProfileService.ProfileConfigs[Nickname].Rider.Premium == 0)
-                                    outPacket.WriteInt(0);
-                                else if (ProfileService.ProfileConfigs[Nickname].Rider.Premium == 1)
-                                    outPacket.WriteInt(10000);
-                                else if (ProfileService.ProfileConfigs[Nickname].Rider.Premium == 2)
-                                    outPacket.WriteInt(30000);
-                                else if (ProfileService.ProfileConfigs[Nickname].Rider.Premium == 3)
-                                    outPacket.WriteInt(60000);
-                                else if (ProfileService.ProfileConfigs[Nickname].Rider.Premium == 4)
-                                    outPacket.WriteInt(120000);
-                                else if (ProfileService.ProfileConfigs[Nickname].Rider.Premium == 5)
-                                    outPacket.WriteInt(200000);
-                                else
-                                    outPacket.WriteInt(0);
-                                if (ProfileService.ProfileConfigs[Nickname].Rider.ClubMark_LOGO == 0)
-                                {
-                                    outPacket.WriteInt(0);
-                                    outPacket.WriteInt(0);
-                                    outPacket.WriteInt(0);
-                                    outPacket.WriteString("");
-                                }
-                                else
-                                {
-                                    outPacket.WriteInt(ProfileService.ProfileConfigs[Nickname].Rider.ClubCode);
-                                    outPacket.WriteInt(ProfileService.ProfileConfigs[Nickname].Rider.ClubMark_LOGO);
-                                    outPacket.WriteInt(ProfileService.ProfileConfigs[Nickname].Rider.ClubMark_LINE);
-                                    outPacket.WriteString(ProfileService.ProfileConfigs[Nickname].Rider.ClubName);
-                                }
-                                outPacket.WriteInt(0);
-                                outPacket.WriteByte(ProfileService.ProfileConfigs[Nickname].Rider.Ranker);
-                                outPacket.WriteInt(0);
-                                outPacket.WriteInt(0);
-                                outPacket.WriteInt(0);
-                                outPacket.WriteInt(0);
-                                outPacket.WriteInt(0);
-                                outPacket.WriteByte(0);
-                                outPacket.WriteByte(0);
-                                outPacket.WriteByte(0);
-                                this.Parent.Client.Send(outPacket);
-                            }
+                            GameSupport.PrGetRiderInfo(nickname, this.Parent);
                         }
                         else
                         {
                             if (ProfileService.ProfileConfigs.ContainsKey(nickname))
                             {
-                                using (OutPacket outPacket = new OutPacket("PrGetRiderInfo"))
-                                {
-                                    outPacket.WriteByte(1);
-                                    outPacket.WriteUInt(Adler32Helper.GenerateAdler32_ASCII(nickname, 0));
-                                    outPacket.WriteString(nickname);
-                                    outPacket.WriteString(nickname);
-                                    outPacket.WriteDateTime(DateTime.Now);
-                                    GameSupport.GetRider(nickname, outPacket);
-                                    outPacket.WriteString(ProfileService.ProfileConfigs[nickname].Rider.Card);
-                                    outPacket.WriteUInt(ProfileService.ProfileConfigs[nickname].Rider.RP);
-                                    outPacket.WriteInt(0);
-                                    outPacket.WriteByte(6);//Licenses
-                                    outPacket.WriteDateTime(DateTime.Now);
-                                    outPacket.WriteBytes(new byte[17]);
-                                    outPacket.WriteShort(ProfileService.ProfileConfigs[nickname].Rider.Emblem1);
-                                    outPacket.WriteShort(ProfileService.ProfileConfigs[nickname].Rider.Emblem2);
-                                    outPacket.WriteShort(0);
-                                    outPacket.WriteString(ProfileService.ProfileConfigs[nickname].Rider.RiderIntro);
-                                    outPacket.WriteInt(ProfileService.ProfileConfigs[nickname].Rider.Premium);
-                                    outPacket.WriteByte(1);
-                                    if (ProfileService.ProfileConfigs[nickname].Rider.Premium == 0)
-                                        outPacket.WriteInt(0);
-                                    else if (ProfileService.ProfileConfigs[nickname].Rider.Premium == 1)
-                                        outPacket.WriteInt(10000);
-                                    else if (ProfileService.ProfileConfigs[nickname].Rider.Premium == 2)
-                                        outPacket.WriteInt(30000);
-                                    else if (ProfileService.ProfileConfigs[nickname].Rider.Premium == 3)
-                                        outPacket.WriteInt(60000);
-                                    else if (ProfileService.ProfileConfigs[nickname].Rider.Premium == 4)
-                                        outPacket.WriteInt(120000);
-                                    else if (ProfileService.ProfileConfigs[nickname].Rider.Premium == 5)
-                                        outPacket.WriteInt(200000);
-                                    else
-                                        outPacket.WriteInt(0);
-                                    if (ProfileService.ProfileConfigs[nickname].Rider.ClubMark_LOGO == 0)
-                                    {
-                                        outPacket.WriteInt(0);
-                                        outPacket.WriteInt(0);
-                                        outPacket.WriteInt(0);
-                                        outPacket.WriteString("");
-                                    }
-                                    else
-                                    {
-                                        outPacket.WriteInt(ProfileService.ProfileConfigs[nickname].Rider.ClubCode);
-                                        outPacket.WriteInt(ProfileService.ProfileConfigs[nickname].Rider.ClubMark_LOGO);
-                                        outPacket.WriteInt(ProfileService.ProfileConfigs[nickname].Rider.ClubMark_LINE);
-                                        outPacket.WriteString(ProfileService.ProfileConfigs[nickname].Rider.ClubName);
-                                    }
-                                    outPacket.WriteInt(0);
-                                    outPacket.WriteByte(ProfileService.ProfileConfigs[nickname].Rider.Ranker);
-                                    outPacket.WriteInt(0);
-                                    outPacket.WriteInt(0);
-                                    outPacket.WriteInt(0);
-                                    outPacket.WriteInt(0);
-                                    outPacket.WriteInt(0);
-                                    outPacket.WriteByte(0);
-                                    outPacket.WriteByte(0);
-                                    outPacket.WriteByte(0);
-                                    this.Parent.Client.Send(outPacket);
-                                }
+                                GameSupport.PrGetRiderInfo(nickname, this.Parent);
                             }
                             else
                             {

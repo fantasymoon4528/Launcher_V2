@@ -19,6 +19,7 @@ public class GameRoom
     public int RoomMaster { get; set; } = 0;
     public byte[] RoomData { get; set;} = new byte[32];
     public byte RandomTrackGameType { get; set; } = 0;
+    public byte unk1 { get; set; } = 0;
     public float redGauge { get; set; } = 0;
     public float blueGauge { get; set; } = 0;
     public byte Lock { get; set; } = 0;

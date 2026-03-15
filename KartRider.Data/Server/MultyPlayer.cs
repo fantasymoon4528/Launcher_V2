@@ -578,14 +578,6 @@ public static class MultyPlayer
             iPacket.ReadBytes(29);
             byte AiSwitch = iPacket.ReadByte();
             Console.WriteLine("AiSwitch = {0}", AiSwitch);
-            using (OutPacket oPacket = new OutPacket("ChCreateRoomReplyPacket"))
-            {
-                oPacket.WriteByte(1);
-                oPacket.WriteByte(1);
-                oPacket.WriteByte(2);
-                oPacket.WriteByte(unk1);
-                Parent.Client.Send(oPacket);
-            }
             var roomData = roomList[nickname];
             var RoomId = RoomManager.CreateRoom();
             var Room = RoomManager.GetRoom(RoomId);
@@ -599,6 +591,14 @@ public static class MultyPlayer
                 {
                     Console.WriteLine("CreateRoom Failed");
                 }
+                using (OutPacket oPacket = new OutPacket("ChCreateRoomReplyPacket"))
+                {
+                    oPacket.WriteByte(1);
+                    oPacket.WriteByte(1);
+                    oPacket.WriteByte(2);
+                    oPacket.WriteByte(unk1);
+                    Parent.Client.Send(oPacket);
+                }
             }
             else
             {
@@ -608,6 +608,14 @@ public static class MultyPlayer
                 if (player == null)
                 {
                     Console.WriteLine("CreateRoom Failed");
+                }
+                using (OutPacket oPacket = new OutPacket("ChCreateRoomReplyPacket"))
+                {
+                    oPacket.WriteByte(1);
+                    oPacket.WriteByte(0);
+                    oPacket.WriteByte(8);
+                    oPacket.WriteByte(unk1);
+                    Parent.Client.Send(oPacket);
                 }
             }
             Room.RoomName = RoomName;
@@ -619,6 +627,7 @@ public static class MultyPlayer
             Room.SpeedType = roomData.SpeedType;
             Room.GameType = roomData.GameType;
             Room.RandomTrackGameType = roomData.RandomTrackGameType;
+            Room.unk1 = unk1;
             Room.RoomData = RoomData;
             if (AiCount > 0 && AiSwitch == 6)
             {
@@ -953,11 +962,13 @@ public static class MultyPlayer
                                 using (OutPacket outPacket = new OutPacket("ChJoinRoomReplyPacket"))
                                 {
                                     outPacket.WriteByte(0);
-                                    outPacket.WriteInt(0);
-                                    outPacket.WriteInt(0);
+                                    outPacket.WriteByte(2);
+                                    outPacket.WriteByte(2);
+                                    outPacket.WriteByte(room.unk1);
+                                    outPacket.WriteBytes(new byte[5]);
                                     Parent.Client.Send(outPacket);
                                 }
-                                break;
+                                return;
                             }
                             else
                             {
@@ -965,19 +976,23 @@ public static class MultyPlayer
                                 using (OutPacket outPacket = new OutPacket("ChJoinRoomReplyPacket"))
                                 {
                                     outPacket.WriteByte(0);
-                                    outPacket.WriteInt(0);
-                                    outPacket.WriteInt(0);
+                                    outPacket.WriteByte(2);
+                                    outPacket.WriteByte(2);
+                                    outPacket.WriteByte(room.unk1);
+                                    outPacket.WriteBytes(new byte[5]);
                                     Parent.Client.Send(outPacket);
                                 }
-                                break;
+                                return;
                             }
                         }
                     }
                     using (OutPacket outPacket = new OutPacket("ChJoinRoomReplyPacket"))
                     {
+                        outPacket.WriteByte(1);
                         outPacket.WriteByte(0);
-                        outPacket.WriteInt(0);
-                        outPacket.WriteInt(0);
+                        outPacket.WriteByte(0);
+                        outPacket.WriteByte(room.unk1);
+                        outPacket.WriteBytes(new byte[5]);
                         Parent.Client.Send(outPacket);
                     }
                 }
@@ -989,8 +1004,10 @@ public static class MultyPlayer
                         using (OutPacket outPacket = new OutPacket("ChJoinRoomReplyPacket"))
                         {
                             outPacket.WriteByte(1);
-                            outPacket.WriteInt(0);
-                            outPacket.WriteInt(0);
+                            outPacket.WriteByte(0);
+                            outPacket.WriteByte(0);
+                            outPacket.WriteByte(room.unk1);
+                            outPacket.WriteBytes(new byte[5]);
                             Parent.Client.Send(outPacket);
                         }
                     }
@@ -999,8 +1016,10 @@ public static class MultyPlayer
                         using (OutPacket outPacket = new OutPacket("ChJoinRoomReplyPacket"))
                         {
                             outPacket.WriteByte(0);
-                            outPacket.WriteInt(0);
-                            outPacket.WriteInt(0);
+                            outPacket.WriteByte(0);
+                            outPacket.WriteByte(8);
+                            outPacket.WriteByte(room.unk1);
+                            outPacket.WriteBytes(new byte[5]);
                             Parent.Client.Send(outPacket);
                         }
                     }
@@ -1011,8 +1030,10 @@ public static class MultyPlayer
                 using (OutPacket outPacket = new OutPacket("ChJoinRoomReplyPacket"))
                 {
                     outPacket.WriteByte(2);
-                    outPacket.WriteInt();
-                    outPacket.WriteInt();
+                    outPacket.WriteByte(0);
+                    outPacket.WriteByte(0);
+                    outPacket.WriteByte(room.unk1);
+                    outPacket.WriteBytes(new byte[5]);
                     Parent.Client.Send(outPacket);
                 }
             }
