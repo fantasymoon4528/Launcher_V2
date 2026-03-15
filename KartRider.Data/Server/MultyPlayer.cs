@@ -292,7 +292,6 @@ public static class MultyPlayer
             outPacket.WriteInt(4);
             outPacket.WriteByte(0);
             outPacket.WriteLong(room.EndTicks + 5000);
-            //Parent.Client.Send(outPacket);
             BroadCast(roomId, outPacket);
         }
         Console.WriteLine("EndTicks = {0}", room.EndTicks + 5000);
@@ -410,7 +409,6 @@ public static class MultyPlayer
                     oPacket.WriteInt(1);
                     oPacket.WriteByte(0);
                     oPacket.WriteUInt(room.StartTicks);
-                    //Parent.Client.Send(oPacket);
                     BroadCast(roomId, oPacket);
                 }
                 room.TimeData = new Dictionary<int, uint>();
@@ -423,21 +421,17 @@ public static class MultyPlayer
             {
                 iPacket.ReadInt();
                 var time = iPacket.ReadUInt();
-                var slotId = RoomManager.GetPlayerSlotId(roomId, nickname);
-                if (slotId != -1)
+                var player = RoomManager.GetPlayer(roomId, nickname);
+                if (player != null)
                 {
                     using (OutPacket oPacket = new OutPacket("GameRaceTimePacket"))
                     {
-                        oPacket.WriteInt(slotId);
+                        oPacket.WriteInt(player.ID);
                         oPacket.WriteUInt(time);
-                        Parent.Client.Send(oPacket);
+                        BroadCast(roomId, oPacket);
                     }
-                    var player = RoomManager.GetPlayer(roomId, nickname);
-                    if (player != null)
-                    {
-                        room.TimeData.TryAdd(player.ID, time);
-                        Console.WriteLine("GameControlPacket, ID = {0}, Time = {1}", player.ID, time);
-                    }
+                    room.TimeData.TryAdd(player.ID, time);
+                    Console.WriteLine("GameControlPacket, ID = {0}, Time = {1}", player.ID, time);
                 }
                 if (room.EndTicks == 0)
                 {
@@ -447,7 +441,6 @@ public static class MultyPlayer
                         oPacket.WriteInt(3);
                         oPacket.WriteByte(0);
                         oPacket.WriteUInt(room.EndTicks);
-                        //Parent.Client.Send(oPacket);
                         BroadCast(roomId, oPacket, nickname);
                     }
                     Set_settleTrigger(Parent, roomId);
@@ -851,7 +844,7 @@ public static class MultyPlayer
             {
                 oPacket.WriteInt(Id);
                 oPacket.WriteUInt(Time);
-                Parent.Client.Send(oPacket);
+                BroadCast(roomId, oPacket);
             }
             room.TimeData.TryAdd(Id, Time);
             Console.WriteLine("GameAiGoalinPacket, Id = {0}, Time = {1}", Id, Time);
