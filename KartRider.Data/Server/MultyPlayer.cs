@@ -296,6 +296,12 @@ public static class MultyPlayer
         }
         room.StartTicks = 0;
         room.Started = false;
+        int firstID = room.Ranking.FirstOrDefault(x => x.Value == 0).Key;
+        if (RoomManager.TryGetIdDetail(roomId, firstID) is Player p4)
+        {
+            room.RoomMaster = firstID;
+            p4.PlayerType = 2;
+        }
         Console.WriteLine("EndTicks = {0}", room.EndTicks + 5000);
     }
 
