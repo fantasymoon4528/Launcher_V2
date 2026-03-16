@@ -186,6 +186,16 @@ public static class MultyPlayer
             {
                 if (Object is Player p3)
                 {
+                    // Ensure profile is loaded for the player
+                    if (!ProfileService.ProfileConfigs.ContainsKey(p3.Nickname))
+                    {
+                        if (!FileName.FileNames.ContainsKey(p3.Nickname))
+                        {
+                            FileName.Load(p3.Nickname);
+                        }
+                        ProfileService.Load(p3.Nickname);
+                    }
+                    
                     outPacket.WriteInt(p3.ID); // player id
                     outPacket.WriteUInt(room.TimeData[p3.ID]);
                     outPacket.WriteByte();
@@ -307,6 +317,12 @@ public static class MultyPlayer
             }
             filename = FileName.FileNames[nickname];
         }
+        
+        // Ensure profile is loaded for the current nickname
+        if (nickname != "" && !ProfileService.ProfileConfigs.ContainsKey(nickname))
+        {
+            ProfileService.Load(nickname);
+        }
         if (hash == Adler32Helper.GenerateAdler32_ASCII("GameSlotPacket", 0))
         {
             int roomId = RoomManager.TryGetRoomId(nickname);
@@ -352,11 +368,16 @@ public static class MultyPlayer
                 {
                     GameSupport.AttackedSkill(Parent, nickname, type, uni, 10);
                 }
-                if (kartConfig.SkillAttacked.TryGetValue(ProfileService.ProfileConfigs[nickname].RiderItem.Set_Kart, out var kartSkills))
+                
+                // Ensure profile is loaded before accessing
+                if (ProfileService.ProfileConfigs.ContainsKey(nickname))
                 {
-                    if (kartSkills.TryGetValue(skill, out var targetSkill))
+                    if (kartConfig.SkillAttacked.TryGetValue(ProfileService.ProfileConfigs[nickname].RiderItem.Set_Kart, out var kartSkills))
                     {
-                        GameSupport.AttackedSkill(Parent, nickname, type, uni, targetSkill);
+                        if (kartSkills.TryGetValue(skill, out var targetSkill))
+                        {
+                            GameSupport.AttackedSkill(Parent, nickname, type, uni, targetSkill);
+                        }
                     }
                 }
                 Console.WriteLine("GameSlotPacket, Attacked. Skill = {0}", skill);
@@ -372,11 +393,16 @@ public static class MultyPlayer
                 {
                     GameSupport.AddItemSkill(Parent, nickname, 6);
                 }
-                if (kartConfig.SkillMappings.TryGetValue(ProfileService.ProfileConfigs[nickname].RiderItem.Set_Kart, out var kartSkills))
+                
+                // Ensure profile is loaded before accessing
+                if (ProfileService.ProfileConfigs.ContainsKey(nickname))
                 {
-                    if (kartSkills.TryGetValue(skill, out var targetSkill))
+                    if (kartConfig.SkillMappings.TryGetValue(ProfileService.ProfileConfigs[nickname].RiderItem.Set_Kart, out var kartSkills))
                     {
-                        GameSupport.AddItemSkill(Parent, nickname, targetSkill);
+                        if (kartSkills.TryGetValue(skill, out var targetSkill))
+                        {
+                            GameSupport.AddItemSkill(Parent, nickname, targetSkill);
+                        }
                     }
                 }
                 Console.WriteLine("GameSlotPacket, Mapping. Skill = {0}", skill);
@@ -1140,6 +1166,16 @@ public static class MultyPlayer
         {
             if (Object is Player p)
             {
+                // Ensure profile is loaded for the player
+                if (!ProfileService.ProfileConfigs.ContainsKey(p.Nickname))
+                {
+                    if (!FileName.FileNames.ContainsKey(p.Nickname))
+                    {
+                        FileName.Load(p.Nickname);
+                    }
+                    ProfileService.Load(p.Nickname);
+                }
+                
                 Console.WriteLine("Player Nickname = {0}, ID = {1}, SlotId = {2}", p.Nickname, p.ID, p.SlotId);
                 if (enter)
                 {
