@@ -981,7 +981,7 @@ public static class MultyPlayer
                     {
                         using (OutPacket outPacket = new OutPacket("GrRiderEchoPacket"))
                         {
-                            outPacket.WriteInt(player.SlotId);
+                            outPacket.WriteInt(player.ID);
                             outPacket.WriteString(value);
                             p.Session.Client.Send(outPacket);
                         }
