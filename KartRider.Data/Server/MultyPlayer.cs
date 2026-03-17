@@ -421,7 +421,7 @@ public static class MultyPlayer
             //start
             if (state == 0 && room.StartTicks == 0)
             {
-                room.StartTicks = ConvertTick() + 7000;
+                room.StartTicks = ConvertTick() + 12000;
                 using (OutPacket oPacket = new OutPacket("GameAiMasterSlotNoticePacket"))
                 {
                     oPacket.WriteInt();
@@ -459,7 +459,7 @@ public static class MultyPlayer
                 }
                 if (room.EndTicks == 0)
                 {
-                    room.EndTicks = ConvertTick();
+                    room.EndTicks = ConvertTick() + 10000;
                     using (OutPacket oPacket = new OutPacket("GameControlPacket"))
                     {
                         oPacket.WriteInt(3);
@@ -833,7 +833,7 @@ public static class MultyPlayer
             Console.WriteLine("GameAiGoalinPacket, Id = {0}, Time = {1}", Id, Time);
             if (room.EndTicks == 0)
             {
-                room.EndTicks = ConvertTick();
+                room.EndTicks = ConvertTick() + 10000;
                 using (OutPacket oPacket = new OutPacket("GameControlPacket"))
                 {
                     oPacket.WriteInt(3);
@@ -1548,10 +1548,10 @@ public static class MultyPlayer
                 {
                     oPacket.WriteInt(7);
                 }
-            }
-            for (int i = 0; i < (8 - room.GetCount()); i++)
-            {
-                oPacket.WriteInt(0);
+                else
+                {
+                    oPacket.WriteInt(0);
+                }
             }
             oPacket.WriteBytes(new byte[32]);
             BroadCast(roomId, oPacket);
