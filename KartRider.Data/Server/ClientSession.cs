@@ -48,7 +48,6 @@ namespace KartRider
                 string clientId = ClientManager.GetClientId(clientEndPoint);
                 var ClientGroup = ClientManager.ClientGroups[clientId];
                 string Nickname = ClientGroup.Nickname;
-                uint UserNO = Adler32Helper.GenerateAdler32_ASCII(Nickname, 0);
                 iPacket.Position = 0;
                 uint hash = iPacket.ReadUInt();
                 string currentTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
@@ -83,7 +82,7 @@ namespace KartRider
                             outPacket.WriteString("https://www.tiancity.com/agreement");
                             this.Parent.Client.Send(outPacket);
                         }
-                        MultyPlayer.UserNOs[Adler32Helper.GenerateAdler32_ASCII(packet.Nickname, 0)] = packet.Nickname;
+                        uint UserNO = ClientManager.GetUserNO(packet.Nickname);
                     }
                     return;
                 }
@@ -473,10 +472,16 @@ namespace KartRider
                     {
                         using (OutPacket outPacket = new OutPacket("RmSlotDataPacket"))
                         {
-                            outPacket.WriteUInt(UserNO);
-                            outPacket.WriteEndPoint(clientEndPoint);
-                            outPacket.WriteInt();
-                            outPacket.WriteShort();
+                            outPacket.WriteUInt(ClientManager.GetUserNO(Nickname));
+                            if (ClientManager.ClientP2pAddrs.TryGetValue(Nickname, out IPEndPoint endPoint))
+                            {
+                                outPacket.WriteEndPoint(endPoint);
+                            }
+                            else
+                            {
+                                outPacket.WriteEndPoint(new IPEndPoint(IPAddress.Any, 0));
+                            }
+                            outPacket.WriteEndPoint(new IPEndPoint(IPAddress.Any, 0));
                             outPacket.WriteString(Nickname);
                             GameSupport.GetRider(Nickname, outPacket);
                             outPacket.WriteUInt(ProfileService.ProfileConfigs[Nickname].Rider.RP);
@@ -485,8 +490,7 @@ namespace KartRider
                             outPacket.WriteByte();
                             for (int i = 0; i < 7; i++)
                             {
-                                outPacket.WriteBytes(new byte[132]);
-                                outPacket.WriteHexString("FF");
+                                outPacket.WriteBytes(new byte[133]);
                             }
                             this.Parent.Client.Send(outPacket);
                         }
@@ -1685,7 +1689,7 @@ namespace KartRider
                             outPacket.WriteDateTime(DateTime.Now);
                             outPacket.WriteByte(5);
                             outPacket.WriteByte(1);
-                            outPacket.WriteUInt(UserNO);
+                            outPacket.WriteUInt(ClientManager.GetUserNO(Nickname));
                             outPacket.WriteString(Nickname);
                             outPacket.WriteInt(500);//最大成员数
                             outPacket.WriteHexString("00000000E803000004FFFF0000");
@@ -1759,7 +1763,7 @@ namespace KartRider
                             outPacket.WriteDateTime(DateTime.Now);
                             outPacket.WriteByte(5);
                             outPacket.WriteByte(1);
-                            outPacket.WriteUInt(UserNO);
+                            outPacket.WriteUInt(ClientManager.GetUserNO(Nickname));
                             outPacket.WriteString(Nickname);
                             outPacket.WriteInt(500);//最大成员数
                             outPacket.WriteHexString("00000000E803000004FFFF0000");
@@ -1775,7 +1779,7 @@ namespace KartRider
                             for (int i = 0; i < ClubMemberCount; i++)
                             {
                                 outPacket.WriteInt(ProfileService.ProfileConfigs[Nickname].Rider.ClubCode);
-                                outPacket.WriteUInt(UserNO);
+                                outPacket.WriteUInt(ClientManager.GetUserNO(Nickname));
                                 outPacket.WriteString(Nickname);
                                 outPacket.WriteUInt(ProfileService.ProfileConfigs[Nickname].Rider.RP);
                                 outPacket.WriteShort(5);//职位
@@ -1788,7 +1792,7 @@ namespace KartRider
                                 outPacket.WriteInt(0);
                             }
                             outPacket.WriteInt(ProfileService.ProfileConfigs[Nickname].Rider.ClubCode);
-                            outPacket.WriteUInt(UserNO);
+                            outPacket.WriteUInt(ClientManager.GetUserNO(Nickname));
                             outPacket.WriteString(Nickname);
                             outPacket.WriteUInt(ProfileService.ProfileConfigs[Nickname].Rider.RP);
                             outPacket.WriteShort(5);//职位
@@ -1818,7 +1822,7 @@ namespace KartRider
                             for (int i = 0; i < ClubMemberCount; i++)
                             {
                                 outPacket.WriteInt(ClubID);
-                                outPacket.WriteUInt(UserNO);
+                                outPacket.WriteUInt(ClientManager.GetUserNO(Nickname));
                                 outPacket.WriteString(Nickname);
                                 outPacket.WriteUInt(ProfileService.ProfileConfigs[Nickname].Rider.RP);
                                 outPacket.WriteShort(5);//职位
@@ -1832,7 +1836,7 @@ namespace KartRider
                             }
                             outPacket.WriteInt(300);
                             outPacket.WriteInt(ClubID);
-                            outPacket.WriteUInt(UserNO);
+                            outPacket.WriteUInt(ClientManager.GetUserNO(Nickname));
                             outPacket.WriteString(Nickname);
                             outPacket.WriteUInt(ProfileService.ProfileConfigs[Nickname].Rider.RP);
                             outPacket.WriteShort(5);//职位
@@ -2814,7 +2818,7 @@ namespace KartRider
                         {
                             outPacket.WriteInt(0);
                             outPacket.WriteDateTime(DateTime.Now);
-                            outPacket.WriteUInt(UserNO);
+                            outPacket.WriteUInt(ClientManager.GetUserNO(Nickname));
                             outPacket.WriteString(Nickname); // UserID
                             outPacket.WriteByte(2);
                             outPacket.WriteByte(1);
@@ -3635,10 +3639,7 @@ namespace KartRider
                         using (OutPacket outPacket = new OutPacket("PrGetMyMsgrInfoPacket"))
                         {
                             outPacket.WriteUInt(unk1);
-                            outPacket.WriteInt(1);
-                            outPacket.WriteInt(0);
-                            outPacket.WriteInt(0);
-                            outPacket.WriteInt(0);
+                            outPacket.WriteBytes(new byte[12]);
                             this.Parent.Client.Send(outPacket);
                         }
                         return;
@@ -3648,6 +3649,10 @@ namespace KartRider
                         uint unk1 = iPacket.ReadUInt();
                         using (OutPacket outPacket = new OutPacket("PrGetMsgrFriendList"))
                         {
+                            outPacket.WriteInt(0);
+                            outPacket.WriteInt(0);
+                            outPacket.WriteByte(0);
+                            outPacket.WriteInt(0);
                             outPacket.WriteInt(0);
                             this.Parent.Client.Send(outPacket);
                         }
@@ -3701,14 +3706,26 @@ namespace KartRider
                     }
                     else if (hash == Adler32Helper.GenerateAdler32_ASCII("ChClientP2pAddrPacket", 0))
                     {
-                        var ipAddressStr = $"{iPacket.ReadByte()}.{iPacket.ReadByte()}.{iPacket.ReadByte()}.{iPacket.ReadByte()}";
-                        Console.WriteLine($"{ipAddressStr}:{iPacket.ReadUShort()}");
+                        var ClientP2pAddr = iPacket.ReadEndPoint();
+                        Console.WriteLine($"{ClientP2pAddr.Address}:{ClientP2pAddr.Port}");
+                        ClientManager.ClientP2pAddrs[Nickname] = ClientP2pAddr;
                         return;
                     }
                     else if (hash == Adler32Helper.GenerateAdler32_ASCII("ChClientUdpAddrPacket", 0))
                     {
-                        var ipAddressStr = $"{iPacket.ReadByte()}.{iPacket.ReadByte()}.{iPacket.ReadByte()}.{iPacket.ReadByte()}";
-                        Console.WriteLine($"{ipAddressStr}:{iPacket.ReadUShort()}");
+                        var ClientUdpAddr = iPacket.ReadEndPoint();
+                        Console.WriteLine($"{ClientUdpAddr.Address}:{ClientUdpAddr.Port}");
+                        ClientManager.ClientUdpAddrs[Nickname] = ClientUdpAddr;
+                        return;
+                    }
+                    else if (hash == Adler32Helper.GenerateAdler32_ASCII("PqStartTrainingCenter", 0))
+                    {
+                        using (OutPacket outPacket = new OutPacket("PrStartTrainingCenter"))
+                        {
+                            outPacket.WriteByte(1);
+                            StartGameData.GetSchoolSpac(outPacket, Nickname);
+                            this.Parent.Client.Send(outPacket);
+                        }
                         return;
                     }
                     else if (hash == Adler32Helper.GenerateAdler32_ASCII("PqServerSideUdpBindCheck", 0))
@@ -3722,26 +3739,6 @@ namespace KartRider
                             outPacket.WriteInt(0);
                             this.Parent.Client.Send(outPacket);
                         }
-                        return;
-                    }
-                    else if (hash == Adler32Helper.GenerateAdler32_ASCII("PqMissionAttendPacket", 0))
-                    {
-                        // using (OutPacket oPacket = new OutPacket("PrMissionAttendPacket"))
-                        // {
-                        //     oPacket.WriteInt(0);
-                        //     oPacket.WriteInt(0);
-                        //     oPacket.WriteInt(0);
-
-                        //     oPacket.WriteInt(0);
-                        //     oPacket.WriteInt(0);
-                        //     oPacket.WriteDateTime(DateTime.Now);
-                        //     oPacket.WriteDateTime(DateTime.Now);
-                        //     oPacket.WriteInt(0);
-
-                        //     oPacket.WriteDateTime(DateTime.Now);
-                        //     oPacket.WriteInt(0);
-                        //     this.Parent.Client.Send(oPacket);
-                        // }
                         return;
                     }
                     else

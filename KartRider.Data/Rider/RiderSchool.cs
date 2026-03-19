@@ -25,7 +25,7 @@ namespace RiderData
 
         public static void PrRiderSchoolData(SessionGroup Parent)
         {
-
+            int TrainingCenterCount = 3;
             using (OutPacket outPacket = new OutPacket("PrRiderSchoolDataPacket"))
             {
                 outPacket.WriteByte(catLevel);//라이센스 등급
@@ -33,6 +33,12 @@ namespace RiderData
                 outPacket.WriteDateTime(DateTime.Now);
                 outPacket.WriteInt(0);
                 outPacket.WriteByte(0);
+                outPacket.WriteInt(TrainingCenterCount);
+                for (int i = 1; i <= TrainingCenterCount; i++)
+                {
+                    outPacket.WriteShort((short)i);
+                    outPacket.WriteShort(4);
+                }
                 Parent.Client.Send(outPacket);
             }
         }

@@ -1613,5 +1613,8 @@ namespace KartRider_PacketName
 		PrReturnMissionRequestDataPacket = 3569945823,
 		PqRotationModeDataPacket = 1973160296,
 		PrRotationModeDataPacket = 1974667625,
+		PqStartTrainingCenter = 1536952428,
+		PrStartTrainingCenter = 1538263149,
+		PqUpdateTrainingCenterDataPacket = 3472428179,
 	}
 }

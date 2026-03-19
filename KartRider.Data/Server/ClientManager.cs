@@ -25,6 +25,11 @@ public static class ClientManager
     // 线程安全的集合，存储所有客户端会话（键：客户端唯一标识，值：会话对象）
     public static readonly ConcurrentDictionary<string, SessionGroup> _clientSessions = new ConcurrentDictionary<string, SessionGroup>();
     public static ConcurrentDictionary<string, ClientGroup> ClientGroups = new ConcurrentDictionary<string, ClientGroup>();
+    public static ConcurrentDictionary<string, IPEndPoint> ClientUdpAddrs = new ConcurrentDictionary<string, IPEndPoint>();
+    public static ConcurrentDictionary<string, IPEndPoint> ClientP2pAddrs = new ConcurrentDictionary<string, IPEndPoint>();
+    public static ConcurrentDictionary<string, uint> NicknameToUserNO = new ConcurrentDictionary<string, uint>();
+    public static ConcurrentDictionary<uint, string> UserNOToNickname = new ConcurrentDictionary<uint, string>();
+    private static uint UserNO = 1;
 
     // 添加客户端会话
     public static void AddClient(SessionGroup session)
@@ -62,6 +67,7 @@ public static class ClientManager
                 RoomManager.RemovePlayer(roomId, (byte)slotId);
             }
             ClientGroups.TryRemove(clientId, out _);
+            ClientGroup.Nickname = "";
             Console.WriteLine($"客户端 {clientId} 已断开，当前在线数：{_clientSessions.Count}");
         }
     }
@@ -133,5 +139,24 @@ public static class ClientManager
         {
             return false;
         }
+    }
+
+    public static uint GetUserNO(string Nickname)
+    {
+        // 1. 先检查昵称是否已存在（忽略大小写，可选）
+        if (NicknameToUserNO.TryGetValue(Nickname, out uint existingUserNO))
+        {
+            // 存在则直接返回原有UserNO，不分配新编号
+            return existingUserNO;
+        }
+
+        // 2. 不存在则分配新UserNO
+        uint newUserNO = UserNO++; // 仅自增一次
+
+        // 3. 双向绑定：昵称→编号、编号→昵称
+        NicknameToUserNO.TryAdd(Nickname, newUserNO);
+        UserNOToNickname.TryAdd(newUserNO, Nickname);
+
+        return newUserNO;
     }
 }

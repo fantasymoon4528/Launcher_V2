@@ -12,6 +12,7 @@ using System.Text;
 using System.Collections.Concurrent;
 using System.Xml;
 using System.Xml.Linq;
+using System.Security;
 
 namespace KartRider;
 
@@ -20,11 +21,10 @@ public static class MultyPlayer
     static string Nickname;
     public static List<short> itemProb_indi = new List<short>();
     public static List<short> itemProb_team = new List<short>();
-    public static ConcurrentDictionary<uint, string> UserNOs = new ConcurrentDictionary<uint, string>();
-    public static ConcurrentDictionary<string, IPEndPoint> Udps = new ConcurrentDictionary<string, IPEndPoint>();
     public static Dictionary<short, AICharacter> aiCharacterDict = new Dictionary<short, AICharacter>();
     public static Dictionary<short, AIKart> aiKartDict = new Dictionary<short, AIKart>();
     public static Dictionary<string, byte> StartTimeAttack = new Dictionary<string, byte>();
+    public static Dictionary<string, bool> Ready = null;
     public static SpecialKartConfig kartConfig = new SpecialKartConfig();
     public static int[] teamPoints = { 10, 8, 6, 5, 4, 3, 2, 1 };
 
@@ -74,6 +74,116 @@ public static class MultyPlayer
         }
 
         return ranks;
+    }
+
+    static void Start(SessionGroup Parent, int roomId)
+    {
+        var room = RoomManager.GetRoom(roomId);
+        if (room == null)
+        {
+            Console.WriteLine($"房间 {roomId} 不存在");
+            return;
+        }
+        room.Started = true;
+        Ready = new Dictionary<string, bool>();
+        foreach (var player in room._slots)
+        {
+            if (player is Player p)
+            {
+                Ready[p.Nickname] = false;
+            }
+        }
+
+        // 标记是否所有值都为true
+        bool allReady = true;
+
+        // 第一步：遍历字典值，检查是否有false
+        foreach (bool value in Ready.Values)
+        {
+            if (!value) // 只要有一个值为false，标记为未全部就绪
+            {
+                allReady = false;
+                break; // 找到false后提前退出遍历，提升效率
+            }
+        }
+
+        // 第二步：用while循环判断（根据allReady的值执行逻辑）
+        // 场景1：等待所有值变为true（循环直到全部为true）
+        while (!allReady)
+        {
+            Console.WriteLine("存在未就绪的玩家，等待中...");
+
+            // 模拟：重新检查字典值（实际场景中可替换为刷新数据的逻辑）
+            allReady = true;
+            foreach (bool value in Ready.Values)
+            {
+                if (!value)
+                {
+                    allReady = false;
+                    break;
+                }
+            }
+
+            // 模拟等待（避免死循环，实际场景可替换为业务逻辑）
+            System.Threading.Thread.Sleep(1000);
+
+            // 可选：添加退出条件，防止无限循环（比如超时）
+            // 示例：累计等待5秒后退出
+            int waitCount = 0;
+            waitCount++;
+            if (waitCount >= 30)
+            {
+                List<string> unreadyNames = Ready.Keys.Where(x => !Ready[x]).ToList();
+                foreach (string name in unreadyNames)
+                {
+                    List<RoomMember> players = room._slots.Where(x => x is Player p && p.Nickname == name).ToList();
+                    foreach (Player player in players)
+                    {
+                        player.Session.Client.OnDisconnect();
+                        Ready.Remove(name);
+                        break;
+                    }
+                }
+                break;
+            }
+        }
+
+        // 循环结束后输出结果
+        if (allReady)
+        {
+            Set_startTrigger(Parent, room);
+        }
+    }
+
+    static void Set_startTrigger(SessionGroup Parent, GameRoom room)
+    {
+        var onceTimer = new System.Timers.Timer();
+        onceTimer.Interval = 5000;
+        onceTimer.Elapsed += new System.Timers.ElapsedEventHandler((s, _event) => startTrigger(Parent, room, s, _event));
+        onceTimer.AutoReset = false;
+        onceTimer.Start();
+    }
+
+    static void startTrigger(SessionGroup Parent, GameRoom room, object sender, System.Timers.ElapsedEventArgs e)
+    {
+        room.StartTicks = ConvertTick() + 3000;
+        using (OutPacket oPacket = new OutPacket("GameAiMasterSlotNoticePacket"))
+        {
+            oPacket.WriteInt();
+            BroadCast(room.RoomId, oPacket);
+        }
+        using (OutPacket oPacket = new OutPacket("GameControlPacket"))
+        {
+            oPacket.WriteInt(1);
+            oPacket.WriteByte(0);
+            oPacket.WriteUInt(room.StartTicks);
+            BroadCast(room.RoomId, oPacket);
+        }
+        room.TimeData = new Dictionary<int, uint>();
+        room.Ranking = new Dictionary<int, int>();
+        room.EndTicks = 0;
+        Ready = null;
+        Console.WriteLine("StartTicks = {0}", room.StartTicks);
     }
 
     static void Set_settleTrigger(SessionGroup Parent, int roomId)
@@ -419,26 +529,9 @@ public static class MultyPlayer
             }
             var state = iPacket.ReadByte();
             //start
-            if (state == 0 && room.StartTicks == 0)
+            if (state == 0 && room.StartTicks == 0 && !room.Started)
             {
-                room.StartTicks = ConvertTick() + 12000;
-                using (OutPacket oPacket = new OutPacket("GameAiMasterSlotNoticePacket"))
-                {
-                    oPacket.WriteInt();
-                    Parent.Client.Send(oPacket);
-                }
-                using (OutPacket oPacket = new OutPacket("GameControlPacket"))
-                {
-                    oPacket.WriteInt(1);
-                    oPacket.WriteByte(0);
-                    oPacket.WriteUInt(room.StartTicks);
-                    BroadCast(roomId, oPacket);
-                }
-                room.TimeData = new Dictionary<int, uint>();
-                room.Ranking = new Dictionary<int, int>();
-                room.EndTicks = 0;
-                room.Started = true;
-                Console.WriteLine("StartTicks = {0}", room.StartTicks);
+                Start(Parent, roomId);
             }
             //finish
             else if (state == 2)
@@ -676,7 +769,7 @@ public static class MultyPlayer
             GrSlotStatePacket(roomId);
             using (OutPacket oPacket = new OutPacket("GrReplySetSlotStatePacket"))
             {
-                oPacket.WriteUInt(Adler32Helper.GenerateAdler32_ASCII(nickname, 0));
+                oPacket.WriteUInt(ClientManager.GetUserNO(nickname));
                 oPacket.WriteByte(1);
                 oPacket.WriteInt(player.ID);
                 oPacket.WriteInt(player.PlayerType);
@@ -689,7 +782,7 @@ public static class MultyPlayer
         {
             using (OutPacket oPacket = new OutPacket("GrReplyClosePacket"))
             {
-                oPacket.WriteUInt(Adler32Helper.GenerateAdler32_ASCII(nickname, 0));
+                oPacket.WriteUInt(ClientManager.GetUserNO(nickname));
                 oPacket.WriteByte(0);
                 oPacket.WriteInt(0);
                 oPacket.WriteInt(0);
@@ -1208,10 +1301,14 @@ public static class MultyPlayer
                 {
                     outPacket.WriteInt(p.PlayerType); // Player Type, 2 = RoomMaster, 3 = AutoReady, 4 = Observer, 5 = Preparing, 7 = AI
                 }
-                outPacket.WriteUInt(Adler32Helper.GenerateAdler32_ASCII(p.Nickname, 0));
-                if (Udps.TryGetValue(p.Nickname, out IPEndPoint endPoint))
+                outPacket.WriteUInt(ClientManager.GetUserNO(p.Nickname));
+                if (ClientManager.ClientUdpAddrs.TryGetValue(p.Nickname, out IPEndPoint endPoint))
                 {
                     outPacket.WriteEndPoint(endPoint);
+                }
+                else
+                {
+                    outPacket.WriteEndPoint(new IPEndPoint(IPAddress.Any, 0));
                 }
                 outPacket.WriteInt(0);
                 outPacket.WriteShort(0);

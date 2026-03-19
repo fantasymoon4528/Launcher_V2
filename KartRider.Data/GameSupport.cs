@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using ExcData;
 using KartRider.Common.Utilities;
 using KartRider.IO.Packet;
 using Profile;
+using RiderData;
 
 namespace KartRider
 {
@@ -209,7 +211,14 @@ namespace KartRider
                 outPacket.WriteString(Nickname);
                 outPacket.WriteInt(1);//ClubMember
                 outPacket.WriteByte(5);//Level
-                outPacket.WriteHexString("A2 0E 90 AB 9A 99");
+                if (ClientManager.ClientP2pAddrs.TryGetValue(Nickname, out IPEndPoint endPoint))
+                {
+                    outPacket.WriteEndPoint(endPoint);
+                }
+                else
+                {
+                    outPacket.WriteEndPoint(new IPEndPoint(IPAddress.Any, 0));
+                }
                 Parent.Client.Send(outPacket);
             }
         }
@@ -324,7 +333,7 @@ namespace KartRider
             using (OutPacket outPacket = new OutPacket("PrGetRiderInfo"))
             {
                 outPacket.WriteByte(1);
-                outPacket.WriteUInt(Adler32Helper.GenerateAdler32_ASCII(nickname, 0));
+                outPacket.WriteUInt(ClientManager.GetUserNO(nickname));
                 outPacket.WriteString(nickname);
                 outPacket.WriteString(nickname);
                 outPacket.WriteDateTime(DateTime.Now);
@@ -332,9 +341,8 @@ namespace KartRider
                 outPacket.WriteString(ProfileService.ProfileConfigs[nickname].Rider.Card);
                 outPacket.WriteUInt(ProfileService.ProfileConfigs[nickname].Rider.RP);
                 outPacket.WriteInt(0);
-                outPacket.WriteByte(6);//Licenses
-                outPacket.WriteDateTime(DateTime.Now);
-                outPacket.WriteBytes(new byte[17]);
+                outPacket.WriteByte(RiderSchool.catLevel);//Licenses
+                outPacket.WriteBytes(new byte[21]);
                 outPacket.WriteShort(ProfileService.ProfileConfigs[nickname].Rider.Emblem1);
                 outPacket.WriteShort(ProfileService.ProfileConfigs[nickname].Rider.Emblem2);
                 outPacket.WriteShort(0);
@@ -371,14 +379,7 @@ namespace KartRider
                 }
                 outPacket.WriteInt(0);
                 outPacket.WriteByte(ProfileService.ProfileConfigs[nickname].Rider.Ranker);
-                outPacket.WriteInt(0);
-                outPacket.WriteInt(0);
-                outPacket.WriteInt(0);
-                outPacket.WriteInt(0);
-                outPacket.WriteInt(0);
-                outPacket.WriteByte(0);
-                outPacket.WriteByte(0);
-                outPacket.WriteByte(0);
+                outPacket.WriteBytes(new byte[30]);
                 Parent.Client.Send(outPacket);
             }
         }
