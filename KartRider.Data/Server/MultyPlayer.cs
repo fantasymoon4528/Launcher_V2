@@ -131,7 +131,7 @@ public static class MultyPlayer
             // 示例：累计等待5秒后退出
             int waitCount = 0;
             waitCount++;
-            if (waitCount >= 30)
+            if (waitCount >= 15)
             {
                 List<string> unreadyNames = Ready.Keys.Where(x => !Ready[x]).ToList();
                 foreach (string name in unreadyNames)
@@ -158,7 +158,7 @@ public static class MultyPlayer
     static void Set_startTrigger(SessionGroup Parent, GameRoom room)
     {
         var onceTimer = new System.Timers.Timer();
-        onceTimer.Interval = 5000;
+        onceTimer.Interval = 3000;
         onceTimer.Elapsed += new System.Timers.ElapsedEventHandler((s, _event) => startTrigger(Parent, room, s, _event));
         onceTimer.AutoReset = false;
         onceTimer.Start();
