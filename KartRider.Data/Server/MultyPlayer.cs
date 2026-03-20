@@ -139,7 +139,7 @@ public static class MultyPlayer
                     List<RoomMember> players = room._slots.Where(x => x is Player p && p.Nickname == name).ToList();
                     foreach (Player player in players)
                     {
-                        player.Session.Client.OnDisconnect();
+                        player.Session.Client.Disconnect();
                         Ready.Remove(name);
                         break;
                     }
