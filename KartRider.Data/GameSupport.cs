@@ -342,7 +342,8 @@ namespace KartRider
                 outPacket.WriteUInt(ProfileService.ProfileConfigs[nickname].Rider.RP);
                 outPacket.WriteInt(0);
                 outPacket.WriteByte(RiderSchool.catLevel);//Licenses
-                outPacket.WriteBytes(new byte[21]);
+                outPacket.WriteDateTime(DateTime.Now);
+                outPacket.WriteBytes(new byte[17]);
                 outPacket.WriteShort(ProfileService.ProfileConfigs[nickname].Rider.Emblem1);
                 outPacket.WriteShort(ProfileService.ProfileConfigs[nickname].Rider.Emblem2);
                 outPacket.WriteShort(0);
