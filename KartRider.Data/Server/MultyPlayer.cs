@@ -202,6 +202,67 @@ public static class MultyPlayer
         {
             return;
         }
+
+        if (room.TimeData.Count < room.GetCount())
+        {
+            foreach (RoomMember Object in room._slots)
+            {
+                if (Object is Player player)
+                {
+                    if (!room.TimeData.ContainsKey(player.ID))
+                    {
+                        room.TimeData[player.ID] = uint.MaxValue;
+                    }
+                }
+                else if (Object is Ai ai)
+                {
+                    if (!room.TimeData.ContainsKey(ai.ID))
+                    {
+                        room.TimeData[ai.ID] = uint.MaxValue;
+                    }
+                }
+            }
+        }
+        room.Ranking = GetAllRanks(room.TimeData);
+        int redTeam = 0;
+        int blueTeam = 0;
+        var firstId = room.Ranking.First(kv => kv.Value == 0).Key;
+        byte firstTeam = 0;
+        if (RoomManager.TryGetIdDetail(roomId, firstId) is Player p)
+        {
+            firstTeam = p.Team;
+        }
+        else if (RoomManager.TryGetIdDetail(roomId, firstId) is Ai ai)
+        {
+            firstTeam = ai.Team;
+        }
+        Console.WriteLine("第一名 ID: {0} Team: {1}", firstId, firstTeam);
+        foreach (RoomMember Object in room._slots)
+        {
+            if (Object is Player p2)
+            {
+                if (p2.Team == 2 && room.TimeData[p2.ID] != uint.MaxValue)
+                {
+                    blueTeam += teamPoints[room.Ranking[p2.ID]];
+                }
+                else if (p2.Team == 1 && room.TimeData[p2.ID] != uint.MaxValue)
+                {
+                    redTeam += teamPoints[room.Ranking[p2.ID]];
+                }
+            }
+            if (Object is Ai a2)
+            {
+                if (a2.Team == 2 && room.TimeData[a2.ID] != uint.MaxValue)
+                {
+                    blueTeam += teamPoints[room.Ranking[a2.ID]];
+                }
+                else if (a2.Team == 1 && room.TimeData[a2.ID] != uint.MaxValue)
+                {
+                    redTeam += teamPoints[room.Ranking[a2.ID]];
+                }
+            }
+        }
+
         using (OutPacket outPacket = new OutPacket("GameNextStagePacket"))
         {
             outPacket.WriteByte(room.GameType);
@@ -211,66 +272,6 @@ public static class MultyPlayer
         }
         using (OutPacket outPacket = new OutPacket("GameResultPacket"))
         {
-            if (room.TimeData.Count < room.GetCount())
-            {
-                foreach (RoomMember Object in room._slots)
-                {
-                    if (Object is Player player)
-                    {
-                        if (!room.TimeData.ContainsKey(player.ID))
-                        {
-                            room.TimeData[player.ID] = uint.MaxValue;
-                        }
-                    }
-                    else if (Object is Ai ai)
-                    {
-                        if (!room.TimeData.ContainsKey(ai.ID))
-                        {
-                            room.TimeData[ai.ID] = uint.MaxValue;
-                        }
-                    }
-                }
-            }
-            room.Ranking = GetAllRanks(room.TimeData);
-            int redTeam = 0;
-            int blueTeam = 0;
-            var firstId = room.Ranking.First(kv => kv.Value == 0).Key;
-            byte firstTeam = 0;
-            if (RoomManager.TryGetIdDetail(roomId, firstId) is Player p)
-            {
-                firstTeam = p.Team;
-            }
-            else if (RoomManager.TryGetIdDetail(roomId, firstId) is Ai ai)
-            {
-                firstTeam = ai.Team;
-            }
-            Console.WriteLine("第一名 ID: {0} Team: {1}", firstId, firstTeam);
-            foreach (RoomMember Object in room._slots)
-            {
-                if (Object is Player p2)
-                {
-                    if (p2.Team == 2)
-                    {
-                        blueTeam += teamPoints[room.Ranking[p2.ID]];
-                    }
-                    else if (p2.Team == 1)
-                    {
-                        redTeam += teamPoints[room.Ranking[p2.ID]];
-                    }
-                }
-                if (Object is Ai a2)
-                {
-                    if (a2.Team == 2)
-                    {
-                        blueTeam += teamPoints[room.Ranking[a2.ID]];
-                    }
-                    else if (a2.Team == 1)
-                    {
-                        redTeam += teamPoints[room.Ranking[a2.ID]];
-                    }
-                }
-            }
-
             if (room.GameType == 3)
             {
                 if (redTeam == blueTeam)
@@ -305,13 +306,13 @@ public static class MultyPlayer
                         }
                         ProfileService.Load(p3.Nickname);
                     }
-                    
+
                     outPacket.WriteInt(p3.ID); // player id
                     outPacket.WriteUInt(room.TimeData[p3.ID]);
                     outPacket.WriteByte();
                     outPacket.WriteShort(ProfileService.ProfileConfigs[p3.Nickname].RiderItem.Set_Kart);
                     int playerRanking = room.Ranking[p3.ID];
-                    int playerPoint = teamPoints[playerRanking];
+                    int playerPoint = room.TimeData[p3.ID] == uint.MaxValue ? 0 : teamPoints[playerRanking];
                     Console.WriteLine("Player {0} 排名 {1} 得分 {2}", p3.ID, playerRanking, playerPoint);
                     outPacket.WriteInt(playerRanking);
                     if (room.GameType == 3 || room.GameType == 4)
@@ -331,14 +332,7 @@ public static class MultyPlayer
 
                     if (room.GameType == 3 || room.GameType == 4)
                     {
-                        if (room.TimeData[p3.ID] == uint.MaxValue)
-                        {
-                            outPacket.WriteInt(0);
-                        }
-                        else
-                        {
-                            outPacket.WriteInt(playerPoint);
-                        }
+                        outPacket.WriteInt(playerPoint);
                         outPacket.WriteByte(p3.Team); // Team
                     }
                     else
@@ -370,21 +364,14 @@ public static class MultyPlayer
                     // 获取 kart 属性值
                     outPacket.WriteShort(a3.Kart);
                     int AiRanking = room.Ranking[a3.ID];
-                    int AiPoint = teamPoints[AiRanking];
+                    int AiPoint = room.TimeData[a3.ID] == uint.MaxValue ? 0 : teamPoints[AiRanking];
                     Console.WriteLine("AI {0} 排名 {1} 得分 {2}", a3.ID, AiRanking, AiPoint);
                     outPacket.WriteInt(AiRanking);
                     outPacket.WriteShort(0);
                     if (room.GameType == 3 || room.GameType == 4)
                     {
                         outPacket.WriteByte(a3.Team); // Team
-                        if (room.TimeData[a3.ID] == uint.MaxValue)
-                        {
-                            outPacket.WriteInt(0);
-                        }
-                        else
-                        {
-                            outPacket.WriteInt(AiPoint);
-                        }
+                        outPacket.WriteInt(AiPoint);
                     }
                     else
                     {
@@ -946,9 +933,10 @@ public static class MultyPlayer
             var team = iPacket.ReadByte();
             var value = iPacket.ReadFloat();
             Console.WriteLine("GameTeamBoosterRequestAddGaugePacket, teams = {0}, value = {1}", team, value);
+
             if (team == 1)
             {
-                room.redGauge += (value * 0.0001f);
+                room.redGauge += (value * 0.000125f / room.GetPlayerCount(team));
                 if (room.redGauge > 1f) room.redGauge = 1f;
                 using (OutPacket oPacket = new OutPacket("GameTeamBoosterSetGaugePacket"))
                 {
@@ -960,7 +948,7 @@ public static class MultyPlayer
             }
             else if (team == 2)
             {
-                room.blueGauge += (value * 0.0001f);
+                room.blueGauge += (value * 0.000125f / room.GetPlayerCount(team));
                 if (room.blueGauge > 1f) room.blueGauge = 1f;
                 using (OutPacket oPacket = new OutPacket("GameTeamBoosterSetGaugePacket"))
                 {
