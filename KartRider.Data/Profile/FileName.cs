@@ -18,6 +18,7 @@ namespace Profile
         public string ItemPresetsConfig;
         public string NewKart_LoadFile;
         public string Favorite_LoadFile;
+        public string Locked_LoadFile;
         public string FavoriteTrack_LoadFile;
         public string AI_LoadFile;
         public string TuneData_LoadFile;
@@ -39,8 +40,6 @@ namespace Profile
         public static string Load_Console = Path.GetFullPath(Path.Combine(ProfileDir, @"Console.ini"));
         public static string Load_Settings = Path.GetFullPath(Path.Combine(ProfileDir, @"Settings.json"));
         public static string Load_CC = Path.GetFullPath(Path.Combine(ProfileDir, @"CountryCode.ini"));
-        public static string NewKart_LoadFile = Path.GetFullPath(Path.Combine(ProfileDir, @"NewKart.json"));
-        public static string NewItem_LoadFile = Path.GetFullPath(Path.Combine(ProfileDir, @"NewItem.json"));
         public static string ModelMax_LoadFile = Path.GetFullPath(Path.Combine(ProfileDir, @"ModelMax.xml"));
         public static string SpecialKartConfig = Path.GetFullPath(Path.Combine(ProfileDir, @"SpecialKartConfig.json"));
 
@@ -53,7 +52,9 @@ namespace Profile
             filename.config_path = Path.GetFullPath(Path.Combine(filename.NicknameDir, @"Launcher.json"));
             filename.ItemPresetsConfig = Path.GetFullPath(Path.Combine(filename.NicknameDir, @"ItemPresetsConfig.json"));
             filename.Favorite_LoadFile = Path.GetFullPath(Path.Combine(filename.NicknameDir, @"Favorite.json"));
+            filename.Locked_LoadFile = Path.GetFullPath(Path.Combine(filename.NicknameDir, @"Locked.json"));
             filename.FavoriteTrack_LoadFile = Path.GetFullPath(Path.Combine(filename.NicknameDir, @"FavoriteTrack.json"));
+            filename.NewKart_LoadFile = Path.GetFullPath(Path.Combine(filename.NicknameDir, @"NewKart.json"));
             filename.AI_LoadFile = Path.GetFullPath(Path.Combine(filename.NicknameDir, @"AI.xml"));
             filename.TuneData_LoadFile = Path.GetFullPath(Path.Combine(filename.NicknameDir, @"TuneData.json"));
             filename.PlantData_LoadFile = Path.GetFullPath(Path.Combine(filename.NicknameDir, @"PlantData.json"));

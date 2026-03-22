@@ -121,19 +121,6 @@ namespace KartRider
             }
         }
 
-        private void GetKart_Button_Click(object sender, EventArgs e)
-        {
-            if (IsProcessRunning("KartRider"))
-            {
-                Program.GetKartDlg = new GetKart();
-                Program.GetKartDlg.ShowDialog();
-            }
-            else
-            {
-                LauncherSystem.MessageBoxType5();
-            }
-        }
-
         private void Setting_Button_Click(object sender, EventArgs e)
         {
             Program.SettingDlg = new Setting();

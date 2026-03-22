@@ -2,6 +2,7 @@ using KartRider;
 using Profile;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 
@@ -84,8 +85,16 @@ namespace ExcData
             float[] Tune_TransAccelFactor_List = { 0f, 0.006f, 0.01f, 0.018f };
             float[] Tune_DriftMaxGauge_List = { 0f, -70f, -140f, -200f };
             float[] Tune_DriftEscapeForce_List = { 0f, 80f, 140f, 210f };
-            KartExcData.TuneLists.TryAdd(Nickname, new List<Tune>());
-            var TuneList = KartExcData.TuneLists[Nickname];
+            if (!FileName.FileNames.ContainsKey(Nickname))
+            {
+                FileName.Load(Nickname);
+            }
+            var filename = FileName.FileNames[Nickname];
+            var TuneList = new List<Tune>();
+            if (File.Exists(filename.TuneData_LoadFile))
+            {
+                TuneList = JsonHelper.DeserializeNoBom<List<Tune>>(filename.TuneData_LoadFile);
+            }
             short Set_Kart = ProfileService.ProfileConfigs[Nickname].RiderItem.Set_Kart;
             short Set_KartSN = ProfileService.ProfileConfigs[Nickname].RiderItem.Set_KartSN;
             var existingTune = TuneList.FirstOrDefault(tune => tune.ID == Set_Kart && tune.SN == Set_KartSN);
@@ -143,8 +152,16 @@ namespace ExcData
 
         public static void Use_PlantSpec(string Nickname, ExcSpecs excSpecs)
         {
-            KartExcData.PlantLists.TryAdd(Nickname, new List<Plant>());
-            var PlantList = KartExcData.PlantLists[Nickname];
+            if (!FileName.FileNames.ContainsKey(Nickname))
+            {
+                FileName.Load(Nickname);
+            }
+            var filename = FileName.FileNames[Nickname];
+            var PlantList = new List<Plant>();
+            if (File.Exists(filename.PlantData_LoadFile))
+            {
+                PlantList = JsonHelper.DeserializeNoBom<List<Plant>>(filename.PlantData_LoadFile);
+            }
             short Set_Kart = ProfileService.ProfileConfigs[Nickname].RiderItem.Set_Kart;
             short Set_KartSN = ProfileService.ProfileConfigs[Nickname].RiderItem.Set_KartSN;
             var existingPlant = PlantList.FirstOrDefault(plant => plant.ID == Set_Kart && plant.SN == Set_KartSN);
@@ -1063,8 +1080,16 @@ namespace ExcData
             float[] KartLevel_StartBoosterTimeSpeed = { 0f, 5f, 10f, 15f, 20f, 30f, 40f, 50f, 65f, 80f, 100f };
             float[] KartLevel_StartBoosterTimeItem = { 0f, 5f, 10f, 15f, 20f, 30f, 40f, 50f, 65f, 80f, 100f };
             float[] KartLevel_BoostAccelFactorOnlyItem = { 0f, 0.001f, 0.003f, 0.005f, 0.009f, 0.013f, 0.019f, 0.025f, 0.033f, 0.041f, 0.05f };
-            KartExcData.LevelLists.TryAdd(Nickname, new List<Level>());
-            var LevelList = KartExcData.LevelLists[Nickname];
+            if (!FileName.FileNames.ContainsKey(Nickname))
+            {
+                FileName.Load(Nickname);
+            }
+            var filename = FileName.FileNames[Nickname];
+            var LevelList = new List<Level>();
+            if (File.Exists(filename.LevelData_LoadFile))
+            {
+                LevelList = JsonHelper.DeserializeNoBom<List<Level>>(filename.LevelData_LoadFile);
+            }
             short Set_Kart = ProfileService.ProfileConfigs[Nickname].RiderItem.Set_Kart;
             short Set_KartSN = ProfileService.ProfileConfigs[Nickname].RiderItem.Set_KartSN;
             var existingLevel = LevelList.FirstOrDefault(level => level.ID == Set_Kart && level.SN == Set_KartSN);
@@ -1095,8 +1120,16 @@ namespace ExcData
 
         public static void Use_PartsSpec(string Nickname, ExcSpecs excSpecs)
         {
-            KartExcData.PartsLists.TryAdd(Nickname, new List<Parts>());
-            var PartsList = KartExcData.PartsLists[Nickname];
+            if (!FileName.FileNames.ContainsKey(Nickname))
+            {
+                FileName.Load(Nickname);
+            }
+            var filename = FileName.FileNames[Nickname];
+            var PartsList = new List<Parts>();
+            if (File.Exists(filename.PartsData_LoadFile))
+            {
+                PartsList = JsonHelper.DeserializeNoBom<List<Parts>>(filename.PartsData_LoadFile);
+            }
             short Set_Kart = ProfileService.ProfileConfigs[Nickname].RiderItem.Set_Kart;
             short Set_KartSN = ProfileService.ProfileConfigs[Nickname].RiderItem.Set_KartSN;
             var existingParts = PartsList.FirstOrDefault(parts => parts.ID == Set_Kart && parts.SN == Set_KartSN);

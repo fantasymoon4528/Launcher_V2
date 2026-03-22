@@ -15,13 +15,6 @@ namespace ExcData
 {
     public static class KartExcData
     {
-        public static Dictionary<string, List<Tune>> TuneLists = new Dictionary<string, List<Tune>>();
-        public static Dictionary<string, List<Plant>> PlantLists = new Dictionary<string, List<Plant>>();
-        public static Dictionary<string, List<Level>> LevelLists = new Dictionary<string, List<Level>>();
-        public static Dictionary<string, List<Parts>> PartsLists = new Dictionary<string, List<Parts>>();
-        public static Dictionary<string, List<Parts12>> Parts12Lists = new Dictionary<string, List<Parts12>>();
-        public static Dictionary<string, List<Level12>> Level12Lists = new Dictionary<string, List<Level12>>();
-
         public static void Tune_ExcData(SessionGroup Parent, string Nickname)
         {
             if (!FileName.FileNames.ContainsKey(Nickname))
@@ -34,7 +27,6 @@ namespace ExcData
             {
                 TuneList = JsonHelper.DeserializeNoBom<List<Tune>>(filename.TuneData_LoadFile);
             }
-            TuneLists.TryAdd(Nickname, TuneList);
             int range = 26;//分批次数
             int times = TuneList.Count / range + (TuneList.Count % range > 0 ? 1 : 0);
             for (int i = 0; i < times; i++)
@@ -96,7 +88,6 @@ namespace ExcData
             {
                 PlantList = JsonHelper.DeserializeNoBom<List<Plant>>(filename.PlantData_LoadFile);
             }
-            PlantLists.TryAdd(Nickname, PlantList);
             int range = 26;//分批次数
             int times = PlantList.Count / range + (PlantList.Count % range > 0 ? 1 : 0);
             for (int i = 0; i < times; i++)
@@ -157,7 +148,6 @@ namespace ExcData
             {
                 LevelList = JsonHelper.DeserializeNoBom<List<Level>>(filename.LevelData_LoadFile);
             }
-            LevelLists.TryAdd(Nickname, LevelList);
             int range = 26;//分批次数
             int times = LevelList.Count / range + (LevelList.Count % range > 0 ? 1 : 0);
             for (int i = 0; i < times; i++)
@@ -216,7 +206,6 @@ namespace ExcData
             {
                 PartsList = JsonHelper.DeserializeNoBom<List<Parts>>(filename.PartsData_LoadFile);
             }
-            PartsLists.TryAdd(Nickname, PartsList);
             int range = 26;//分批次数
             int times = PartsList.Count / range + (PartsList.Count % range > 0 ? 1 : 0);
             for (int i = 0; i < times; i++)
@@ -289,7 +278,6 @@ namespace ExcData
             {
                 Level12List = JsonHelper.DeserializeNoBom<List<Level12>>(filename.Level12Data_LoadFile);
             }
-            Level12Lists.TryAdd(Nickname, Level12List);
             int range = 26;//分批次数
             int times = Level12List.Count / range + (Level12List.Count % range > 0 ? 1 : 0);
             for (int i = 0; i < times; i++)
@@ -353,7 +341,6 @@ namespace ExcData
             {
                 Parts12List = JsonHelper.DeserializeNoBom<List<Parts12>>(filename.Parts12Data_LoadFile);
             }
-            Parts12Lists.TryAdd(Nickname, Parts12List);
             int range = 26;//分批次数
             int times = Parts12List.Count / range + (Parts12List.Count % range > 0 ? 1 : 0);
             for (int i = 0; i < times; i++)
@@ -427,8 +414,11 @@ namespace ExcData
                 FileName.Load(Nickname);
             }
             var filename = FileName.FileNames[Nickname];
-            TuneLists.TryAdd(Nickname, new List<Tune>());
-            var TuneList = TuneLists[Nickname];
+            var TuneList = new List<Tune>();
+            if (File.Exists(filename.TuneData_LoadFile))
+            {
+                TuneList = JsonHelper.DeserializeNoBom<List<Tune>>(filename.TuneData_LoadFile);
+            }
             var existingList = TuneList.FirstOrDefault(list => list.ID == id && list.SN == sn);
             if (existingList == null)
             {
@@ -456,8 +446,11 @@ namespace ExcData
                 FileName.Load(Nickname);
             }
             var filename = FileName.FileNames[Nickname];
-            PlantLists.TryAdd(Nickname, new List<Plant>());
-            var PlantList = PlantLists[Nickname];
+            var PlantList = new List<Plant>();
+            if (File.Exists(filename.PlantData_LoadFile))
+            {
+                PlantList = JsonHelper.DeserializeNoBom<List<Plant>>(filename.PlantData_LoadFile);
+            }
             var existingList = PlantList.FirstOrDefault(list => list.ID == id && list.SN == sn);
             if (existingList == null)
             {
@@ -516,8 +509,11 @@ namespace ExcData
                 FileName.Load(Nickname);
             }
             var filename = FileName.FileNames[Nickname];
-            LevelLists.TryAdd(Nickname, new List<Level>());
-            var LevelList = LevelLists[Nickname];
+            var LevelList = new List<Level>();
+            if (File.Exists(filename.LevelData_LoadFile))
+            {
+                LevelList = JsonHelper.DeserializeNoBom<List<Level>>(filename.LevelData_LoadFile);
+            }
             var existingList = LevelList.FirstOrDefault(list => list.ID == id && list.SN == sn);
             if (existingList == null)
             {
@@ -545,10 +541,16 @@ namespace ExcData
                 FileName.Load(Nickname);
             }
             var filename = FileName.FileNames[Nickname];
-            Parts12Lists.TryAdd(Nickname, new List<Parts12>());
-            var Parts12List = Parts12Lists[Nickname];
-            PartsLists.TryAdd(Nickname, new List<Parts>());
-            var PartsList = PartsLists[Nickname];
+            var Parts12List = new List<Parts12>();
+            if (File.Exists(filename.Parts12Data_LoadFile))
+            {
+                Parts12List = JsonHelper.DeserializeNoBom<List<Parts12>>(filename.Parts12Data_LoadFile);
+            }
+            var PartsList = new List<Parts>();
+            if (File.Exists(filename.PartsData_LoadFile))
+            {
+                PartsList = JsonHelper.DeserializeNoBom<List<Parts>>(filename.PartsData_LoadFile);
+            }
             var existing12List = Parts12List.FirstOrDefault(list => list.ID == id && list.SN == sn);
             if (Item_Cat_Id == 0)
             {
@@ -626,74 +628,77 @@ namespace ExcData
                 }
                 return;
             }
-            var existingList = PartsList.FirstOrDefault(list => list.ID == id && list.SN == sn);
-            if (existingList == null)
+            else if (Item_Cat_Id == 63 || Item_Cat_Id == 64 || Item_Cat_Id == 65 || Item_Cat_Id == 66 || Item_Cat_Id == 68 || Item_Cat_Id == 69)
             {
-                var newList = new Parts { ID = id, SN = sn, Engine = 0, EngineGrade = 0, EngineValue = 0, Handle = 0, HandleGrade = 0, HandleValue = 0, Wheel = 0, WheelGrade = 0, WheelValue = 0, Booster = 0, BoosterGrade = 0, BoosterValue = 0, Coating = 0, TailLamp = 0 };
-                switch (Item_Cat_Id)
+                var existingList = PartsList.FirstOrDefault(list => list.ID == id && list.SN == sn);
+                if (existingList == null)
                 {
-                    case 63:
-                        newList.Engine = Item_Id;
-                        newList.EngineGrade = Grade;
-                        newList.EngineValue = PartsValue;
-                        break;
-                    case 64:
-                        newList.Handle = Item_Id;
-                        newList.HandleGrade = Grade;
-                        newList.HandleValue = PartsValue;
-                        break;
-                    case 65:
-                        newList.Wheel = Item_Id;
-                        newList.WheelGrade = Grade;
-                        newList.WheelValue = PartsValue;
-                        break;
-                    case 66:
-                        newList.Booster = Item_Id;
-                        newList.BoosterGrade = Grade;
-                        newList.BoosterValue = PartsValue;
-                        break;
-                    case 68:
-                        newList.Coating = Item_Id;
-                        break;
-                    case 69:
-                        newList.TailLamp = Item_Id;
-                        break;
+                    var newList = new Parts { ID = id, SN = sn, Engine = 0, EngineGrade = 0, EngineValue = 0, Handle = 0, HandleGrade = 0, HandleValue = 0, Wheel = 0, WheelGrade = 0, WheelValue = 0, Booster = 0, BoosterGrade = 0, BoosterValue = 0, Coating = 0, TailLamp = 0 };
+                    switch (Item_Cat_Id)
+                    {
+                        case 63:
+                            newList.Engine = Item_Id;
+                            newList.EngineGrade = Grade;
+                            newList.EngineValue = PartsValue;
+                            break;
+                        case 64:
+                            newList.Handle = Item_Id;
+                            newList.HandleGrade = Grade;
+                            newList.HandleValue = PartsValue;
+                            break;
+                        case 65:
+                            newList.Wheel = Item_Id;
+                            newList.WheelGrade = Grade;
+                            newList.WheelValue = PartsValue;
+                            break;
+                        case 66:
+                            newList.Booster = Item_Id;
+                            newList.BoosterGrade = Grade;
+                            newList.BoosterValue = PartsValue;
+                            break;
+                        case 68:
+                            newList.Coating = Item_Id;
+                            break;
+                        case 69:
+                            newList.TailLamp = Item_Id;
+                            break;
+                    }
+                    PartsList.Add(newList);
+                    Save(filename.PartsData_LoadFile, PartsList);
                 }
-                PartsList.Add(newList);
-                Save(filename.PartsData_LoadFile, PartsList);
-            }
-            else
-            {
-                switch (Item_Cat_Id)
+                else
                 {
-                    case 63:
-                        existingList.Engine = Item_Id;
-                        existingList.EngineGrade = Grade;
-                        existingList.EngineValue = PartsValue;
-                        break;
-                    case 64:
-                        existingList.Handle = Item_Id;
-                        existingList.HandleGrade = Grade;
-                        existingList.HandleValue = PartsValue;
-                        break;
-                    case 65:
-                        existingList.Wheel = Item_Id;
-                        existingList.WheelGrade = Grade;
-                        existingList.WheelValue = PartsValue;
-                        break;
-                    case 66:
-                        existingList.Booster = Item_Id;
-                        existingList.BoosterGrade = Grade;
-                        existingList.BoosterValue = PartsValue;
-                        break;
-                    case 68:
-                        existingList.Coating = Item_Id;
-                        break;
-                    case 69:
-                        existingList.TailLamp = Item_Id;
-                        break;
+                    switch (Item_Cat_Id)
+                    {
+                        case 63:
+                            existingList.Engine = Item_Id;
+                            existingList.EngineGrade = Grade;
+                            existingList.EngineValue = PartsValue;
+                            break;
+                        case 64:
+                            existingList.Handle = Item_Id;
+                            existingList.HandleGrade = Grade;
+                            existingList.HandleValue = PartsValue;
+                            break;
+                        case 65:
+                            existingList.Wheel = Item_Id;
+                            existingList.WheelGrade = Grade;
+                            existingList.WheelValue = PartsValue;
+                            break;
+                        case 66:
+                            existingList.Booster = Item_Id;
+                            existingList.BoosterGrade = Grade;
+                            existingList.BoosterValue = PartsValue;
+                            break;
+                        case 68:
+                            existingList.Coating = Item_Id;
+                            break;
+                        case 69:
+                            existingList.TailLamp = Item_Id;
+                            break;
+                    }
+                    Save(filename.PartsData_LoadFile, PartsList);
                 }
-                Save(filename.PartsData_LoadFile, PartsList);
             }
         }
 
@@ -704,8 +709,11 @@ namespace ExcData
                 FileName.Load(Nickname);
             }
             var filename = FileName.FileNames[Nickname];
-            Level12Lists.TryAdd(Nickname, new List<Level12>());
-            var Level12List = Level12Lists[Nickname];
+            var Level12List = new List<Level12>();
+            if (File.Exists(filename.Level12Data_LoadFile))
+            {
+                Level12List = JsonHelper.DeserializeNoBom<List<Level12>>(filename.Level12Data_LoadFile);
+            }
             var existingList = Level12List.FirstOrDefault(list => list.ID == id && list.SN == sn);
             if (existingList == null)
             {

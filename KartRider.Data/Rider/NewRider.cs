@@ -9,6 +9,12 @@ using Profile;
 
 namespace RiderData
 {
+    public class NewKart
+    {
+        public ushort KartID { get; set; } = 0;
+        public ushort KartSN { get; set; } = 0;
+    }
+
     public static class NewRider
     {
         public static Dictionary<ushort, Dictionary<ushort, string>> items = new Dictionary<ushort, Dictionary<ushort, string>>();
@@ -37,8 +43,7 @@ namespace RiderData
             NewRider.partsBooster12(Parent, Nickname);
             NewRider.Items(Parent, Nickname);
             NewRider.NewKart1(Parent);
-            NewRider.NewKart2(Parent);
-            NewRider.NewItem(Parent);
+            NewRider.NewKart2(Parent, Nickname);
             NewRider.NewRiderData(Parent, Nickname);//라이더 인식
         }
 
@@ -97,20 +102,24 @@ namespace RiderData
             }
         }
 
-        public static void NewKart2(SessionGroup Parent)
+        public static void NewKart2(SessionGroup Parent, string Nickname)
         {
-            var newList = new List<NewKart>();
-
-            if (File.Exists(FileName.NewKart_LoadFile))
+            if (!FileName.FileNames.ContainsKey(Nickname))
             {
-                newList = JsonHelper.DeserializeNoBom<List<NewKart>>(FileName.NewKart_LoadFile);
+                FileName.Load(Nickname);
+            }
+            var filename = FileName.FileNames[Nickname];
+            var newkart = new List<NewKart>();
+            if (File.Exists(filename.NewKart_LoadFile))
+            {
+                newkart = JsonHelper.DeserializeNoBom<List<NewKart>>(filename.NewKart_LoadFile);
             }
 
             int range = 100;//分批次数
-            int times = newList.Count / range + (newList.Count % range > 0 ? 1 : 0);
+            int times = newkart.Count / range + (newkart.Count % range > 0 ? 1 : 0);
             for (int i = 0; i < times; i++)
             {
-                var tempList = newList.GetRange(i * range, (i + 1) * range > newList.Count ? (newList.Count - i * range) : range);
+                var tempList = newkart.GetRange(i * range, (i + 1) * range > newkart.Count ? (newkart.Count - i * range) : range);
                 int Count = tempList.Count;
                 using (OutPacket outPacket = new OutPacket("PrRequestKartInfoPacket"))
                 {
@@ -133,28 +142,56 @@ namespace RiderData
             }
         }
 
-        public static void NewItem(SessionGroup Parent)
+        public static void AddNewKart(SessionGroup Parent, string Nickname, ushort kartid)
         {
-            var newList = new List<NewItem>();
-
-            if (File.Exists(FileName.NewItem_LoadFile))
+            if (!FileName.FileNames.ContainsKey(Nickname))
             {
-                newList = JsonHelper.DeserializeNoBom<List<NewItem>>(FileName.NewItem_LoadFile);
+                FileName.Load(Nickname);
             }
-
-            // 按 ItemType 分组（返回 IEnumerable<IGrouping<short, NewItem>>）
-            var groupedByType = newList.GroupBy(item => item.ItemType);
-
-            // 遍历分组结果
-            foreach (var group in groupedByType)
+            var filename = FileName.FileNames[Nickname];
+            var newkart = new List<NewKart>();
+            if (File.Exists(filename.NewKart_LoadFile))
             {
-                List<List<ushort>> items = new List<List<ushort>>();
-                foreach (var item in group)
+                newkart = JsonHelper.DeserializeNoBom<List<NewKart>>(filename.NewKart_LoadFile);
+            }
+            ushort newsn = newkart.Any(kart => kart.KartID == kartid) ? (ushort)newkart.Where(kart => kart.KartID == kartid).Max(kart => kart.KartSN) : (ushort)1;
+            var addkart = new NewKart { KartID = kartid, KartSN = (ushort)(newsn + 1) };
+            newkart.Add(addkart);
+            File.WriteAllText(filename.NewKart_LoadFile, JsonHelper.Serialize(newkart));
+            using (OutPacket outPacket = new OutPacket("PrRequestKartInfoPacket"))
+            {
+                outPacket.WriteByte(1);
+                outPacket.WriteInt(1);
+                outPacket.WriteShort(3);
+                outPacket.WriteUShort(addkart.KartID);
+                outPacket.WriteUShort(addkart.KartSN);
+                outPacket.WriteUShort(1);//数量
+                outPacket.WriteShort(0);
+                outPacket.WriteShort(-1);
+                outPacket.WriteShort(0);
+                outPacket.WriteShort(0);
+                outPacket.WriteShort(0);
+                Parent.Client.Send(outPacket);
+            }
+        }
+
+        public static void DelNewKart(string Nickname, ushort ItemID, ushort SN)
+        {
+            if (!FileName.FileNames.ContainsKey(Nickname))
+            {
+                FileName.Load(Nickname);
+            }
+            var filename = FileName.FileNames[Nickname];
+            var newkart = new List<NewKart>();
+            if (File.Exists(filename.NewKart_LoadFile))
+            {
+                newkart = JsonHelper.DeserializeNoBom<List<NewKart>>(filename.NewKart_LoadFile);
+                var targetItems = newkart.Where(kart => kart.KartID == ItemID && kart.KartSN == SN).ToList();
+                foreach (var item in targetItems)
                 {
-                    List<ushort> add = new List<ushort> { (ushort)item.ItemID, 0, item.Count };
-                    items.Add(add);
+                    newkart.Remove(item);
                 }
-                LoRpGetRiderItemPacket(Parent, group.Key, items);
+                File.WriteAllText(filename.NewKart_LoadFile, JsonHelper.Serialize(newkart));
             }
         }
 

@@ -1,8 +1,10 @@
 ﻿using ExcData;
 using KartRider.Common.Utilities;
+using Profile;
 using RiderData;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
@@ -95,11 +97,19 @@ namespace KartRider
             if (RandomTrackSetRandomTrack == "all" || RandomTrackSetRandomTrack == "speedAll")
             {
                 Random random = new Random();
-                List<uint> availableTracks;
-                if (FavoriteItem.FavoriteTrackLists.TryGetValue(Nickname, out var favoriteTracks)
-                    && favoriteTracks.GetAllTracks().Count > 0)
+                if (!FileName.FileNames.ContainsKey(Nickname))
                 {
-                    availableTracks = favoriteTracks.GetAllTracks();
+                    FileName.Load(Nickname);
+                }
+                var filename = FileName.FileNames[Nickname];
+                var FavoriteTrackList = new Favorite_Track();
+                if (File.Exists(filename.FavoriteTrack_LoadFile))
+                {
+                    FavoriteTrackList = JsonHelper.DeserializeNoBom<Favorite_Track>(filename.FavoriteTrack_LoadFile);
+                }
+                List<uint> availableTracks = FavoriteTrackList.GetAllTracks();
+                if (availableTracks.Count > 0)
+                {
                     return availableTracks[random.Next(availableTracks.Count)];
                 }
                 else

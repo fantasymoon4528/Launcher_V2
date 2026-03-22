@@ -8,7 +8,6 @@ namespace KartRider
         private void InitializeComponent()
         {
             Start_Button = new Button();
-            GetKart_Button = new Button();
             Setting_Button = new Button();
             button_ToggleTerminal = new Button();
             ConsoleLogger = new Button();
@@ -30,42 +29,32 @@ namespace KartRider
             Start_Button.UseVisualStyleBackColor = true;
             Start_Button.Click += Start_Button_Click;
             // 
-            // GetKart_Button
-            // 
-            GetKart_Button.Location = new System.Drawing.Point(19, 49);
-            GetKart_Button.Name = "GetKart_Button";
-            GetKart_Button.Size = new System.Drawing.Size(114, 23);
-            GetKart_Button.TabIndex = 1;
-            GetKart_Button.Text = "添加道具";
-            GetKart_Button.UseVisualStyleBackColor = true;
-            GetKart_Button.Click += GetKart_Button_Click;
-            // 
             // Setting_Button
             // 
-            Setting_Button.Location = new System.Drawing.Point(19, 78);
+            Setting_Button.Location = new System.Drawing.Point(19, 49);
             Setting_Button.Name = "Setting_Button";
             Setting_Button.Size = new System.Drawing.Size(114, 23);
-            Setting_Button.TabIndex = 2;
+            Setting_Button.TabIndex = 1;
             Setting_Button.Text = "设置";
             Setting_Button.UseVisualStyleBackColor = true;
             Setting_Button.Click += Setting_Button_Click;
             // 
             // button_ToggleTerminal
             // 
-            button_ToggleTerminal.Location = new System.Drawing.Point(19, 107);
+            button_ToggleTerminal.Location = new System.Drawing.Point(19, 78);
             button_ToggleTerminal.Name = "button_ToggleTerminal";
             button_ToggleTerminal.Size = new System.Drawing.Size(57, 23);
-            button_ToggleTerminal.TabIndex = 3;
+            button_ToggleTerminal.TabIndex = 2;
             button_ToggleTerminal.Text = "控制台";
             button_ToggleTerminal.UseVisualStyleBackColor = true;
             button_ToggleTerminal.Click += button_ToggleTerminal_Click;
             // 
             // ConsoleLogger
             // 
-            ConsoleLogger.Location = new System.Drawing.Point(76, 107);
+            ConsoleLogger.Location = new System.Drawing.Point(76, 78);
             ConsoleLogger.Name = "ConsoleLogger";
             ConsoleLogger.Size = new System.Drawing.Size(57, 23);
-            ConsoleLogger.TabIndex = 4;
+            ConsoleLogger.TabIndex = 3;
             ConsoleLogger.Text = "输出";
             ConsoleLogger.UseVisualStyleBackColor = true;
             ConsoleLogger.Click += ConsoleLogger_Click;
@@ -78,8 +67,8 @@ namespace KartRider
             label_Client.ForeColor = System.Drawing.Color.Blue;
             label_Client.Location = new System.Drawing.Point(2, 144);
             label_Client.Name = "label_Client";
-            label_Client.Size = new System.Drawing.Size(42, 12);
-            label_Client.TabIndex = 5;
+            label_Client.Size = new System.Drawing.Size(47, 12);
+            label_Client.TabIndex = 4;
             label_Client.Text = "Client:";
             label_Client.Click += label_Client_Click;
             // 
@@ -91,8 +80,8 @@ namespace KartRider
             ClientVersion.ForeColor = System.Drawing.Color.Red;
             ClientVersion.Location = new System.Drawing.Point(45, 144);
             ClientVersion.Name = "ClientVersion";
-            ClientVersion.Size = new System.Drawing.Size(24, 12);
-            ClientVersion.TabIndex = 6;
+            ClientVersion.Size = new System.Drawing.Size(0, 12);
+            ClientVersion.TabIndex = 5;
             ClientVersion.Click += label_Client_Click;
             // 
             // Launcher_label
@@ -101,8 +90,8 @@ namespace KartRider
             Launcher_label.ForeColor = System.Drawing.Color.Blue;
             Launcher_label.Location = new System.Drawing.Point(2, 160);
             Launcher_label.Name = "Launcher_label";
-            Launcher_label.Size = new System.Drawing.Size(54, 12);
-            Launcher_label.TabIndex = 7;
+            Launcher_label.Size = new System.Drawing.Size(59, 12);
+            Launcher_label.TabIndex = 6;
             Launcher_label.Text = "Launcher:";
             Launcher_label.Click += GitHub_Click;
             // 
@@ -114,8 +103,8 @@ namespace KartRider
             VersionLabel.ForeColor = System.Drawing.Color.Red;
             VersionLabel.Location = new System.Drawing.Point(57, 160);
             VersionLabel.Name = "VersionLabel";
-            VersionLabel.Size = new System.Drawing.Size(36, 12);
-            VersionLabel.TabIndex = 8;
+            VersionLabel.Size = new System.Drawing.Size(0, 12);
+            VersionLabel.TabIndex = 7;
             VersionLabel.Click += GitHub_Click;
             // 
             // GitHub
@@ -125,7 +114,7 @@ namespace KartRider
             GitHub.Location = new System.Drawing.Point(213, 144);
             GitHub.Name = "GitHub";
             GitHub.Size = new System.Drawing.Size(41, 12);
-            GitHub.TabIndex = 9;
+            GitHub.TabIndex = 8;
             GitHub.Text = "GitHub";
             GitHub.Click += GitHub_Click;
             // 
@@ -136,7 +125,7 @@ namespace KartRider
             KartInfo.Location = new System.Drawing.Point(201, 160);
             KartInfo.Name = "KartInfo";
             KartInfo.Size = new System.Drawing.Size(53, 12);
-            KartInfo.TabIndex = 10;
+            KartInfo.TabIndex = 9;
             KartInfo.Text = "KartInfo";
             KartInfo.Click += KartInfo_Click;
             // 
@@ -147,7 +136,6 @@ namespace KartRider
             BackColor = System.Drawing.SystemColors.Control;
             ClientSize = new System.Drawing.Size(257, 180);
             Controls.Add(Start_Button);
-            Controls.Add(GetKart_Button);
             Controls.Add(Setting_Button);
             Controls.Add(button_ToggleTerminal);
             Controls.Add(ConsoleLogger);
@@ -171,7 +159,6 @@ namespace KartRider
         }
 
         private Button Start_Button;
-        private Button GetKart_Button;
         private Button Setting_Button;
         private Button button_ToggleTerminal;
         private Button ConsoleLogger;

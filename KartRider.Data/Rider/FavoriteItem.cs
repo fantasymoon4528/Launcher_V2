@@ -12,9 +12,6 @@ namespace RiderData
 {
     public static class FavoriteItem
     {
-        public static Dictionary<string, List<Favorite_Item>> FavoriteItemLists = new Dictionary<string, List<Favorite_Item>>();
-        public static Dictionary<string, Favorite_Track> FavoriteTrackLists = new Dictionary<string, Favorite_Track>();
-
         public static void Favorite_Item(SessionGroup Parent, string Nickname)
         {
             if (!FileName.FileNames.ContainsKey(Nickname))
@@ -27,25 +24,32 @@ namespace RiderData
             {
                 FavoriteItemList = JsonHelper.DeserializeNoBom<List<Favorite_Item>>(filename.Favorite_LoadFile);
             }
-            FavoriteItemLists.TryAdd(Nickname, FavoriteItemList);
             using (OutPacket outPacket = new OutPacket("PrFavoriteItemGet"))
             {
                 outPacket.WriteInt(FavoriteItemList.Count);
                 foreach (Favorite_Item FavoriteItem in FavoriteItemList)
                 {
-                    outPacket.WriteShort(FavoriteItem.ItemCatID);
-                    outPacket.WriteShort(FavoriteItem.ItemID);
-                    outPacket.WriteShort(FavoriteItem.ItemSN);
+                    outPacket.WriteUShort(FavoriteItem.ItemCatID);
+                    outPacket.WriteUShort(FavoriteItem.ItemID);
+                    outPacket.WriteUShort(FavoriteItem.ItemSN);
                     outPacket.WriteByte(0);
                 }
                 Parent.Client.Send(outPacket);
             }
         }
 
-        public static void Favorite_Item_Add(string Nickname, short itemCatID, short itemID, short itemSN)
+        public static void Favorite_Item_Add(string Nickname, ushort itemCatID, ushort itemID, ushort itemSN)
         {
-            FavoriteItemLists.TryAdd(Nickname, new List<Favorite_Item>());
-            var FavoriteItemList = FavoriteItemLists[Nickname];
+            if (!FileName.FileNames.ContainsKey(Nickname))
+            {
+                FileName.Load(Nickname);
+            }
+            var filename = FileName.FileNames[Nickname];
+            var FavoriteItemList = new List<Favorite_Item>();
+            if (File.Exists(filename.Favorite_LoadFile))
+            {
+                FavoriteItemList = JsonHelper.DeserializeNoBom<List<Favorite_Item>>(filename.Favorite_LoadFile);
+            }
             var existingItem = FavoriteItemList.FirstOrDefault(item => item.ItemCatID == itemCatID && item.ItemID == itemID && item.ItemSN == itemSN);
             if (existingItem == null)
             {
@@ -55,16 +59,23 @@ namespace RiderData
             }
         }
 
-        public static void Favorite_Item_Del(string Nickname, short itemCatID, short itemID, short itemSN)
+        public static void Favorite_Item_Del(string Nickname, ushort itemCatID, ushort itemID, ushort itemSN)
         {
-            if (FavoriteItemLists.ContainsKey(Nickname))
+            if (!FileName.FileNames.ContainsKey(Nickname))
             {
-                var itemToRemove = FavoriteItemLists[Nickname].FirstOrDefault(item => item.ItemCatID == itemCatID && item.ItemID == itemID && item.ItemSN == itemSN);
-                if (itemToRemove != null)
-                {
-                    FavoriteItemLists[Nickname].Remove(itemToRemove);
-                    Save_ItemList(Nickname, FavoriteItemLists[Nickname]);
-                }
+                FileName.Load(Nickname);
+            }
+            var filename = FileName.FileNames[Nickname];
+            var FavoriteItemList = new List<Favorite_Item>();
+            if (File.Exists(filename.Favorite_LoadFile))
+            {
+                FavoriteItemList = JsonHelper.DeserializeNoBom<List<Favorite_Item>>(filename.Favorite_LoadFile);
+            }
+            var itemToRemove = FavoriteItemList.FirstOrDefault(item => item.ItemCatID == itemCatID && item.ItemID == itemID && item.ItemSN == itemSN);
+            if (itemToRemove != null)
+            {
+                FavoriteItemList.Remove(itemToRemove);
+                Save_ItemList(Nickname, FavoriteItemList);
             }
         }
 
@@ -90,7 +101,6 @@ namespace RiderData
             {
                 FavoriteTrackList = JsonHelper.DeserializeNoBom<Favorite_Track>(filename.FavoriteTrack_LoadFile);
             }
-            FavoriteTrackLists.TryAdd(Nickname, FavoriteTrackList);
             using (OutPacket outPacket = new OutPacket("PrFavoriteTrackMapGet"))
             {
                 var ThemesList = FavoriteTrackList.GetTheme();
@@ -113,16 +123,32 @@ namespace RiderData
 
         public static void Favorite_Track_Add(string Nickname, short theme, uint track)
         {
-            FavoriteTrackLists.TryAdd(Nickname, new Favorite_Track());
-            var FavoriteTrackList = FavoriteTrackLists[Nickname];
+            if (!FileName.FileNames.ContainsKey(Nickname))
+            {
+                FileName.Load(Nickname);
+            }
+            var filename = FileName.FileNames[Nickname];
+            var FavoriteTrackList = new Favorite_Track();
+            if (File.Exists(filename.FavoriteTrack_LoadFile))
+            {
+                FavoriteTrackList = JsonHelper.DeserializeNoBom<Favorite_Track>(filename.FavoriteTrack_LoadFile);
+            }
             FavoriteTrackList.AddTrack(theme, track);
             Save_TrackList(Nickname, FavoriteTrackList);
         }
 
         public static void Favorite_Track_Del(string Nickname, short theme, uint track)
         {
-            FavoriteTrackLists.TryAdd(Nickname, new Favorite_Track());
-            var FavoriteTrackList = FavoriteTrackLists[Nickname];
+            if (!FileName.FileNames.ContainsKey(Nickname))
+            {
+                FileName.Load(Nickname);
+            }
+            var filename = FileName.FileNames[Nickname];
+            var FavoriteTrackList = new Favorite_Track();
+            if (File.Exists(filename.FavoriteTrack_LoadFile))
+            {
+                FavoriteTrackList = JsonHelper.DeserializeNoBom<Favorite_Track>(filename.FavoriteTrack_LoadFile);
+            }
             FavoriteTrackList.RemoveTrack(theme, track);
             Save_TrackList(Nickname, FavoriteTrackList);
         }
@@ -140,9 +166,9 @@ namespace RiderData
 
     public class Favorite_Item
     {
-        public short ItemCatID { get; set; } = 0;
-        public short ItemID { get; set; } = 0;
-        public short ItemSN { get; set; } = 0;
+        public ushort ItemCatID { get; set; } = 0;
+        public ushort ItemID { get; set; } = 0;
+        public ushort ItemSN { get; set; } = 0;
     }
 
     public class Favorite_Track

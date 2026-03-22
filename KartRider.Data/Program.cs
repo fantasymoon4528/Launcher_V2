@@ -39,7 +39,6 @@ namespace KartRider
         public static readonly IntPtr consoleHandle = GetConsoleWindow();
 
         public static Launcher LauncherDlg;
-        public static GetKart GetKartDlg;
         public static Setting SettingDlg;
         public static bool SpeedPatch;
         public static bool PreventItem;

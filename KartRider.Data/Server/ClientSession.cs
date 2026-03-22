@@ -683,7 +683,7 @@ namespace KartRider
                     {
                         iPacket.ReadByte();
                         iPacket.ReadShort();
-                        short Kart = iPacket.ReadShort();
+                        ushort Kart = iPacket.ReadUShort();
                         iPacket.ReadShort();
                         short SN = iPacket.ReadShort();
                         iPacket.ReadBytes(6);
@@ -698,7 +698,7 @@ namespace KartRider
                             outPacket.WriteShort(0);
                             outPacket.WriteInt(0);
                             outPacket.WriteShort(0);
-                            outPacket.WriteShort(Kart);
+                            outPacket.WriteUShort(Kart);
                             outPacket.WriteShort(1);
                             outPacket.WriteShort(0);
                             outPacket.WriteByte(1);//Grade
@@ -711,43 +711,7 @@ namespace KartRider
                             this.Parent.Client.Send(outPacket);
                         }
 
-                        if (!FileName.FileNames.ContainsKey(Nickname))
-                        {
-                            FileName.Load(Nickname);
-                        }
-                        var filename = FileName.FileNames[Nickname];
-                        KartExcData.Parts12Lists.TryAdd(Nickname, new List<Parts12>());
-                        var Parts12List = KartExcData.Parts12Lists[Nickname];
-                        KartExcData.PartsLists.TryAdd(Nickname, new List<Parts>());
-                        var PartsList = KartExcData.PartsLists[Nickname];
-                        KartExcData.PlantLists.TryAdd(Nickname, new List<Plant>());
-                        var PlantList = KartExcData.PlantLists[Nickname];
-                        if (Parts12List.Any(list => list.ID == Kart && list.SN == SN))
-                        {
-                            KartExcData.AddPartsList(Nickname, Kart, SN, 72, 0, 0, 0);
-                            KartExcData.AddPartsList(Nickname, Kart, SN, 73, 0, 0, 0);
-                            KartExcData.AddPartsList(Nickname, Kart, SN, 74, 0, 0, 0);
-                            KartExcData.AddPartsList(Nickname, Kart, SN, 75, 0, 0, 0);
-                            KartExcData.AddPartsList(Nickname, Kart, SN, 76, 0, 0, 0);
-                            KartExcData.AddPartsList(Nickname, Kart, SN, 77, 0, 0, 0);
-                            KartExcData.AddPartsList(Nickname, Kart, SN, 78, 0, 0, 0);
-                        }
-                        if (PartsList.Any(list => list.ID == Kart && list.SN == SN))
-                        {
-                            KartExcData.AddPartsList(Nickname, Kart, SN, 63, 0, 0, 0);
-                            KartExcData.AddPartsList(Nickname, Kart, SN, 64, 0, 0, 0);
-                            KartExcData.AddPartsList(Nickname, Kart, SN, 65, 0, 0, 0);
-                            KartExcData.AddPartsList(Nickname, Kart, SN, 66, 0, 0, 0);
-                            KartExcData.AddPartsList(Nickname, Kart, SN, 68, 0, 0, 0);
-                            KartExcData.AddPartsList(Nickname, Kart, SN, 69, 0, 0, 0);
-                        }
-                        if (PlantList.Any(list => list.ID == Kart && list.SN == SN))
-                        {
-                            KartExcData.AddPlantList(Nickname, Kart, SN, 43, 0);
-                            KartExcData.AddPlantList(Nickname, Kart, SN, 44, 0);
-                            KartExcData.AddPlantList(Nickname, Kart, SN, 45, 0);
-                            KartExcData.AddPlantList(Nickname, Kart, SN, 46, 0);
-                        }
+                        NewRider.AddNewKart(this.Parent, Nickname, Kart);
                         return;
                     }
                     else if (hash == Adler32Helper.GenerateAdler32_ASCII("PqKartLevelUpProbText", 0))
@@ -816,7 +780,16 @@ namespace KartRider
                             outPacket.WriteShort(Effect);
                             this.Parent.Client.Send(outPacket);
                         }
-                        var LevelList = KartExcData.LevelLists[Nickname];
+                        if (!FileName.FileNames.ContainsKey(Nickname))
+                        {
+                            FileName.Load(Nickname);
+                        }
+                        var filename = FileName.FileNames[Nickname];
+                        var LevelList = new List<Level>();
+                        if (File.Exists(filename.LevelData_LoadFile))
+                        {
+                            LevelList = JsonHelper.DeserializeNoBom<List<Level>>(filename.LevelData_LoadFile);
+                        }
                         var existingLevelList = LevelList.FirstOrDefault(level => level.ID == Kart && level.SN == SN);
                         if (existingLevelList == null)
                         {
@@ -862,7 +835,16 @@ namespace KartRider
                         short SN = iPacket.ReadShort();
                         short Effect = iPacket.ReadShort();
 
-                        var LevelList = KartExcData.LevelLists[Nickname];
+                        if (!FileName.FileNames.ContainsKey(Nickname))
+                        {
+                            FileName.Load(Nickname);
+                        }
+                        var filename = FileName.FileNames[Nickname];
+                        var LevelList = new List<Level>();
+                        if (File.Exists(filename.LevelData_LoadFile))
+                        {
+                            LevelList = JsonHelper.DeserializeNoBom<List<Level>>(filename.LevelData_LoadFile);
+                        }
                         var existingLevelList = LevelList.FirstOrDefault(level => level.ID == Kart && level.SN == SN);
 
                         using (OutPacket outPacket = new OutPacket("PrKartLevelSpecialSlotUpdate"))
@@ -915,11 +897,6 @@ namespace KartRider
                             outPacket.WriteHexString("00 00 00 00 FF FF 00 00 00 00 00 00 00 00");
                             this.Parent.Client.Send(outPacket);
                         }
-                        using (OutPacket outPacket = new OutPacket("PcSlaveNotice"))
-                        {
-                            outPacket.WriteString("使用粒子激活器R直接获得启变佳！");
-                            this.Parent.Client.Send(outPacket);
-                        }
                         KartExcData.AddTuneList(Nickname, Kart, KartSN, 0, 0, 0, -1, 0, -1, 0);
                         return;
                     }
@@ -932,7 +909,16 @@ namespace KartRider
                         short KartSN = iPacket.ReadShort();
 
                         Random random = new Random();
-                        var TuneList = KartExcData.TuneLists[Nickname];
+                        if (!FileName.FileNames.ContainsKey(Nickname))
+                        {
+                            FileName.Load(Nickname);
+                        }
+                        var filename = FileName.FileNames[Nickname];
+                        var TuneList = new List<Tune>();
+                        if (File.Exists(filename.TuneData_LoadFile))
+                        {
+                            TuneList = JsonHelper.DeserializeNoBom<List<Tune>>(filename.TuneData_LoadFile);
+                        }
                         var existingList = TuneList.FirstOrDefault(tune => tune.ID == Kart && tune.SN == KartSN);
                         if (existingList != null)
                         {
@@ -1056,7 +1042,16 @@ namespace KartRider
                         iPacket.ReadShort();
                         short slot = iPacket.ReadShort();
 
-                        var TuneList = KartExcData.TuneLists[Nickname];
+                        if (!FileName.FileNames.ContainsKey(Nickname))
+                        {
+                            FileName.Load(Nickname);
+                        }
+                        var filename = FileName.FileNames[Nickname];
+                        var TuneList = new List<Tune>();
+                        if (File.Exists(filename.TuneData_LoadFile))
+                        {
+                            TuneList = JsonHelper.DeserializeNoBom<List<Tune>>(filename.TuneData_LoadFile);
+                        }
                         var existingList = TuneList.FirstOrDefault(tune => tune.ID == Kart && tune.SN == KartSN);
                         if (existingList != null)
                         {
@@ -1113,7 +1108,16 @@ namespace KartRider
                         iPacket.ReadShort();
                         short KartSN = iPacket.ReadShort();
 
-                        var TuneList = KartExcData.TuneLists[Nickname];
+                        if (!FileName.FileNames.ContainsKey(Nickname))
+                        {
+                            FileName.Load(Nickname);
+                        }
+                        var filename = FileName.FileNames[Nickname];
+                        var TuneList = new List<Tune>();
+                        if (File.Exists(filename.TuneData_LoadFile))
+                        {
+                            TuneList = JsonHelper.DeserializeNoBom<List<Tune>>(filename.TuneData_LoadFile);
+                        }
                         var existingList = TuneList.FirstOrDefault(tune => tune.ID == Kart && tune.SN == KartSN);
                         if (existingList != null)
                         {
@@ -2479,23 +2483,16 @@ namespace KartRider
                         iPacket.ReadInt();
                         iPacket.ReadInt();
                         iPacket.ReadShort();
-                        short ItemType = iPacket.ReadShort();
-                        short ItemID = iPacket.ReadShort();
-                        short SN = iPacket.ReadShort();
+                        ushort ItemType = iPacket.ReadUShort();
+                        ushort ItemID = iPacket.ReadUShort();
+                        ushort SN = iPacket.ReadUShort();
                         using (OutPacket outPacket = new OutPacket("LoRpDeleteItemPacket"))
                         {
                             this.Parent.Client.Send(outPacket);
                         }
                         if (ItemType == 3)
                         {
-                            XmlDocument doc = new XmlDocument();
-                            doc.Load(FileName.NewKart_LoadFile);
-                            XmlElement elementToRemove = doc.SelectSingleNode("//Kart[@id='" + ItemID + "' and @sn='" + SN + "']") as XmlElement;
-                            if (elementToRemove != null)
-                            {
-                                elementToRemove.ParentNode.RemoveChild(elementToRemove);
-                            }
-                            doc.Save(FileName.NewKart_LoadFile);
+                            NewRider.DelNewKart(Nickname, ItemID, SN);
                         }
                         return;
                     }
@@ -2609,10 +2606,7 @@ namespace KartRider
                     {
                         int useType = iPacket.ReadInt();
                         int stringType = iPacket.ReadInt();
-                        for (int i = 0; i < useType; i++)
-                        {
-                            iPacket.ReadString(false);
-                        }
+                        string password = iPacket.ReadString();
                         byte Type = iPacket.ReadByte();
                         using (OutPacket outPacket = new OutPacket("PrUnLockedItem"))
                         {
@@ -2629,13 +2623,12 @@ namespace KartRider
                     else if (hash == Adler32Helper.GenerateAdler32_ASCII("PqFavoriteItemUpdate", 0))
                     {
                         iPacket.ReadByte();
-                        int j = iPacket.ReadShort();
-                        iPacket.ReadShort();
+                        int j = iPacket.ReadInt();
                         for (int i = 0; i < j; i++)
                         {
-                            short item = iPacket.ReadShort();
-                            short id = iPacket.ReadShort();
-                            short sn = iPacket.ReadShort();
+                            ushort item = iPacket.ReadUShort();
+                            ushort id = iPacket.ReadUShort();
+                            ushort sn = iPacket.ReadUShort();
                             byte Add_Del = iPacket.ReadByte();
                             if (Add_Del == 1)
                             {
@@ -2650,15 +2643,28 @@ namespace KartRider
                     }
                     else if (hash == Adler32Helper.GenerateAdler32_ASCII("PqLockedItemGet", 0))//아이템 보호
                     {
-                        using (OutPacket outPacket = new OutPacket("PrLockedItemGet"))
-                        {
-                            outPacket.WriteInt(0);
-                            this.Parent.Client.Send(outPacket);
-                        }
+                        LockedItem.LockedItemGet(this.Parent, Nickname);
                         return;
                     }
                     else if (hash == Adler32Helper.GenerateAdler32_ASCII("PqLockedItemUpdate", 0))
                     {
+                        iPacket.ReadByte();
+                        int j = iPacket.ReadInt();
+                        for (int i = 0; i < j; i++)
+                        {
+                            ushort item = iPacket.ReadUShort();
+                            ushort id = iPacket.ReadUShort();
+                            ushort sn = iPacket.ReadUShort();
+                            byte Add_Del = iPacket.ReadByte();
+                            if (Add_Del == 1)
+                            {
+                                LockedItem.LockedItem_Add(Nickname, item, id, sn);
+                            }
+                            else if (Add_Del == 2)
+                            {
+                                LockedItem.LockedItem_Del(Nickname, item, id, sn);
+                            }
+                        }
                         return;
                     }
                     else if (hash == Adler32Helper.GenerateAdler32_ASCII("PqSimGameSimpleInfoAndRankPacket", 0))
@@ -3059,7 +3065,16 @@ namespace KartRider
                         short kart = iPacket.ReadShort();
                         short sn = iPacket.ReadShort();
                         uint[] money = new uint[] { 0, 10, 12, 15, 20, 30 };
-                        var Level12List = KartExcData.Level12Lists[Nickname];
+                        if (!FileName.FileNames.ContainsKey(Nickname))
+                        {
+                            FileName.Load(Nickname);
+                        }
+                        var filename = FileName.FileNames[Nickname];
+                        var Level12List = new List<Level12>();
+                        if (File.Exists(filename.Level12Data_LoadFile))
+                        {
+                            Level12List = JsonHelper.DeserializeNoBom<List<Level12>>(filename.Level12Data_LoadFile);
+                        }
                         var existingParts = Level12List.FirstOrDefault(level12 => level12.ID == kart && level12.SN == sn);
                         if (existingParts != null)
                         {
@@ -3145,7 +3160,16 @@ namespace KartRider
                         short kart = iPacket.ReadShort();
                         short sn = iPacket.ReadShort();
                         short field = iPacket.ReadShort();
-                        var Level12List = KartExcData.Level12Lists[Nickname];
+                        if (!FileName.FileNames.ContainsKey(Nickname))
+                        {
+                            FileName.Load(Nickname);
+                        }
+                        var filename = FileName.FileNames[Nickname];
+                        var Level12List = new List<Level12>();
+                        if (File.Exists(filename.Level12Data_LoadFile))
+                        {
+                            Level12List = JsonHelper.DeserializeNoBom<List<Level12>>(filename.Level12Data_LoadFile);
+                        }
                         var existingParts = Level12List.FirstOrDefault(level12 => level12.ID == kart && level12.SN == sn);
                         if (existingParts != null)
                         {
@@ -3204,7 +3228,16 @@ namespace KartRider
                         short sn = iPacket.ReadShort();
                         short field = iPacket.ReadShort();
                         byte AddDel = iPacket.ReadByte();
-                        var Level12List = KartExcData.Level12Lists[Nickname];
+                        if (!FileName.FileNames.ContainsKey(Nickname))
+                        {
+                            FileName.Load(Nickname);
+                        }
+                        var filename = FileName.FileNames[Nickname];
+                        var Level12List = new List<Level12>();
+                        if (File.Exists(filename.Level12Data_LoadFile))
+                        {
+                            Level12List = JsonHelper.DeserializeNoBom<List<Level12>>(filename.Level12Data_LoadFile);
+                        }
                         var existingParts = Level12List.FirstOrDefault(level12 => level12.ID == kart && level12.SN == sn);
                         if (existingParts != null)
                         {
@@ -3340,8 +3373,17 @@ namespace KartRider
                         uint Lucci = iPacket.ReadUInt();
 
                         int ExceedType1 = 0;
-                        KartExcData.Parts12Lists.TryAdd(Nickname, new List<Parts12>());
-                        var targetPart = KartExcData.Parts12Lists[Nickname].FirstOrDefault(parts => parts.ID == kart1 && parts.SN == sn1);
+                        if (!FileName.FileNames.ContainsKey(Nickname))
+                        {
+                            FileName.Load(Nickname);
+                        }
+                        var filename = FileName.FileNames[Nickname];
+                        var Parts12List = new List<Parts12>();
+                        if (File.Exists(filename.Level12Data_LoadFile))
+                        {
+                            Parts12List = JsonHelper.DeserializeNoBom<List<Parts12>>(filename.Parts12Data_LoadFile);
+                        }
+                        var targetPart = Parts12List.FirstOrDefault(parts => parts.ID == kart1 && parts.SN == sn1);
                         if (targetPart != null)
                         {
                             ExceedType1 = targetPart.ExceedType;

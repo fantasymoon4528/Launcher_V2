@@ -2,6 +2,7 @@ using KartRider;
 using Profile;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -30,8 +31,18 @@ namespace ExcData
 
         public static List<short> GetSkills(string Nickname)
         {
+            if (!FileName.FileNames.ContainsKey(Nickname))
+            {
+                FileName.Load(Nickname);
+            }
+            var filename = FileName.FileNames[Nickname];
+            var Level12List = new List<Level12>();
+            if (File.Exists(filename.Level12Data_LoadFile))
+            {
+                Level12List = JsonHelper.DeserializeNoBom<List<Level12>>(filename.Level12Data_LoadFile);
+            }
             List<short> skills = new List<short>();
-            var existingLevel = KartExcData.Level12Lists[Nickname].FirstOrDefault(Level12 => Level12.ID == ProfileService.ProfileConfigs[Nickname].RiderItem.Set_Kart && Level12.SN == ProfileService.ProfileConfigs[Nickname].RiderItem.Set_KartSN);
+            var existingLevel = Level12List.FirstOrDefault(Level12 => Level12.ID == ProfileService.ProfileConfigs[Nickname].RiderItem.Set_Kart && Level12.SN == ProfileService.ProfileConfigs[Nickname].RiderItem.Set_KartSN);
             if (existingLevel != null)
             {
                 if (existingLevel.SkillGrade1 != 0)
@@ -86,10 +97,16 @@ namespace ExcData
                 FileName.Load(Nickname);
             }
             var filename = FileName.FileNames[Nickname];
-            KartExcData.Parts12Lists.TryAdd(Nickname, new List<Parts12>());
-            KartExcData.Level12Lists.TryAdd(Nickname, new List<Level12>());
-            var Parts12List = KartExcData.Parts12Lists[Nickname];
-            var Level12List = KartExcData.Level12Lists[Nickname];
+            var Parts12List = new List<Parts12>();
+            if (File.Exists(filename.Parts12Data_LoadFile))
+            {
+                Parts12List = JsonHelper.DeserializeNoBom<List<Parts12>>(filename.Parts12Data_LoadFile);
+            }
+            var Level12List = new List<Level12>();
+            if (File.Exists(filename.Level12Data_LoadFile))
+            {
+                Level12List = JsonHelper.DeserializeNoBom<List<Level12>>(filename.Level12Data_LoadFile);
+            }
 
             if (Kart.defaultExceedType > 0)
             {
@@ -452,6 +469,3 @@ namespace ExcData
         public float V2Level_DriftMaxGauge { get; set; } = 0f;
     }
 }
-
-
-
