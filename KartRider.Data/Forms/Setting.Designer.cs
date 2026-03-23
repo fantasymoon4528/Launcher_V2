@@ -1,3 +1,4 @@
+using System.Drawing;
 using System.Windows.Forms;
 using Launcher.Properties;
 
@@ -212,7 +213,7 @@ namespace KartRider
             MaximizeBox = false;
             MinimizeBox = false;
             Name = "Setting";
-            Icon = Resources.icon;
+            Icon = new Icon(Resources.icon, new Size(32, 32));
             StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             Text = "设置";
             FormClosing += OnFormClosing;

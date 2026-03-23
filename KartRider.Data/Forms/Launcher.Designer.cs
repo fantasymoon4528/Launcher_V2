@@ -1,5 +1,6 @@
-using Launcher.Properties;
+using System.Drawing;
 using System.Windows.Forms;
+using Launcher.Properties;
 
 namespace KartRider
 {
@@ -149,7 +150,7 @@ namespace KartRider
             FormBorderStyle = FormBorderStyle.FixedSingle;
             MaximizeBox = false;
             Name = "Launcher";
-            Icon = Resources.icon;
+            Icon = new Icon(Resources.icon, new Size(32, 32));
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Launcher";
             FormClosing += OnFormClosing;
