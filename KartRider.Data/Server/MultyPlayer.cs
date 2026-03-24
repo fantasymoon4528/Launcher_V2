@@ -599,7 +599,7 @@ public static class MultyPlayer
                 oPacket.WriteInt(0);
                 oPacket.WriteShort(channel);
                 oPacket.WriteShort(iPacket.ReadShort());
-                oPacket.WriteEndPoint(ProfileService.SettingConfig.ServerIP == "127.0.0.1" ? serverEndPoint.Address : IPAddress.Parse(ProfileService.SettingConfig.ServerIP), ProfileService.SettingConfig.ServerPort);
+                oPacket.WriteEndPoint(ProfileService.SettingConfig.ServerIP == "127.0.0.1" ? serverEndPoint : new IPEndPoint(IPAddress.Parse(ProfileService.SettingConfig.ServerIP), ProfileService.SettingConfig.ServerPort));
                 Parent.Client.Send(oPacket);
             }
             return;
@@ -619,8 +619,8 @@ public static class MultyPlayer
             using (OutPacket oPacket = new OutPacket("PrChannelMoveIn"))
             {
                 oPacket.WriteByte(1);
-                oPacket.WriteEndPoint(ProfileService.SettingConfig.ServerIP == "127.0.0.1" ? serverEndPoint.Address : IPAddress.Parse(ProfileService.SettingConfig.ServerIP), ProfileService.SettingConfig.ServerPort);
-                oPacket.WriteEndPoint(ProfileService.SettingConfig.ServerIP == "127.0.0.1" ? serverEndPoint.Address : IPAddress.Parse(ProfileService.SettingConfig.ServerIP), (ushort)(ProfileService.SettingConfig.ServerPort + 1));
+                outPacket.WriteEndPoint(new IPEndPoint(IPAddress.Any, ProfileService.SettingConfig.ServerPort));
+                outPacket.WriteEndPoint(new IPEndPoint(IPAddress.Any, (ushort)(ProfileService.SettingConfig.ServerPort + 1)));
                 Parent.Client.Send(oPacket);
             }
             return;
@@ -1297,7 +1297,7 @@ public static class MultyPlayer
                 }
                 else
                 {
-                    outPacket.WriteEndPoint(new IPEndPoint(IPAddress.Any, (ushort)(ProfileService.SettingConfig.ServerPort + 1)));
+                    outPacket.WriteEndPoint(new IPEndPoint(0, 0));
                 }
                 if (ClientManager.ClientUdpAddrs.TryGetValue(p.Nickname, out IPEndPoint UdpPoint))
                 {
@@ -1305,7 +1305,7 @@ public static class MultyPlayer
                 }
                 else
                 {
-                    outPacket.WriteEndPoint(new IPEndPoint(IPAddress.Any, ProfileService.SettingConfig.ServerPort));
+                    outPacket.WriteEndPoint(new IPEndPoint(0, 0));
                 }
                 outPacket.WriteString(p.Nickname);
                 outPacket.WriteShort(ProfileService.ProfileConfigs[p.Nickname].Rider.Emblem1);

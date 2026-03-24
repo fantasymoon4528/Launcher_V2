@@ -2831,8 +2831,8 @@ namespace KartRider
                                 outPacket.WriteInt(0);
                             }
                             outPacket.WriteByte(0);
-                            outPacket.WriteEndPoint(ProfileService.SettingConfig.ServerIP == "127.0.0.1" ? serverEndPoint.Address : IPAddress.Parse(ProfileService.SettingConfig.ServerIP), ProfileService.SettingConfig.ServerPort);
-                            outPacket.WriteEndPoint(ProfileService.SettingConfig.ServerIP == "127.0.0.1" ? serverEndPoint.Address : IPAddress.Parse(ProfileService.SettingConfig.ServerIP), (ushort)(ProfileService.SettingConfig.ServerPort + 1));
+                            outPacket.WriteEndPoint(new IPEndPoint(IPAddress.Any, ProfileService.SettingConfig.ServerPort));
+                            outPacket.WriteEndPoint(new IPEndPoint(IPAddress.Any, (ushort)(ProfileService.SettingConfig.ServerPort + 1)));
                             outPacket.WriteByte(0);
                             outPacket.WriteByte(0);
                             outPacket.WriteByte((byte)(PcMsgPassport ? 1 : 0));
