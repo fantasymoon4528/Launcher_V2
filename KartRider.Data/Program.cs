@@ -98,9 +98,6 @@ namespace KartRider
 
                 string TCGame = "HKEY_CURRENT_USER\\Software\\TCGame\\kart";
                 string RootDirectory = (string)Registry.GetValue(TCGame, "gamepath", null);
-                string KartRider = Path.GetFullPath(Path.Combine(RootDirectory, @"KartRider.exe"));
-                string pinFile = Path.GetFullPath(Path.Combine(RootDirectory, @"KartRider.pin"));
-                string pinFileBak = Path.GetFullPath(Path.Combine(RootDirectory, @"KartRider-bak.pin"));
                 if (File.Exists(FileName.pinFile) && File.Exists(FileName.KartRider))
                 {
                     RootDirectory = FileName.appDir;
@@ -114,6 +111,9 @@ namespace KartRider
                     LauncherSystem.MessageBoxType3();
                     return;
                 }
+                string KartRider = Path.GetFullPath(Path.Combine(RootDirectory, @"KartRider.exe"));
+                string pinFile = Path.GetFullPath(Path.Combine(RootDirectory, @"KartRider.pin"));
+                string pinFileBak = Path.GetFullPath(Path.Combine(RootDirectory, @"KartRider-bak.pin"));
                 if (!string.IsNullOrEmpty(RootDirectory))
                 {
                     if (File.Exists(pinFileBak))
