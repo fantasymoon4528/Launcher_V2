@@ -263,7 +263,7 @@ namespace RHOParser
                 PackFolderManager packFolderManager = new PackFolderManager();
                 try
                 {
-                    Console.WriteLine("当前游戏路径: " + RootDirectory);
+                    Console.WriteLine("当前游戏路径: " + inputDir);
                     Console.WriteLine("开始读取游戏Data内文件...");
                     Console.WriteLine("==============================");
                     packFolderManager.OpenDataFolder(input);
