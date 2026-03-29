@@ -43,7 +43,6 @@ namespace KartRider
         public static bool SpeedPatch;
         public static bool PreventItem;
         public static Encoding targetEncoding = Encoding.UTF8;
-        public static CountryCode CC = CountryCode.CN;
 
         private static readonly string[] datapack =
         {
@@ -69,23 +68,6 @@ namespace KartRider
             SetAdaptiveConsoleEncoding();
 
             // Console.WriteLine(Common.Utilities.Adler32Helper.GenerateAdler32_ASCII("PrRotationModeDataPacket"));
-
-            if (File.Exists(FileName.Load_CC))
-            {
-                string textValue = System.IO.File.ReadAllText(FileName.Load_CC);
-                Program.CC = (CountryCode)Enum.Parse(typeof(CountryCode), textValue);
-            }
-            else
-            {
-                if (!Directory.Exists(FileName.ProfileDir))
-                {
-                    Directory.CreateDirectory(FileName.ProfileDir);
-                }
-                using (StreamWriter streamWriter = new StreamWriter(FileName.Load_CC, false))
-                {
-                    streamWriter.Write(Program.CC.ToString());
-                }
-            }
 
             if (args != null && args.Length > 0)
             {
@@ -121,7 +103,6 @@ namespace KartRider
                         File.Delete(pinFile);
                         File.Move(pinFileBak, pinFile);
                     }
-                    ProfileService.LoadSettings();
                     if (ProfileService.SettingConfig.PatchUpdate)
                     {
                         await PatchUpdate.UpdateDataAsync(RootDirectory);
@@ -147,15 +128,8 @@ namespace KartRider
                     }
                     packFolderManager.Reset();
 
-                    if (!File.Exists(FileName.Load_Console))
-                    {
-                        using (StreamWriter streamWriter = new StreamWriter(FileName.Load_Console, false))
-                        {
-                            streamWriter.Write("0");
-                        }
-                    }
-                    string textValue = System.IO.File.ReadAllText(FileName.Load_Console);
-                    if (textValue == "0")
+                    ProfileService.LoadSettings();
+                    if (!ProfileService.SettingConfig.Console)
                     {
                         ShowWindow(consoleHandle, SW_HIDE);
                         isVisible = false;
@@ -339,6 +313,9 @@ namespace KartRider
 
         private static void encode(string input, string output)
         {
+            string aaaPath = Path.Combine(Directory.GetParent(input).FullName, "aaa.pk");
+            string regionCode = KartRhoFile.GetRegionCode(aaaPath);
+            CountryCode CC = (CountryCode)Enum.Parse(typeof(CountryCode), regionCode, true);
             var rho5Archive = new Rho5Archive();
             if (!output.EndsWith(".rho5"))
                 output += ".rho5";
@@ -366,6 +343,9 @@ namespace KartRider
 
         private static void decode(string input, string output)
         {
+            string aaaPath = Path.Combine(Directory.GetParent(input).FullName, "aaa.pk");
+            string regionCode = KartRhoFile.GetRegionCode(aaaPath);
+            CountryCode CC = (CountryCode)Enum.Parse(typeof(CountryCode), regionCode, true);
             if (output.EndsWith(".rho"))
                 output = Path.GetDirectoryName(output);
             else if (output.EndsWith(".rho5"))

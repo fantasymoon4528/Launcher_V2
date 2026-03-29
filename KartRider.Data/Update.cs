@@ -86,6 +86,7 @@ namespace KartRider
                             string country = await GetCountryAsync();
                             if (country != "" && country == "CN")
                             {
+                                ProfileService.LoadSettings();
                                 string url2 = ProfileService.SettingConfig.Proxy + launcherExeAsset.browser_download_url;
                                 if (ProfileService.SettingConfig.Proxy == "https://gh-proxy.com/")
                                 {

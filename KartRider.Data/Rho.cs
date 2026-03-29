@@ -11,6 +11,7 @@ using RiderData;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -21,6 +22,8 @@ namespace RHOParser
 {
     public static class KartRhoFile
     {
+        public static string regionCode = "cn";
+
         public static PackFolderManager Dump(string input)
         {
             try
@@ -35,74 +38,8 @@ namespace RHOParser
                 Console.WriteLine($"sound_bgm_korea.rho exists: {koreaFileExists}");
                 Console.WriteLine($"sound_bgm_lotte.rho exists: {lotteFileExists}");
 
-                // Read the current aaa.pk content
-                byte[] aaaPkData;
-                try
-                {
-                    using (FileStream fileStream = new FileStream(input, FileMode.Open))
-                    {
-                        BinaryReader br = new BinaryReader(fileStream);
-                        int dataLen = br.ReadInt32();
-                        aaaPkData = br.ReadKRData(dataLen);
-                        fileStream.Close();
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Error reading aaa.pk: {ex.Message}");
-                    // If reading fails, return null
-                    return null;
-                }
-
-                BinaryXmlDocument bxmlDoc = new BinaryXmlDocument();
-                bxmlDoc.Read(Encoding.GetEncoding("UTF-16"), aaaPkData);
-                BinaryXmlTag rootTag = bxmlDoc.RootTag;
-
-                // Extract regionCode from the XML
-                string regionCode = "cn"; // Default to CN
-                try
-                {
-                    // Try to find the region code by looking at zeta folders
-                    BinaryXmlTag zetaFolder = null;
-                    foreach (BinaryXmlTag subtag in rootTag.Children)
-                    {
-                        if (subtag.Name == "PackFolder" && subtag.GetAttribute("name") == "zeta")
-                        {
-                            zetaFolder = subtag;
-                            break;
-                        }
-                    }
-
-                    if (zetaFolder != null)
-                    {
-                        foreach (BinaryXmlTag subtag in zetaFolder.Children)
-                        {
-                            if (subtag.Name == "PackFolder")
-                            {
-                                string folderName = subtag.GetAttribute("name");
-                                if (folderName == "kr")
-                                {
-                                    regionCode = "kr";
-                                    break;
-                                }
-                                else if (folderName == "cn")
-                                {
-                                    regionCode = "cn";
-                                    break;
-                                }
-                                else if (folderName == "tw")
-                                {
-                                    regionCode = "tw";
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Error extracting regionCode: {ex.Message}");
-                }
+                regionCode = GetRegionCode(input);
+                BinaryXmlTag rootTag = GetAAATag(input);
 
                 // Find the sound/bgm folder path
                 BinaryXmlTag soundFolder = null;
@@ -1122,6 +1059,90 @@ namespace RHOParser
             childCounts.Add(childCount);
             foreach (var child in element.Elements()) CountChildren(child, level + 1, childCounts);
             return childCounts;
+        }
+
+        public static BinaryXmlTag GetAAATag(string input)
+        {
+            // Read the current aaa.pk content
+            byte[] aaaPkData;
+            try
+            {
+                using (FileStream fileStream = new FileStream(input, FileMode.Open))
+                {
+                    BinaryReader br = new BinaryReader(fileStream);
+                    int dataLen = br.ReadInt32();
+                    aaaPkData = br.ReadKRData(dataLen);
+                    fileStream.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error reading aaa.pk: {ex.Message}");
+                // If reading fails, return null
+                return null;
+            }
+
+            BinaryXmlDocument bxmlDoc = new BinaryXmlDocument();
+            bxmlDoc.Read(Encoding.GetEncoding("UTF-16"), aaaPkData);
+            BinaryXmlTag rootTag = bxmlDoc.RootTag;
+            return rootTag;
+        }
+
+        public static string GetRegionCode(string input)
+        {
+            // Extract regionCode from the XML
+            string regionCode = "cn"; // Default to CN
+
+            BinaryXmlTag rootTag = GetAAATag(input);
+            if (rootTag == null)
+            {
+                return regionCode;
+            }
+
+            try
+            {
+                // Try to find the region code by looking at zeta folders
+                BinaryXmlTag zetaFolder = null;
+                foreach (BinaryXmlTag subtag in rootTag.Children)
+                {
+                    if (subtag.Name == "PackFolder" && subtag.GetAttribute("name") == "zeta")
+                    {
+                        zetaFolder = subtag;
+                        break;
+                    }
+                }
+
+                if (zetaFolder != null)
+                {
+                    foreach (BinaryXmlTag subtag in zetaFolder.Children)
+                    {
+                        if (subtag.Name == "PackFolder")
+                        {
+                            string folderName = subtag.GetAttribute("name");
+                            if (folderName == "kr")
+                            {
+                                regionCode = "kr";
+                                break;
+                            }
+                            else if (folderName == "cn")
+                            {
+                                regionCode = "cn";
+                                break;
+                            }
+                            else if (folderName == "tw")
+                            {
+                                regionCode = "tw";
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error extracting regionCode: {ex.Message}");
+            }
+            return regionCode;
         }
     }
 }

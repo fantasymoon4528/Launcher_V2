@@ -2770,7 +2770,7 @@ namespace KartRider
                             outPacket.WriteInt(0);
                             outPacket.WriteInt(1);
                             outPacket.WriteString("cc");
-                            outPacket.WriteString(Program.CC.ToString().ToLower());
+                            outPacket.WriteString(KartRhoFile.regionCode);
                             outPacket.WriteInt(6);
                             outPacket.WriteString("content");
                             outPacket.WriteInt(0);

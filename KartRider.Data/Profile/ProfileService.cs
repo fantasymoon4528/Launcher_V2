@@ -15,6 +15,11 @@ namespace Profile
 
         public static void SaveSettings()
         {
+            var settingsDir = Path.GetDirectoryName(FileName.Load_Settings);
+            if (!string.IsNullOrEmpty(settingsDir) && !Directory.Exists(settingsDir))
+            {
+                Directory.CreateDirectory(settingsDir);
+            }
             File.WriteAllText(FileName.Load_Settings, JsonHelper.Serialize(SettingConfig));
         }
 

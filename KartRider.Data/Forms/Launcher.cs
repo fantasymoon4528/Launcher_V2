@@ -204,10 +204,8 @@ namespace KartRider
         {
             Program.isVisible = !Program.isVisible;
             Program.ShowWindow(Program.consoleHandle, Program.isVisible ? Program.SW_SHOW : Program.SW_HIDE);
-            using (StreamWriter streamWriter = new StreamWriter(FileName.Load_Console, false))
-            {
-                streamWriter.Write((Program.isVisible ? "1" : "0"));
-            }
+            ProfileService.SettingConfig.Console = Program.isVisible;
+            ProfileService.SaveSettings();
         }
 
         private void ConsoleLogger_Click(object sender, EventArgs e)
