@@ -3732,6 +3732,11 @@ namespace KartRider
                         else
                         {
                             room.RelayType = 1; //TCP
+                            using (OutPacket oPacket = new OutPacket("PcSlaveNotice"))
+                            {
+                                oPacket.WriteString("网络异常，切换为服务器中转...");
+                                MultyPlayer.BroadCast(roomId, oPacket);
+                            }
                         }
                         return;
                     }

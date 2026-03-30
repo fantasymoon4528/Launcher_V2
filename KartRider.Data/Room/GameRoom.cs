@@ -194,9 +194,9 @@ public class GameRoom
             _IDs[player.ID] = null;
             if (player.ID == RoomMaster)
             {
-                foreach (RoomMember Object in _IDs)
+                foreach (RoomMember member in _IDs)
                 {
-                    if (Object is Player p)
+                    if (member is Player p)
                     {
                         RoomMaster = p.ID;
                         p.PlayerType = 2;

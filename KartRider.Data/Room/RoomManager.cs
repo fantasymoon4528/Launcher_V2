@@ -228,20 +228,31 @@ public static class RoomManager
             {
                 if (room.ChangeSlotId(slotId, (byte)i))
                 {
-                    var Object = TryGetSlotDetail(roomId, (byte)i);
-                    if (Object is Player player)
+                    var member = TryGetSlotDetail(roomId, (byte)i);
+                    if (member is Player player)
                     {
                         player.SlotId = (byte)i;
                         player.Team = team;
                         return true;
                     }
-                    else if (Object is Ai ai)
+                    else if (member is Ai ai)
                     {
                         ai.SlotId = (byte)i;
                         ai.Team = team;
                         return true;
                     }
                 }
+            }
+            var member1 = TryGetSlotDetail(roomId, slotId);
+            if (member1 is Player player1)
+            {
+                player1.Team = team;
+                return false;
+            }
+            else if (member1 is Ai ai1)
+            {
+                ai1.Team = team;
+                return false;
             }
         }
         else if (team == 1)
@@ -250,20 +261,31 @@ public static class RoomManager
             {
                 if (room.ChangeSlotId(slotId, (byte)i))
                 {
-                    var Object = TryGetSlotDetail(roomId, (byte)i);
-                    if (Object is Player player)
+                    var member = TryGetSlotDetail(roomId, (byte)i);
+                    if (member is Player player)
                     {
                         player.SlotId = (byte)i;
                         player.Team = team;
                         return true;
                     }
-                    else if (Object is Ai ai)
+                    else if (member is Ai ai)
                     {
                         ai.SlotId = (byte)i;
                         ai.Team = team;
                         return true;
                     }
                 }
+            }
+            var member1 = TryGetSlotDetail(roomId, slotId);
+            if (member1 is Player player1)
+            {
+                player1.Team = team;
+                return false;
+            }
+            else if (member1 is Ai ai1)
+            {
+                ai1.Team = team;
+                return false;
             }
         }
         return false;

@@ -214,9 +214,9 @@ namespace KartRider
                             {
                                 if (room.RelayType == 0) //UDP
                                 {
-                                    foreach (RoomMember Object in room._slots)
+                                    foreach (RoomMember member in room._slots)
                                     {
-                                        if (Object is Player player && player.Nickname != nickname)
+                                        if (member is Player player && player.Nickname != nickname)
                                         {
                                             OutPacket oPacket = new OutPacket();
 

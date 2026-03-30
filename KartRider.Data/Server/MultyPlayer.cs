@@ -206,16 +206,16 @@ public static class MultyPlayer
 
         if (room.TimeData.Count < room.GetCount())
         {
-            foreach (RoomMember Object in room._slots)
+            foreach (RoomMember member in room._slots)
             {
-                if (Object is Player player)
+                if (member is Player player)
                 {
                     if (!room.TimeData.ContainsKey(player.ID))
                     {
                         room.TimeData[player.ID] = uint.MaxValue;
                     }
                 }
-                else if (Object is Ai ai)
+                else if (member is Ai ai)
                 {
                     if (!room.TimeData.ContainsKey(ai.ID))
                     {
@@ -238,9 +238,9 @@ public static class MultyPlayer
             firstTeam = ai.Team;
         }
         Console.WriteLine("第一名 ID: {0} Team: {1}", firstId, firstTeam);
-        foreach (RoomMember Object in room._slots)
+        foreach (RoomMember member in room._slots)
         {
-            if (Object is Player p2)
+            if (member is Player p2)
             {
                 if (p2.Team == 2 && room.TimeData[p2.ID] != uint.MaxValue)
                 {
@@ -251,7 +251,7 @@ public static class MultyPlayer
                     redTeam += teamPoints[room.Ranking[p2.ID]];
                 }
             }
-            if (Object is Ai a2)
+            if (member is Ai a2)
             {
                 if (a2.Team == 2 && room.TimeData[a2.ID] != uint.MaxValue)
                 {
@@ -294,9 +294,9 @@ public static class MultyPlayer
             }
 
             outPacket.WriteInt(room.GetPlayerCount()); // player count
-            foreach (RoomMember Object in room._IDs)
+            foreach (RoomMember member in room._IDs)
             {
-                if (Object is Player p3)
+                if (member is Player p3)
                 {
                     // Ensure profile is loaded for the player
                     if (!ProfileService.ProfileConfigs.ContainsKey(p3.Nickname))
@@ -354,9 +354,9 @@ public static class MultyPlayer
             }
 
             outPacket.WriteInt(room.GetAiCount()); // AI count
-            foreach (RoomMember Object in room._IDs)
+            foreach (RoomMember member in room._IDs)
             {
-                if (Object is Ai a3)
+                if (member is Ai a3)
                 {
                     outPacket.WriteInt(a3.ID);
                     outPacket.WriteUInt(room.TimeData[a3.ID]);
@@ -716,6 +716,30 @@ public static class MultyPlayer
                 return;
             }
 
+            int readyCount = 0;
+            foreach (RoomMember member in room._IDs)
+            {
+                if (member is Player player)
+                {
+                    if (player.PlayerType == 3 && player.ID != room.RoomMaster)
+                    {
+                        readyCount++;
+                        continue;
+                    }
+                }
+            }
+
+            int playerCount = room.GetPlayerCount() - 1; // 减去房主
+            if (readyCount < playerCount)
+            {
+                using (OutPacket oPacket = new OutPacket("GrReplyStartPacket"))
+                {
+                    oPacket.WriteInt(2);
+                    Parent.Client.Send(oPacket);
+                }
+                return;
+            }
+
             room.trackTemp = RandomTrack.GetRandomTrack(Parent.Nickname, room.RandomTrackGameType, room.track);
 
             using (OutPacket oPacket = new OutPacket("GrReplyStartPacket"))
@@ -724,9 +748,9 @@ public static class MultyPlayer
                 Parent.Client.Send(oPacket);
             }
 
-            foreach (RoomMember Object in room._IDs)
+            foreach (RoomMember member in room._IDs)
             {
-                if (Object is Player p)
+                if (member is Player p)
                 {
                     using (OutPacket oPacket = new OutPacket("GrCommandStartPacket"))
                     {
@@ -1031,9 +1055,9 @@ public static class MultyPlayer
                 Console.WriteLine("GetPlayer Failed, roomId = {0}, Parent.Nickname = {1}", roomId, Parent.Nickname);
                 return;
             }
-            foreach (var Object in room._slots)
+            foreach (var member in room._slots)
             {
-                if (Object is Player p)
+                if (member is Player p)
                 {
                     if (p.Nickname != Parent.Nickname)
                     {
@@ -1208,9 +1232,9 @@ public static class MultyPlayer
         outPacket.WriteBytes(new byte[31]);
 
         /* ---- Player ---- */
-        foreach (RoomMember Object in room._IDs)
+        foreach (RoomMember member in room._IDs)
         {
-            if (Object is Player p)
+            if (member is Player p)
             {
                 // Ensure profile is loaded for the player
                 if (!ProfileService.ProfileConfigs.ContainsKey(p.Nickname))
@@ -1274,7 +1298,7 @@ public static class MultyPlayer
                 }
                 outPacket.WriteBytes(new byte[19]);
             }
-            else if (Object is Ai a)
+            else if (member is Ai a)
             {
                 Console.WriteLine("Ai ID = {0}, SlotId = {1}", a.ID, a.SlotId);
                 outPacket.WriteInt(7);
@@ -1336,9 +1360,9 @@ public static class MultyPlayer
         {
             return;
         }
-        foreach (RoomMember Object in room._slots)
+        foreach (RoomMember member in room._slots)
         {
-            if (Object is Player p)
+            if (member is Player p)
             {
                 if (team == 0)
                 {
@@ -1544,13 +1568,13 @@ public static class MultyPlayer
         {
             return;
         }
-        foreach (RoomMember Object in room._slots)
+        foreach (RoomMember member in room._slots)
         {
-            if (Object is Player player)
+            if (member is Player player)
             {
                 outPacket.WriteInt(player.ID);
             }
-            else if (Object is Ai ai)
+            else if (member is Ai ai)
             {
                 outPacket.WriteInt(ai.ID);
             }
@@ -1570,13 +1594,13 @@ public static class MultyPlayer
         }
         using (OutPacket oPacket = new OutPacket("GrSlotStatePacket"))
         {
-            foreach (RoomMember Object in room._IDs)
+            foreach (RoomMember member in room._IDs)
             {
-                if (Object is Player player)
+                if (member is Player player)
                 {
                     oPacket.WriteInt(player.PlayerType);
                 }
-                else if (Object is Ai ai)
+                else if (member is Ai ai)
                 {
                     oPacket.WriteInt(7);
                 }
