@@ -1244,6 +1244,43 @@ public static class MultyPlayer
             }
             return;
         }
+        else if (hash == Adler32Helper.GenerateAdler32_ASCII("PqWhereAmI"))
+        {
+            uint userid = iPacket.ReadUInt();
+            int roomId = RoomManager.TryGetRoomId(Parent.Nickname);
+            var room = RoomManager.GetRoom(roomId);
+            var channel = GameSupport.Channels.FirstOrDefault(c => c.Value.GameType == room.GameType).Key;
+            using (OutPacket outPacket = new OutPacket("PrWhereAmI"))
+            {
+                outPacket.WriteUInt(userid);
+                outPacket.WriteInt(roomId);
+                outPacket.WriteByte(channel);
+                outPacket.WriteInt(0);
+                outPacket.WriteInt(0);
+                Parent.Client.Send(outPacket);
+            }
+            return;
+        }
+        else if (hash == Adler32Helper.GenerateAdler32_ASCII("PqInviteGamePacket"))
+        {
+            uint userid = iPacket.ReadUInt();
+            string nickname = ClientManager.GetNickname(userid);
+            if (string.IsNullOrEmpty(nickname) || !ProfileService.ProfileConfigs.ContainsKey(nickname))
+            {
+                return; // 无效用户或未加载配置
+            }
+
+            string clientId = ProfileService.ProfileConfigs[nickname].Rider.ClientId;
+            using (OutPacket outPacket = new OutPacket("PrInviteGamePacket"))
+            {
+                outPacket.WriteBytes(iPacket.ReadBytes(iPacket.Available));
+                if (ClientManager._clientSessions.TryGetValue(clientId, out SessionGroup playerSession) && playerSession != null)
+                {
+                    playerSession.Client.Send(outPacket);
+                }
+            }
+            return;
+        }
         else
         {
             return;
@@ -1283,7 +1320,7 @@ public static class MultyPlayer
                     }
                     ProfileService.Load(p.Nickname);
                 }
-                
+
                 Console.WriteLine("Player Nickname = {0}, ID = {1}, SlotId = {2}", p.Nickname, p.ID, p.SlotId);
                 if (enter)
                 {
