@@ -135,6 +135,9 @@ namespace KartRider
                         isVisible = false;
                     }
 
+                    // 初始化ModManager
+                    ModManager.Initialize(RootDirectory);
+
                     Application.EnableVisualStyles();
                     Application.SetCompatibleTextRenderingDefault(false);
                     Launcher StartLauncher = new Launcher();
