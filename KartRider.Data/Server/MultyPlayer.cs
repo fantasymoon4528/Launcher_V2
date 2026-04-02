@@ -1307,12 +1307,12 @@ public static class MultyPlayer
                 outPacket.WriteByte(id);
                 if (type == 0)
                 {
-                    outPacket.WriteString(ProfileService.ProfileConfigs[Parent.Nickname].GameOption.QuickMsg[id]);
+                    outPacket.WriteString(ProfileService.ProfileConfigs[Parent.Nickname].GameOption.QuickMsg.GetValueOrDefault(id) ?? "");
                     BroadCast(roomId, outPacket, Parent.Nickname);
                 }
                 else
                 {
-                    outPacket.WriteString(ProfileService.ProfileConfigs[Parent.Nickname].GameOption.TeamQuickMsg[id]);
+                    outPacket.WriteString(ProfileService.ProfileConfigs[Parent.Nickname].GameOption.TeamQuickMsg.GetValueOrDefault(id) ?? "");
                     BroadCast(roomId, outPacket, Parent.Nickname, player.Team);
                 }
             }
