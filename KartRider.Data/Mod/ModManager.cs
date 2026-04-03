@@ -18,7 +18,6 @@ public static class ModManager
     {
         // 定义mod路径
         ModPath = Path.Combine(RootDirectory, "Mods");
-
         Console.WriteLine($"Mod加载路径: {ModPath}");
 
         // 检查mod路径是否存在

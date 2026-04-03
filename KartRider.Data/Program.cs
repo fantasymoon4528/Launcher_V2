@@ -140,8 +140,6 @@ namespace KartRider
                         ModManager.Initialize(RootDirectory);
                     }
 
-                    // 初始化ModManager
-                    ModManager.Initialize(RootDirectory);
 
                     Application.EnableVisualStyles();
                     Application.SetCompatibleTextRenderingDefault(false);
