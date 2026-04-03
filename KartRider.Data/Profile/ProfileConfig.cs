@@ -91,6 +91,8 @@ namespace Profile
 
     public class RiderData
     {
+        public ushort BanType { get; set; } = 0; // 1:ID已登录 2:账号封停 3:非加盟网吧 4:ID错误 5:禁止IP登录 6:ID不正确
+
         public int ClubCode { get; set; } = 10000;
 
         public int ClubMark_LOGO { get; set; } = 2; //343 베로
@@ -125,7 +127,7 @@ namespace Profile
 
         public ushort SlotChanger { get; set; } = (ushort)short.MaxValue;
 
-        public uint pmap { get; set; } = 0; //3130 //1068 //2520
+        public uint pmap { get; set; } = 0; //3130 //1068 //2520 //718
 
         public byte IdentificationType { get; set; } = 1;
 

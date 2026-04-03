@@ -9,6 +9,7 @@ using RHOParser;
 using RiderData;
 using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -60,36 +61,29 @@ namespace KartRider
                     if (packet == null) return;
                     if (ClientManager.HasClientWithNickname(packet.Nickname))
                     {
-                        using (OutPacket outPacket = new OutPacket("PrCnAuthenLogin"))
+                        if (ProfileService.ProfileConfigs[packet.Nickname].Rider.BanType == 0)
                         {
-                            outPacket.WriteInt(7);
-                            outPacket.WriteString("pnlcdfngkdjfdhdermnkicqknmqrnjnkrlpdirerjrqkcllhpckngophnrrfclgiojmopomonkjilgmheoldpmmcdokgdqljqcnkrplffhflqdnchherghnhoihgfnon");
-                            outPacket.WriteByte(0);
-                            outPacket.WriteString("https://www.tiancity.com/agreement");
-                            this.Parent.Client.Send(outPacket);
+                            ProfileService.ProfileConfigs[packet.Nickname].Rider.BanType = 1;
                         }
                     }
-                    else
+                    using (OutPacket outPacket = new OutPacket("PrCnAuthenLogin"))
                     {
-                        using (OutPacket outPacket = new OutPacket("PrCnAuthenLogin"))
-                        {
-                            outPacket.WriteInt(1);
-                            outPacket.WriteString("pnlcdfngkdjfdhdermnkicqknmqrnjnkrlpdirerjrqkcllhpckngophnrrfclgiojmopomonkjilgmheoldpmmcdokgdqljqcnkrplffhflqdnchherghnhoihgfnon");
-                            outPacket.WriteByte(0);
-                            outPacket.WriteString("https://www.tiancity.com/agreement");
-                            this.Parent.Client.Send(outPacket);
-                        }
-                        IPEndPoint clientEndPoint = Parent.Client.Socket.RemoteEndPoint as IPEndPoint;
-                        if (clientEndPoint == null) return;
-                        string clientId = ClientManager.GetClientId(clientEndPoint);
-                        var ClientGroup = ClientManager.ClientGroups[clientId];
-                        this.Parent.Nickname = packet.Nickname;
-                        ClientGroup.Nickname = packet.Nickname;
-                        FileName.Load(packet.Nickname);
-                        uint UserNO = ClientManager.GetUserNO(packet.Nickname);
-                        ProfileService.ProfileConfigs[packet.Nickname].Rider.ClientId = clientId;
-                        ProfileService.Save(packet.Nickname);
+                        outPacket.WriteInt(1);
+                        outPacket.WriteString("pnlcdfngkdjfdhdermnkicqknmqrnjnkrlpdirerjrqkcllhpckngophnrrfclgiojmopomonkjilgmheoldpmmcdokgdqljqcnkrplffhflqdnchherghnhoihgfnon");
+                        outPacket.WriteByte(0);
+                        outPacket.WriteString("https://www.tiancity.com/agreement");
+                        this.Parent.Client.Send(outPacket);
                     }
+                    IPEndPoint clientEndPoint = Parent.Client.Socket.RemoteEndPoint as IPEndPoint;
+                    if (clientEndPoint == null) return;
+                    string clientId = ClientManager.GetClientId(clientEndPoint);
+                    var ClientGroup = ClientManager.ClientGroups[clientId];
+                    this.Parent.Nickname = packet.Nickname;
+                    ClientGroup.Nickname = packet.Nickname;
+                    FileName.Load(packet.Nickname);
+                    uint UserNO = ClientManager.GetUserNO(packet.Nickname);
+                    ProfileService.ProfileConfigs[packet.Nickname].Rider.ClientId = clientId;
+                    ProfileService.Save(packet.Nickname);
                     return;
                 }
                 if (hash != Adler32Helper.GenerateAdler32(Encoding.ASCII.GetBytes("PcReportRaidOccur"), 0) && hash != Adler32Helper.GenerateAdler32(Encoding.ASCII.GetBytes("PqGameReportMyBadUdp"), 0))
@@ -2759,16 +2753,17 @@ namespace KartRider
 
                         using (OutPacket outPacket = new OutPacket("PrLogin"))
                         {
-                            outPacket.WriteInt(0);
+                            outPacket.WriteInt(ProfileService.ProfileConfigs[this.Parent.Nickname].Rider.BanType); // 1:ID已登录 2:账号封停 3:非加盟网吧 4:ID错误 5:禁止IP登录 6:ID不正确
                             outPacket.WriteDateTime(DateTime.Now);
                             outPacket.WriteUInt(ClientManager.GetUserNO(this.Parent.Nickname));
                             outPacket.WriteString(this.Parent.Nickname); // UserID
-                            outPacket.WriteByte(2);
+                            outPacket.WriteByte(2); // 2
                             outPacket.WriteByte(1);
                             outPacket.WriteByte(0);
                             outPacket.WriteInt(0);
                             outPacket.WriteByte(0);
                             outPacket.WriteHexString("FF FF 5F 54");
+                            // outPacket.WriteUInt(718);
                             outPacket.WriteUInt(ProfileService.ProfileConfigs[this.Parent.Nickname].Rider.pmap);
                             for (int i = 0; i < 11; i++)
                             {
@@ -2872,6 +2867,11 @@ namespace KartRider
                                 outPacket.WriteString("meemllpigrppochjepdmgclfekpocdikifemgnkddeierhkekiefcidhrreienedmrcemjcjpqmjpkolfjfpggiqiefelqleondcpennpmpfenhpfomdpfqdpdpggdjm", true);
                                 this.Parent.Client.Send(outPacket);
                             }
+                        }
+                        if (ProfileService.ProfileConfigs[this.Parent.Nickname].Rider.BanType == 1)
+                        {
+                            ProfileService.ProfileConfigs[this.Parent.Nickname].Rider.BanType = 0;
+                            ProfileService.Save(this.Parent.Nickname);
                         }
                         return;
                     }

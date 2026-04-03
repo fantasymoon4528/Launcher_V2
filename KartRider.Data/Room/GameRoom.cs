@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.WebSockets;
 using KartLibrary.File;
 
 namespace KartRider;
@@ -18,15 +19,16 @@ public class GameRoom
     public byte SpeedType { get; set; } = 0;
     public byte GameType { get; set; } = 0;
     public int RoomMaster { get; set; } = 0;
-    public byte[] RoomData { get; set;} = new byte[32];
+    public byte[] RoomData { get; set; } = new byte[32];
     public byte RandomTrackGameType { get; set; } = 0;
     public float redGauge { get; set; } = 0;
     public float blueGauge { get; set; } = 0;
     public bool Lock { get; set; } = false;
-    public bool Started { get; set;} = false;
+    public bool Started { get; set; } = false;
     public string LockPwd { get; set; } = "";
     public bool ReqRelay = false;
     public byte RelayType = 0; //0 - UDP 1 - TCP
+    public List<byte> CloseSlotIds { get; set; } = new List<byte>();
     public Dictionary<int, uint> TimeData { get; set; } = new Dictionary<int, uint>();
     public Dictionary<int, int> Ranking { get; set; } = new Dictionary<int, int>();
 
@@ -298,6 +300,50 @@ public class GameRoom
         return true;
     }
 
+    public bool AddClose(byte slotId, int ID)
+    {
+        if (!IsValidSlotId(slotId) || !IsValidSlotId((byte)ID))
+            throw new ArgumentOutOfRangeException(nameof(slotId), "格子ID必须在0-7之间");
+
+        if (_slots[slotId] != null)
+            return false;
+
+        if (_IDs[ID] != null)
+            return false;
+
+        Close close = new Close();
+        close.ID = ID;
+        close.PlayerType = 1;
+        _slots[slotId] = close;
+        _IDs[ID] = _slots[slotId];
+        CloseSlotIds.Add(slotId);
+        return true;
+    }
+
+    public bool RemoveClose(byte slotId, int ID)
+    {
+        if (!IsValidSlotId(slotId) || !IsValidSlotId((byte)ID))
+            throw new ArgumentOutOfRangeException(nameof(slotId), "格子ID必须在0-7之间");
+
+        if (_slots[slotId] == null)
+            return false;
+
+        if (_IDs[ID] == null)
+            return false;
+
+        if (_slots[slotId] is Close close)
+        {
+            if (close.ID != ID)
+                return false;
+
+            _slots[slotId] = null;
+            _IDs[close.ID] = null;
+            CloseSlotIds.Remove(slotId);
+            return true;
+        }
+        return false;
+    }
+
     private bool IsValidSlotId(byte slotId) => slotId >= 0 && slotId < 8;
 }
 
@@ -330,9 +376,16 @@ public class Ai : RoomMember
     public byte Team { get; set; }
 }
 
+public class Close : RoomMember
+{
+    public int ID { get; set; }
+    public int PlayerType { get; set; }
+}
+
 public enum SlotStatus
 {
     Empty,    // 空位置
     Player,   // 玩家
-    Ai        // AI
+    Ai,       // AI
+    Close     // 关闭
 }
