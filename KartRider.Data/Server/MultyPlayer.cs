@@ -441,16 +441,6 @@ public static class MultyPlayer
             {
                 Start(Parent, roomId);
             }
-            else if (state == 0 && room.StartTicks > 0)
-            {
-                using (OutPacket outPacket = new OutPacket("GameControlPacket"))
-                {
-                    outPacket.WriteInt(4);
-                    outPacket.WriteByte(0);
-                    outPacket.WriteUInt(ConvertTick());
-                    BroadCast(roomId, outPacket);
-                }
-            }
             //finish
             else if (state == 2)
             {
