@@ -565,6 +565,22 @@ public static class MultyPlayer
         {
             string RoomName = iPacket.ReadString();    //room name
             Console.WriteLine("RoomName = {0}, len = {1}", RoomName, RoomName.Length);
+
+            // 校验房间名是否为空或仅包含空白字符
+            if (string.IsNullOrWhiteSpace(RoomName))
+            {
+                Console.WriteLine("创建房间失败: 房间名为空或仅包含空白字符");
+                using (OutPacket oPacket = new OutPacket("ChCreateRoomReplyPacket"))
+                {
+                    oPacket.WriteByte(1); // 失败
+                    oPacket.WriteByte(0);
+                    oPacket.WriteByte(0);
+                    oPacket.WriteEncByte(0);
+                    Parent.Client.Send(oPacket);
+                }
+                return;
+            }
+
             string Password = iPacket.ReadString();
             Console.WriteLine("Password = {0}, len = {1}", Password, Password.Length);
             byte GameType = iPacket.ReadEncodedByte(); //7c
@@ -580,12 +596,30 @@ public static class MultyPlayer
 
             var RoomId = RoomManager.CreateRoom();
             var Room = RoomManager.GetRoom(RoomId);
+            Room.RoomName = RoomName;
+            if (Password != "")
+            {
+                Room.Lock = true;
+            }
+            Room.LockPwd = Password;
+            if (StartTimeAttack.ContainsKey(Parent.Nickname))
+            {
+                Room.SpeedType = StartTimeAttack[Parent.Nickname];
+            }
+            else
+            {
+                Room.SpeedType = 7;
+            }
+            Room.GameType = GameType;
+            Room.RoomData = RoomData;
             Console.WriteLine("CreateRoom = {0}", RoomId);
             byte randomTrackGameType = 0;
             if (GameType == 2 || GameType == 4 || GameType == 14 || GameType == 54)
             {
                 randomTrackGameType = 1;
             }
+            Room.RandomTrackGameType = randomTrackGameType;
+
             if (GameType == 3 || GameType == 4)
             {
                 byte slot = RoomManager.AddPlayer(RoomId, Parent.Nickname, 2, 2, Parent);
@@ -639,23 +673,6 @@ public static class MultyPlayer
                     Parent.Client.Send(oPacket);
                 }
             }
-            Room.RoomName = RoomName;
-            if (Password != "")
-            {
-                Room.Lock = true;
-            }
-            Room.LockPwd = Password;
-            if (StartTimeAttack.ContainsKey(Parent.Nickname))
-            {
-                Room.SpeedType = StartTimeAttack[Parent.Nickname];
-            }
-            else
-            {
-                Room.SpeedType = 7;
-            }
-            Room.GameType = GameType;
-            Room.RandomTrackGameType = randomTrackGameType;
-            Room.RoomData = RoomData;
             if (AiCount > 0 && AiSwitch == 6)
             {
                 // 新增 AI 数量
