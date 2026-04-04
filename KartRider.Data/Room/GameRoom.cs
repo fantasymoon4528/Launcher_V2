@@ -11,7 +11,7 @@ public class GameRoom
 {
     // 房间唯一ID（创建后不可修改）
     public int RoomId { get; }
-    public string RoomName { get; set; }
+    public string RoomName { get; set; } = "";
     public uint track { get; set; } = 0;
     public uint trackTemp { get; set; } = 0;
     public List<uint> trackList { get; set; } = new List<uint>();
