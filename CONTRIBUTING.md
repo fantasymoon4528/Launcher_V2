@@ -6,13 +6,13 @@ Acknowledgments / 致谢
 
 This project is based on and modified from the original work of the following open-source repositories:
 
-- Launcher.cn_3075
+- [Launcher.cn_3075](https://github.com/MyPuppy/Launcher.cn_3075)
 Served as the original core codebase of this project. Most core logic and structure are derived and improved from this repository.
 
-- Kartrider-File-Reader
+- [Kartrider-File-Reader](https://github.com/xpoi5010/Kartrider-File-Reader)
 Provided important references for Kartrider file parsing and data reading logic.
 
-- kart_data_Transform
+- [kart_data_Transform](https://github.com/lkk9898969/kart_data_Transform)
 Provided reference implementation for kart vehicle data parsing and transformation.
 
 Sincere thanks to the authors of the above repositories for their excellent work and open-source spirit.
