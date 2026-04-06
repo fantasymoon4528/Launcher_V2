@@ -761,79 +761,164 @@ public static class MultyPlayer
             {
                 return;
             }
-            int unk1 = iPacket.ReadInt();
+            uint unk1 = iPacket.ReadUInt();
             byte type = iPacket.ReadByte();
-            int slotId1 = iPacket.ReadInt();
-            int unk2 = iPacket.ReadInt();
+            uint slotId1 = iPacket.ReadUInt();
+            uint unk2 = iPacket.ReadUInt();
             uint slotId2 = iPacket.ReadUInt();
             using (OutPacket oPacket = new OutPacket("GrReplyClosePacket"))
             {
                 oPacket.WriteUInt(ClientManager.GetUserNO(Parent.Nickname));
-                oPacket.WriteByte(1);
-                oPacket.WriteInt(unk1);
-                if (unk1 < 8 && slotId1 < 8 && type == 1 && !room.CloseSlotIds.Contains((byte)slotId1))
+                if (room.GameType == 3 || room.GameType == 4)
                 {
-                    room.AddClose((byte)slotId1, unk1);
-                    if (unk2 < 8 && slotId2 < 8 && !room.CloseSlotIds.Contains((byte)slotId2))
+                    if (unk1 < 8 && slotId1 < 8 && unk2 < 8 && slotId2 < 8 && type == 1 && !room.CloseSlotIds.Contains((byte)slotId1) && !room.CloseSlotIds.Contains((byte)slotId2))
                     {
-                        if (room.AddClose((byte)slotId2, unk2))
+                        if (room.AddClose((byte)slotId1, (int)unk1) && room.AddClose((byte)slotId2, (int)unk2))
                         {
-                            oPacket.WriteInt(unk2);
+                            oPacket.WriteByte(1);
+                            oPacket.WriteUInt(unk1);
+                            oPacket.WriteUInt(unk2);
+                            int closeCount = room.CloseSlotIds.Count;
+                            oPacket.WriteInt(1);
+                            oPacket.WriteInt(closeCount);
+                            foreach (byte slotId in room.CloseSlotIds)
+                            {
+                                oPacket.WriteByte(slotId);
+                            }
                         }
                         else
                         {
-                            oPacket.WriteInt(unk1);
+                            oPacket.WriteByte(0);
+                            oPacket.WriteUInt(unk1);
+                            oPacket.WriteUInt(unk2);
+                            int closeCount = room.CloseSlotIds.Count;
+                            oPacket.WriteInt(0);
+                            oPacket.WriteInt(closeCount);
+                            foreach (byte slotId in room.CloseSlotIds)
+                            {
+                                oPacket.WriteByte(slotId);
+                            }
+                        }
+                    }
+                    else if (unk1 < 8 && slotId1 < 8 && unk2 < 8 && slotId2 < 8 && type == 0 && room.CloseSlotIds.Contains((byte)slotId1) && room.CloseSlotIds.Contains((byte)slotId2))
+                    {
+                        if (room.RemoveClose((byte)slotId1, (int)unk1) && room.RemoveClose((byte)slotId2, (int)unk2))
+                        {
+                            oPacket.WriteByte(1);
+                            oPacket.WriteUInt(unk1);
+                            oPacket.WriteUInt(unk2);
+                            int closeCount = room.CloseSlotIds.Count;
+                            oPacket.WriteInt(0);
+                            oPacket.WriteInt(closeCount);
+                            foreach (byte slotId in room.CloseSlotIds)
+                            {
+                                oPacket.WriteByte(slotId);
+                            }
+                        }
+                        else
+                        {
+                            oPacket.WriteByte(0);
+                            oPacket.WriteUInt(unk1);
+                            oPacket.WriteUInt(unk2);
+                            int closeCount = room.CloseSlotIds.Count;
+                            oPacket.WriteInt(0);
+                            oPacket.WriteInt(closeCount);
+                            foreach (byte slotId in room.CloseSlotIds)
+                            {
+                                oPacket.WriteByte(slotId);
+                            }
                         }
                     }
                     else
                     {
-                        oPacket.WriteInt(unk1);
-                    }
-                    int closeCount = room.CloseSlotIds.Count;
-                    oPacket.WriteInt(1);
-                    oPacket.WriteInt(closeCount);
-                    foreach (byte slotId in room.CloseSlotIds)
-                    {
-                        oPacket.WriteByte(slotId);
-                    }
-                }
-                else if (unk1 < 8 && slotId1 < 8 && type == 0 && room.CloseSlotIds.Contains((byte)slotId1))
-                {
-                    room.RemoveClose((byte)slotId1, unk1);
-                    if (unk2 < 8 && slotId2 < 8 && room.CloseSlotIds.Contains((byte)slotId2))
-                    {
-                        if (room.RemoveClose((byte)slotId2, unk2))
+                        oPacket.WriteByte(0);
+                        oPacket.WriteUInt(unk1);
+                        oPacket.WriteUInt(unk2);
+                        int closeCount = room.CloseSlotIds.Count;
+                        oPacket.WriteInt(0);
+                        oPacket.WriteInt(closeCount);
+                        foreach (byte slotId in room.CloseSlotIds)
                         {
-                            oPacket.WriteInt(unk2);
-                        }
-                        else
-                        {
-                            oPacket.WriteInt(unk1);
+                            oPacket.WriteByte(slotId);
                         }
                     }
-                    else
-                    {
-                        oPacket.WriteInt(unk1);
-                    }
-                    int closeCount = room.CloseSlotIds.Count;
-                    oPacket.WriteInt(0);
-                    oPacket.WriteInt(closeCount);
-                    foreach (byte slotId in room.CloseSlotIds)
-                    {
-                        oPacket.WriteByte(slotId);
-                    }
+                    BroadCast(roomId, oPacket);
                 }
                 else
                 {
-                    int closeCount = room.CloseSlotIds.Count;
-                    oPacket.WriteInt(0);
-                    oPacket.WriteInt(closeCount);
-                    foreach (byte slotId in room.CloseSlotIds)
+                    if (unk1 < 8 && slotId1 < 8 && type == 1 && !room.CloseSlotIds.Contains((byte)slotId1))
                     {
-                        oPacket.WriteByte(slotId);
+                        if (room.AddClose((byte)slotId1, (int)unk1))
+                        {
+                            oPacket.WriteByte(1);
+                            oPacket.WriteUInt(unk1);
+                            oPacket.WriteUInt(unk1);
+                            int closeCount = room.CloseSlotIds.Count;
+                            oPacket.WriteInt(1);
+                            oPacket.WriteInt(closeCount);
+                            foreach (byte slotId in room.CloseSlotIds)
+                            {
+                                oPacket.WriteByte(slotId);
+                            }
+                        }
+                        else
+                        {
+                            oPacket.WriteByte(0);
+                            oPacket.WriteUInt(unk1);
+                            oPacket.WriteUInt(unk1);
+                            int closeCount = room.CloseSlotIds.Count;
+                            oPacket.WriteInt(0);
+                            oPacket.WriteInt(closeCount);
+                            foreach (byte slotId in room.CloseSlotIds)
+                            {
+                                oPacket.WriteByte(slotId);
+                            }
+                        }
                     }
+                    else if (unk1 < 8 && slotId1 < 8 && type == 0 && room.CloseSlotIds.Contains((byte)slotId1))
+                    {
+                        if (room.RemoveClose((byte)slotId1, (int)unk1))
+                        {
+                            oPacket.WriteByte(1);
+                            oPacket.WriteUInt(unk1);
+                            oPacket.WriteUInt(unk1);
+                            int closeCount = room.CloseSlotIds.Count;
+                            oPacket.WriteInt(0);
+                            oPacket.WriteInt(closeCount);
+                            foreach (byte slotId in room.CloseSlotIds)
+                            {
+                                oPacket.WriteByte(slotId);
+                            }
+                        }
+                        else
+                        {
+                            oPacket.WriteByte(0);
+                            oPacket.WriteUInt(unk1);
+                            oPacket.WriteUInt(unk1);
+                            int closeCount = room.CloseSlotIds.Count;
+                            oPacket.WriteInt(0);
+                            oPacket.WriteInt(closeCount);
+                            foreach (byte slotId in room.CloseSlotIds)
+                            {
+                                oPacket.WriteByte(slotId);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        oPacket.WriteByte(0);
+                        oPacket.WriteUInt(unk1);
+                        oPacket.WriteUInt(unk1);
+                        int closeCount = room.CloseSlotIds.Count;
+                        oPacket.WriteInt(0);
+                        oPacket.WriteInt(closeCount);
+                        foreach (byte slotId in room.CloseSlotIds)
+                        {
+                            oPacket.WriteByte(slotId);
+                        }
+                    }
+                    BroadCast(roomId, oPacket);
                 }
-                BroadCast(roomId, oPacket);
             }
             return;
         }
