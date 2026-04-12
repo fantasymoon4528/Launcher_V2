@@ -5,6 +5,22 @@ using System.IO;
 namespace KartRider;
 
 /// <summary>
+/// 技能映射配置项（包含目标道具ID和触发概率）
+/// </summary>
+public class SkillMappingConfig
+{
+    /// <summary>
+    /// 目标道具ID
+    /// </summary>
+    public short TargetItemId { get; set; }
+
+    /// <summary>
+    /// 触发概率（0-100，100表示100%触发）
+    /// </summary>
+    public byte Probability { get; set; } = 100;
+}
+
+/// <summary>
 /// 特殊道具车配置类
 /// </summary>
 public class SpecialKartConfig
@@ -13,19 +29,19 @@ public class SpecialKartConfig
     /// 特殊道具车：将指定道具变更为特殊道具
     /// </summary>
     public string SkillChangeDesc { get; set; }
-    public Dictionary<ushort, Dictionary<short, short>> SkillChange { get; set; } = new();
+    public Dictionary<ushort, Dictionary<short, SkillMappingConfig>> SkillChange { get; set; } = new();
 
     /// <summary>
     /// 特殊道具车：使用指定道具后获得特殊道具
     /// </summary>
     public string SkillMappingsDesc { get; set; }
-    public Dictionary<ushort, Dictionary<short, short>> SkillMappings { get; set; } = new();
+    public Dictionary<ushort, Dictionary<short, SkillMappingConfig>> SkillMappings { get; set; } = new();
 
     /// <summary>
     /// 特殊道具车：被指定道具攻击后获得特殊道具
     /// </summary>
     public string SkillAttackedDesc { get; set; }
-    public Dictionary<ushort, Dictionary<short, short>> SkillAttacked { get; set; } = new();
+    public Dictionary<ushort, Dictionary<short, SkillMappingConfig>> SkillAttacked { get; set; } = new();
 
     /// <summary>
     /// 将特殊道具车配置存储到JSON文件（存在时补充缺失内容，保留额外内容）
@@ -51,9 +67,9 @@ public class SpecialKartConfig
             var existingConfig = JsonHelper.DeserializeNoBom<SpecialKartConfig>(filePath) ?? new SpecialKartConfig();
 
             // 3.2 初始化现有配置的字典（避免null引用）
-            existingConfig.SkillChange ??= new Dictionary<ushort, Dictionary<short, short>>();
-            existingConfig.SkillMappings ??= new Dictionary<ushort, Dictionary<short, short>>();
-            existingConfig.SkillAttacked ??= new Dictionary<ushort, Dictionary<short, short>>();
+            existingConfig.SkillChange ??= new Dictionary<ushort, Dictionary<short, SkillMappingConfig>>();
+            existingConfig.SkillMappings ??= new Dictionary<ushort, Dictionary<short, SkillMappingConfig>>();
+            existingConfig.SkillAttacked ??= new Dictionary<ushort, Dictionary<short, SkillMappingConfig>>();
 
             // 3.3 补充缺失的描述文本
             existingConfig.SkillChangeDesc ??= defaultConfig.SkillChangeDesc;
@@ -65,7 +81,7 @@ public class SpecialKartConfig
             {
                 if (!existingConfig.SkillChange.ContainsKey(key))
                 {
-                    existingConfig.SkillChange[key] = new Dictionary<short, short>(valueDict);
+                    existingConfig.SkillChange[key] = new Dictionary<short, SkillMappingConfig>(valueDict);
                 }
                 else
                 {
@@ -73,7 +89,11 @@ public class SpecialKartConfig
                     {
                         if (!existingConfig.SkillChange[key].ContainsKey(innerKey))
                         {
-                            existingConfig.SkillChange[key][innerKey] = innerValue;
+                            existingConfig.SkillChange[key][innerKey] = new SkillMappingConfig
+                            {
+                                TargetItemId = innerValue.TargetItemId,
+                                Probability = innerValue.Probability
+                            };
                         }
                     }
                 }
@@ -84,7 +104,7 @@ public class SpecialKartConfig
             {
                 if (!existingConfig.SkillMappings.ContainsKey(key))
                 {
-                    existingConfig.SkillMappings[key] = new Dictionary<short, short>(valueDict);
+                    existingConfig.SkillMappings[key] = new Dictionary<short, SkillMappingConfig>(valueDict);
                 }
                 else
                 {
@@ -92,7 +112,11 @@ public class SpecialKartConfig
                     {
                         if (!existingConfig.SkillMappings[key].ContainsKey(innerKey))
                         {
-                            existingConfig.SkillMappings[key][innerKey] = innerValue;
+                            existingConfig.SkillMappings[key][innerKey] = new SkillMappingConfig
+                            {
+                                TargetItemId = innerValue.TargetItemId,
+                                Probability = innerValue.Probability
+                            };
                         }
                     }
                 }
@@ -103,7 +127,7 @@ public class SpecialKartConfig
             {
                 if (!existingConfig.SkillAttacked.ContainsKey(key))
                 {
-                    existingConfig.SkillAttacked[key] = new Dictionary<short, short>(valueDict);
+                    existingConfig.SkillAttacked[key] = new Dictionary<short, SkillMappingConfig>(valueDict);
                 }
                 else
                 {
@@ -111,7 +135,11 @@ public class SpecialKartConfig
                     {
                         if (!existingConfig.SkillAttacked[key].ContainsKey(innerKey))
                         {
-                            existingConfig.SkillAttacked[key][innerKey] = innerValue;
+                            existingConfig.SkillAttacked[key][innerKey] = new SkillMappingConfig
+                            {
+                                TargetItemId = innerValue.TargetItemId,
+                                Probability = innerValue.Probability
+                            };
                         }
                     }
                 }
@@ -150,9 +178,9 @@ public class SpecialKartConfig
         }
 
         // 确保字典不为null（避免后续使用时的null引用异常）
-        config.SkillChange ??= new Dictionary<ushort, Dictionary<short, short>>();
-        config.SkillMappings ??= new Dictionary<ushort, Dictionary<short, short>>();
-        config.SkillAttacked ??= new Dictionary<ushort, Dictionary<short, short>>();
+        config.SkillChange ??= new Dictionary<ushort, Dictionary<short, SkillMappingConfig>>();
+        config.SkillMappings ??= new Dictionary<ushort, Dictionary<short, SkillMappingConfig>>();
+        config.SkillAttacked ??= new Dictionary<ushort, Dictionary<short, SkillMappingConfig>>();
 
         Console.WriteLine($"道具车特性配置已成功从 {filePath} 读取");
         return config;
@@ -166,93 +194,93 @@ public class SpecialKartConfig
         return new SpecialKartConfig
         {
             SkillChangeDesc = "特殊道具车：将指定道具变更为特殊道具",
-            SkillChange = new Dictionary<ushort, Dictionary<short, short>>
+            SkillChange = new Dictionary<ushort, Dictionary<short, SkillMappingConfig>>
             {
-                { 1610, new Dictionary<short, short> { {9, 34} } },
-                { 1605, new Dictionary<short, short> { {4, 118} } },
-                { 1601, new Dictionary<short, short> { {7, 131}, {6, 31} } },
-                { 1600, new Dictionary<short, short> { {5, 103}, {6, 31} } },
-                { 1597, new Dictionary<short, short> { {9, 34} } },
-                { 1594, new Dictionary<short, short> { {3, 112} } },
-                { 1593, new Dictionary<short, short> { {3, 112} } },
-                { 1592, new Dictionary<short, short> { {3, 112} } },
-                { 1591, new Dictionary<short, short> { {6, 31}, {5, 24} } },
-                { 1590, new Dictionary<short, short> { {8, 17} } },
-                { 1588, new Dictionary<short, short> { {7, 32}, {127, 32} } },
-                { 1585, new Dictionary<short, short> { {4, 118} } },
-                { 1579, new Dictionary<short, short> { {5, 103}, {6, 31} } },
-                { 1575, new Dictionary<short, short> { {4, 119}, {9, 27} } },
-                { 1571, new Dictionary<short, short> { {7, 32} } },
-                { 1569, new Dictionary<short, short> { {4, 7} } },
-                { 1567, new Dictionary<short, short> { {6, 31} } },
-                { 1565, new Dictionary<short, short> { {33, 137}, {3, 137} } },
-                { 1563, new Dictionary<short, short> { {7, 136}, {114, 16} } },
-                { 1561, new Dictionary<short, short> { {8, 37}, {6, 31} } },
-                { 1551, new Dictionary<short, short> { {8, 25} } },
-                { 1543, new Dictionary<short, short> { {6, 31} } },
-                { 1548, new Dictionary<short, short> { {4, 132} } },
-                { 1536, new Dictionary<short, short> { {8, 17}, {5, 103} } },
-                { 1526, new Dictionary<short, short> { {9, 27} } },
-                { 1522, new Dictionary<short, short> { {9, 34}, {6, 31} } },
-                { 1511, new Dictionary<short, short> { {2, 38} } },
-                { 1510, new Dictionary<short, short> { {7, 32} } },
-                { 1509, new Dictionary<short, short> { {7, 32} } },
-                { 1507, new Dictionary<short, short> { {6, 31} } },
-                { 1506, new Dictionary<short, short> { {5, 103} } },
-                { 1505, new Dictionary<short, short> { {8, 129}, {4, 120} } },
-                { 1502, new Dictionary<short, short> { {7, 4} } },
-                { 1500, new Dictionary<short, short> { {9, 34}, {113, 135}, {33, 135} } },
-                { 1496, new Dictionary<short, short> { {7, 134}, {6, 31} } },
-                { 1494, new Dictionary<short, short> { {4, 132}, {6, 31} } },
-                { 1491, new Dictionary<short, short> { {8, 82}, {9, 27}, {13, 28} } },
-                { 1489, new Dictionary<short, short> { {9, 111}, {6, 31} } },
-                { 1487, new Dictionary<short, short> { {5, 103}, {10, 36} } },
-                { 1484, new Dictionary<short, short> { {7, 32}, {6, 31} } },
-                { 1482, new Dictionary<short, short> { {5, 6} } },
-                { 1481, new Dictionary<short, short> { {7, 102}, {9, 34} } },
-                { 1479, new Dictionary<short, short> { {7, 131} } }
+                { 1610, new Dictionary<short, SkillMappingConfig> { {9, new SkillMappingConfig { TargetItemId = 34, Probability = 100 }} } },
+                { 1605, new Dictionary<short, SkillMappingConfig> { {4, new SkillMappingConfig { TargetItemId = 118, Probability = 100 }} } },
+                { 1601, new Dictionary<short, SkillMappingConfig> { {7, new SkillMappingConfig { TargetItemId = 131, Probability = 100 }}, {6, new SkillMappingConfig { TargetItemId = 31, Probability = 100 }} } },
+                { 1600, new Dictionary<short, SkillMappingConfig> { {5, new SkillMappingConfig { TargetItemId = 103, Probability = 100 }}, {6, new SkillMappingConfig { TargetItemId = 31, Probability = 100 }} } },
+                { 1597, new Dictionary<short, SkillMappingConfig> { {9, new SkillMappingConfig { TargetItemId = 34, Probability = 100 }} } },
+                { 1594, new Dictionary<short, SkillMappingConfig> { {3, new SkillMappingConfig { TargetItemId = 112, Probability = 100 }} } },
+                { 1593, new Dictionary<short, SkillMappingConfig> { {3, new SkillMappingConfig { TargetItemId = 112, Probability = 100 }} } },
+                { 1592, new Dictionary<short, SkillMappingConfig> { {3, new SkillMappingConfig { TargetItemId = 112, Probability = 100 }} } },
+                { 1591, new Dictionary<short, SkillMappingConfig> { {6, new SkillMappingConfig { TargetItemId = 31, Probability = 100 }}, {5, new SkillMappingConfig { TargetItemId = 24, Probability = 100 }} } },
+                { 1590, new Dictionary<short, SkillMappingConfig> { {8, new SkillMappingConfig { TargetItemId = 17, Probability = 100 }} } },
+                { 1588, new Dictionary<short, SkillMappingConfig> { {7, new SkillMappingConfig { TargetItemId = 32, Probability = 100 }}, {127, new SkillMappingConfig { TargetItemId = 32, Probability = 100 }} } },
+                { 1585, new Dictionary<short, SkillMappingConfig> { {4, new SkillMappingConfig { TargetItemId = 118, Probability = 100 }} } },
+                { 1579, new Dictionary<short, SkillMappingConfig> { {5, new SkillMappingConfig { TargetItemId = 103, Probability = 100 }}, {6, new SkillMappingConfig { TargetItemId = 31, Probability = 100 }} } },
+                { 1575, new Dictionary<short, SkillMappingConfig> { {4, new SkillMappingConfig { TargetItemId = 119, Probability = 100 }}, {9, new SkillMappingConfig { TargetItemId = 27, Probability = 100 }} } },
+                { 1571, new Dictionary<short, SkillMappingConfig> { {7, new SkillMappingConfig { TargetItemId = 32, Probability = 100 }} } },
+                { 1569, new Dictionary<short, SkillMappingConfig> { {4, new SkillMappingConfig { TargetItemId = 7, Probability = 100 }} } },
+                { 1567, new Dictionary<short, SkillMappingConfig> { {6, new SkillMappingConfig { TargetItemId = 31, Probability = 100 }} } },
+                { 1565, new Dictionary<short, SkillMappingConfig> { {33, new SkillMappingConfig { TargetItemId = 137, Probability = 100 }}, {3, new SkillMappingConfig { TargetItemId = 137, Probability = 100 }} } },
+                { 1563, new Dictionary<short, SkillMappingConfig> { {7, new SkillMappingConfig { TargetItemId = 136, Probability = 100 }}, {114, new SkillMappingConfig { TargetItemId = 16, Probability = 100 }} } },
+                { 1561, new Dictionary<short, SkillMappingConfig> { {8, new SkillMappingConfig { TargetItemId = 37, Probability = 100 }}, {6, new SkillMappingConfig { TargetItemId = 31, Probability = 100 }} } },
+                { 1551, new Dictionary<short, SkillMappingConfig> { {8, new SkillMappingConfig { TargetItemId = 25, Probability = 100 }} } },
+                { 1543, new Dictionary<short, SkillMappingConfig> { {6, new SkillMappingConfig { TargetItemId = 31, Probability = 100 }} } },
+                { 1548, new Dictionary<short, SkillMappingConfig> { {4, new SkillMappingConfig { TargetItemId = 132, Probability = 100 }} } },
+                { 1536, new Dictionary<short, SkillMappingConfig> { {8, new SkillMappingConfig { TargetItemId = 17, Probability = 100 }}, {5, new SkillMappingConfig { TargetItemId = 103, Probability = 100 }} } },
+                { 1526, new Dictionary<short, SkillMappingConfig> { {9, new SkillMappingConfig { TargetItemId = 27, Probability = 100 }} } },
+                { 1522, new Dictionary<short, SkillMappingConfig> { {9, new SkillMappingConfig { TargetItemId = 34, Probability = 100 }}, {6, new SkillMappingConfig { TargetItemId = 31, Probability = 100 }} } },
+                { 1511, new Dictionary<short, SkillMappingConfig> { {2, new SkillMappingConfig { TargetItemId = 38, Probability = 100 }} } },
+                { 1510, new Dictionary<short, SkillMappingConfig> { {7, new SkillMappingConfig { TargetItemId = 32, Probability = 100 }} } },
+                { 1509, new Dictionary<short, SkillMappingConfig> { {7, new SkillMappingConfig { TargetItemId = 32, Probability = 100 }} } },
+                { 1507, new Dictionary<short, SkillMappingConfig> { {6, new SkillMappingConfig { TargetItemId = 31, Probability = 100 }} } },
+                { 1506, new Dictionary<short, SkillMappingConfig> { {5, new SkillMappingConfig { TargetItemId = 103, Probability = 100 }} } },
+                { 1505, new Dictionary<short, SkillMappingConfig> { {8, new SkillMappingConfig { TargetItemId = 129, Probability = 100 }}, {4, new SkillMappingConfig { TargetItemId = 120, Probability = 100 }} } },
+                { 1502, new Dictionary<short, SkillMappingConfig> { {7, new SkillMappingConfig { TargetItemId = 4, Probability = 100 }} } },
+                { 1500, new Dictionary<short, SkillMappingConfig> { {9, new SkillMappingConfig { TargetItemId = 34, Probability = 100 }}, {113, new SkillMappingConfig { TargetItemId = 135, Probability = 100 }}, {33, new SkillMappingConfig { TargetItemId = 135, Probability = 100 }} } },
+                { 1496, new Dictionary<short, SkillMappingConfig> { {7, new SkillMappingConfig { TargetItemId = 134, Probability = 100 }}, {6, new SkillMappingConfig { TargetItemId = 31, Probability = 100 }} } },
+                { 1494, new Dictionary<short, SkillMappingConfig> { {4, new SkillMappingConfig { TargetItemId = 132, Probability = 100 }}, {6, new SkillMappingConfig { TargetItemId = 31, Probability = 100 }} } },
+                { 1491, new Dictionary<short, SkillMappingConfig> { {8, new SkillMappingConfig { TargetItemId = 82, Probability = 100 }}, {9, new SkillMappingConfig { TargetItemId = 27, Probability = 100 }}, {13, new SkillMappingConfig { TargetItemId = 28, Probability = 100 }} } },
+                { 1489, new Dictionary<short, SkillMappingConfig> { {9, new SkillMappingConfig { TargetItemId = 111, Probability = 100 }}, {6, new SkillMappingConfig { TargetItemId = 31, Probability = 100 }} } },
+                { 1487, new Dictionary<short, SkillMappingConfig> { {5, new SkillMappingConfig { TargetItemId = 103, Probability = 100 }}, {10, new SkillMappingConfig { TargetItemId = 36, Probability = 100 }} } },
+                { 1484, new Dictionary<short, SkillMappingConfig> { {7, new SkillMappingConfig { TargetItemId = 32, Probability = 100 }}, {6, new SkillMappingConfig { TargetItemId = 31, Probability = 100 }} } },
+                { 1482, new Dictionary<short, SkillMappingConfig> { {5, new SkillMappingConfig { TargetItemId = 6, Probability = 100 }} } },
+                { 1481, new Dictionary<short, SkillMappingConfig> { {7, new SkillMappingConfig { TargetItemId = 102, Probability = 100 }}, {9, new SkillMappingConfig { TargetItemId = 34, Probability = 100 }} } },
+                { 1479, new Dictionary<short, SkillMappingConfig> { {7, new SkillMappingConfig { TargetItemId = 131, Probability = 100 }} } }
             },
 
             SkillMappingsDesc = "特殊道具车：使用指定道具后获得特殊道具",
-            SkillMappings = new Dictionary<ushort, Dictionary<short, short>>
+            SkillMappings = new Dictionary<ushort, Dictionary<short, SkillMappingConfig>>
             {
-                { 1607, new Dictionary<short, short> { {5, 6} } },
-                { 1601, new Dictionary<short, short> { {131, 5} } },
-                { 1597, new Dictionary<short, short> { {5, 6} } },
-                { 1590, new Dictionary<short, short> { {5, 10} } },
-                { 1569, new Dictionary<short, short> { {5, 7} } },
-                { 1567, new Dictionary<short, short> { {5, 31} } },
-                { 1450, new Dictionary<short, short> { {7, 5}, {5, 24} } },
-                { 1563, new Dictionary<short, short> { {136, 6} } },
-                { 1548, new Dictionary<short, short> { {5, 6} } },
-                { 1510, new Dictionary<short, short> { {32, 32} } },
-                { 1507, new Dictionary<short, short> { {5, 31} } },
-                { 1496, new Dictionary<short, short> { {5, 24} } },
-                { 1489, new Dictionary<short, short> { {5, 10} } },
-                { 1479, new Dictionary<short, short> { {131, 5} } }
+                { 1607, new Dictionary<short, SkillMappingConfig> { {5, new SkillMappingConfig { TargetItemId = 6, Probability = 100 }} } },
+                { 1601, new Dictionary<short, SkillMappingConfig> { {131, new SkillMappingConfig { TargetItemId = 5, Probability = 100 }} } },
+                { 1597, new Dictionary<short, SkillMappingConfig> { {5, new SkillMappingConfig { TargetItemId = 6, Probability = 100 }} } },
+                { 1590, new Dictionary<short, SkillMappingConfig> { {5, new SkillMappingConfig { TargetItemId = 10, Probability = 100 }} } },
+                { 1569, new Dictionary<short, SkillMappingConfig> { {5, new SkillMappingConfig { TargetItemId = 7, Probability = 100 }} } },
+                { 1567, new Dictionary<short, SkillMappingConfig> { {5, new SkillMappingConfig { TargetItemId = 31, Probability = 100 }} } },
+                { 1450, new Dictionary<short, SkillMappingConfig> { {7, new SkillMappingConfig { TargetItemId = 5, Probability = 100 }}, {5, new SkillMappingConfig { TargetItemId = 24, Probability = 100 }} } },
+                { 1563, new Dictionary<short, SkillMappingConfig> { {136, new SkillMappingConfig { TargetItemId = 6, Probability = 100 }} } },
+                { 1548, new Dictionary<short, SkillMappingConfig> { {5, new SkillMappingConfig { TargetItemId = 6, Probability = 100 }} } },
+                { 1510, new Dictionary<short, SkillMappingConfig> { {32, new SkillMappingConfig { TargetItemId = 32, Probability = 70 }} } },
+                { 1507, new Dictionary<short, SkillMappingConfig> { {5, new SkillMappingConfig { TargetItemId = 31, Probability = 100 }} } },
+                { 1496, new Dictionary<short, SkillMappingConfig> { {5, new SkillMappingConfig { TargetItemId = 24, Probability = 100 }} } },
+                { 1489, new Dictionary<short, SkillMappingConfig> { {5, new SkillMappingConfig { TargetItemId = 10, Probability = 100 }} } },
+                { 1479, new Dictionary<short, SkillMappingConfig> { {131, new SkillMappingConfig { TargetItemId = 5, Probability = 100 }} } }
             },
 
             SkillAttackedDesc = "特殊道具车：被指定道具攻击后获得特殊道具",
-            SkillAttacked = new Dictionary<ushort, Dictionary<short, short>>
+            SkillAttacked = new Dictionary<ushort, Dictionary<short, SkillMappingConfig>>
             {
-                { 1610, new Dictionary<short, short> { {4, 6} } },
-                { 1607, new Dictionary<short, short> { {7, 5} } },
-                { 1605, new Dictionary<short, short> { {5, 111} } },
-                { 1600, new Dictionary<short, short> { {32, 31}, {99, 31} } },
-                { 1588, new Dictionary<short, short> { {7, 32} } },
-                { 1581, new Dictionary<short, short> { {5, 31}, {7, 31} } },
-                { 1571, new Dictionary<short, short> { {8, 6} } },
-                { 1561, new Dictionary<short, short> { {7, 111} } },
-                { 1557, new Dictionary<short, short> { {7, 32}, {5, 103} } },
-                { 1555, new Dictionary<short, short> { {4, 6}, {9, 6} } },
-                { 1551, new Dictionary<short, short> { {7, 6} } },
-                { 1524, new Dictionary<short, short> { {5, 103} } },
-                { 1511, new Dictionary<short, short> { {7, 5} } },
-                { 1510, new Dictionary<short, short> { {5, 10} } },
-                { 1509, new Dictionary<short, short> { {5, 10} } },
-                { 1506, new Dictionary<short, short> { {4, 6}, {9, 6} } },
-                { 1502, new Dictionary<short, short> { {4, 9} } },
-                { 1482, new Dictionary<short, short> { {4, 119}, {9, 119} } }
+                { 1610, new Dictionary<short, SkillMappingConfig> { {4, new SkillMappingConfig { TargetItemId = 6, Probability = 100 }} } },
+                { 1607, new Dictionary<short, SkillMappingConfig> { {7, new SkillMappingConfig { TargetItemId = 5, Probability = 100 }} } },
+                { 1605, new Dictionary<short, SkillMappingConfig> { {5, new SkillMappingConfig { TargetItemId = 111, Probability = 100 }} } },
+                { 1600, new Dictionary<short, SkillMappingConfig> { {32, new SkillMappingConfig { TargetItemId = 31, Probability = 100 }}, {99, new SkillMappingConfig { TargetItemId = 31, Probability = 100 }} } },
+                { 1588, new Dictionary<short, SkillMappingConfig> { {7, new SkillMappingConfig { TargetItemId = 32, Probability = 100 }} } },
+                { 1581, new Dictionary<short, SkillMappingConfig> { {5, new SkillMappingConfig { TargetItemId = 31, Probability = 100 }}, {7, new SkillMappingConfig { TargetItemId = 31, Probability = 100 }} } },
+                { 1571, new Dictionary<short, SkillMappingConfig> { {8, new SkillMappingConfig { TargetItemId = 6, Probability = 100 }} } },
+                { 1561, new Dictionary<short, SkillMappingConfig> { {7, new SkillMappingConfig { TargetItemId = 111, Probability = 100 }} } },
+                { 1557, new Dictionary<short, SkillMappingConfig> { {7, new SkillMappingConfig { TargetItemId = 32, Probability = 100 }}, {5, new SkillMappingConfig { TargetItemId = 103, Probability = 100 }} } },
+                { 1555, new Dictionary<short, SkillMappingConfig> { {4, new SkillMappingConfig { TargetItemId = 6, Probability = 100 }}, {9, new SkillMappingConfig { TargetItemId = 6, Probability = 100 }} } },
+                { 1551, new Dictionary<short, SkillMappingConfig> { {7, new SkillMappingConfig { TargetItemId = 6, Probability = 100 }} } },
+                { 1524, new Dictionary<short, SkillMappingConfig> { {5, new SkillMappingConfig { TargetItemId = 103, Probability = 100 }} } },
+                { 1511, new Dictionary<short, SkillMappingConfig> { {7, new SkillMappingConfig { TargetItemId = 5, Probability = 100 }} } },
+                { 1510, new Dictionary<short, SkillMappingConfig> { {5, new SkillMappingConfig { TargetItemId = 10, Probability = 100 }} } },
+                { 1509, new Dictionary<short, SkillMappingConfig> { {5, new SkillMappingConfig { TargetItemId = 10, Probability = 100 }} } },
+                { 1506, new Dictionary<short, SkillMappingConfig> { {4, new SkillMappingConfig { TargetItemId = 6, Probability = 100 }}, {9, new SkillMappingConfig { TargetItemId = 6, Probability = 100 }} } },
+                { 1502, new Dictionary<short, SkillMappingConfig> { {4, new SkillMappingConfig { TargetItemId = 9, Probability = 100 }} } },
+                { 1482, new Dictionary<short, SkillMappingConfig> { {4, new SkillMappingConfig { TargetItemId = 119, Probability = 100 }}, {9, new SkillMappingConfig { TargetItemId = 119, Probability = 100 }} } }
             }
         };
     }

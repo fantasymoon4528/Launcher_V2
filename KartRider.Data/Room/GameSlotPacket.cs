@@ -9,6 +9,7 @@ namespace KartRider;
 public class SlotData
 {
     public static SpecialKartConfig kartConfig = new SpecialKartConfig();
+    private static readonly Random _random = new Random();
 
     public static void GameSlotPacket(SessionGroup Parent, InPacket iPacket)
     {
@@ -78,9 +79,10 @@ public class SlotData
                 {
                     if (kartConfig.SkillAttacked.TryGetValue(ProfileService.ProfileConfigs[Parent.Nickname].RiderItem.Set_Kart, out var kartSkills))
                     {
-                        if (kartSkills.TryGetValue(skill, out var targetSkill))
+                        if (kartSkills.TryGetValue(skill, out var skillConfig))
                         {
-                            AttackedSkill(roomId, id, Parent, type, uni, targetSkill);
+                            // 传入概率参数，由 AttackedSkill 内部判断是否触发
+                            AttackedSkill(roomId, id, Parent, type, uni, skillConfig.TargetItemId, skillConfig.Probability);
                         }
                     }
                 }
@@ -103,9 +105,10 @@ public class SlotData
                 {
                     if (kartConfig.SkillMappings.TryGetValue(ProfileService.ProfileConfigs[Parent.Nickname].RiderItem.Set_Kart, out var kartSkills))
                     {
-                        if (kartSkills.TryGetValue(skill, out var targetSkill))
+                        if (kartSkills.TryGetValue(skill, out var skillConfig))
                         {
-                            AddItemSkill(roomId, id, Parent, targetSkill);
+                            // 传入概率参数，由 AddItemSkill 内部判断是否触发
+                            AddItemSkill(roomId, id, Parent, skillConfig.TargetItemId, skillConfig.Probability);
                         }
                     }
                 }
@@ -147,15 +150,31 @@ public class SlotData
             }
         }
         if (kartConfig.SkillChange.TryGetValue(ProfileService.ProfileConfigs[Nickname].RiderItem.Set_Kart, out var changes) &&
-            changes.TryGetValue(skill, out var changesSkill))
+            changes.TryGetValue(skill, out var skillConfig))
         {
-            return changesSkill;
+            // 触发几率判断
+            if (skillConfig.Probability >= 100 || _random.Next(100) < skillConfig.Probability)
+            {
+                Console.WriteLine("[SkillChange] 玩家 {0} 道具变更 {1} -> {2} (概率: {3}%)", Nickname, skill, skillConfig.TargetItemId, skillConfig.Probability);
+                return skillConfig.TargetItemId;
+            }
+            else
+            {
+                Console.WriteLine("[SkillChange] 玩家 {0} 道具变更未触发 {1} (概率: {2}%)", Nickname, skill, skillConfig.Probability);
+            }
         }
         return skill;
     }
 
-    public static void AddItemSkill(int roomId, int id, SessionGroup Parent, short skill)
+    public static void AddItemSkill(int roomId, int id, SessionGroup Parent, short skill, byte probability = 100)
     {
+        // 概率判断：不触发时直接返回，不发送数据包
+        if (probability < 100 && _random.Next(100) >= probability)
+        {
+            Console.WriteLine("[AddItemSkill] 玩家 {0} 技能 {1} 未触发 (概率: {2}%)", Parent.Nickname, skill, probability);
+            return;
+        }
+
         skill = GetItemSkill(Parent.Nickname, skill);
         using (OutPacket oPacket = new OutPacket("GameSlotPacket"))
         {
@@ -174,8 +193,15 @@ public class SlotData
         }
     }
 
-    public static void AttackedSkill(int roomId, int id, SessionGroup Parent, byte type, byte uni, short skill)
+    public static void AttackedSkill(int roomId, int id, SessionGroup Parent, byte type, byte uni, short skill, byte probability = 100)
     {
+        // 概率判断：不触发时直接返回，不发送数据包
+        if (probability < 100 && _random.Next(100) >= probability)
+        {
+            Console.WriteLine("[AttackedSkill] 玩家 {0} 技能 {1} 未触发 (概率: {2}%)", Parent.Nickname, skill, probability);
+            return;
+        }
+
         skill = GetItemSkill(Parent.Nickname, skill);
         using (OutPacket oPacket = new OutPacket("GameSlotPacket"))
         {
