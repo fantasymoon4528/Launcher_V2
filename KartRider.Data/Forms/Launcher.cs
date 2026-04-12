@@ -70,13 +70,6 @@ namespace KartRider
                 ProfileService.SettingConfig.ClientVersion = val.Header.MinorVersion;
                 ProfileService.SettingConfig.LocaleID = val.Header.LocaleID;
                 ProfileService.SettingConfig.nClientLoc = val.Header.Unk2;
-
-                // 安全检查：确保 AuthMethods 有元素
-                if (val.AuthMethods != null && val.AuthMethods.Count > 0 && val.AuthMethods[0].LoginServers != null)
-                {
-                    ProfileService.SettingConfig.ServerList = val.AuthMethods[0].LoginServers;
-                }
-
                 ProfileService.SaveSettings();
                 ClientVersion.Text = val.Header.MinorVersion.ToString();
                 Console.WriteLine($"ClientVersion: {val.Header.MinorVersion}");

@@ -58,8 +58,6 @@ namespace Profile
         public bool EnableMod { get; set; } = false;
 
         public string Proxy { get; set; } = "https://gh-proxy.com/";
-
-        public List<PINFile.IPEndPoint> ServerList { get; set; }
     }
 
     public class ProfileConfig
