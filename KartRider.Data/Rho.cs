@@ -30,16 +30,12 @@ namespace RHOParser
             {
                 regionCode = GetRegionCode(input);
 
-                /*
                 // Check for sound_bgm_korea.rho and sound_bgm_lotte.rho files
                 string inputDir = Path.GetDirectoryName(input);
                 string korea = Path.Combine(inputDir, "sound_bgm_korea.rho");
                 bool koreaFileExists = File.Exists(korea);
                 string lotte = Path.Combine(inputDir, "sound_bgm_lotte.rho");
                 bool lotteFileExists = File.Exists(lotte);
-                Console.WriteLine($"Checking for Rho files in: {inputDir}");
-                Console.WriteLine($"sound_bgm_korea.rho exists: {koreaFileExists}");
-                Console.WriteLine($"sound_bgm_lotte.rho exists: {lotteFileExists}");
 
                 BinaryXmlTag rootTag = GetAAATag(input);
 
@@ -193,8 +189,6 @@ namespace RHOParser
                                 binaryWriter.Write(KRDataLength);
                             }
 
-                            Console.WriteLine("Successfully updated aaa.pk");
-
                             if (File.Exists(tempXmlPath))
                             {
                                 File.Delete(tempXmlPath);
@@ -207,7 +201,6 @@ namespace RHOParser
                         }
                     }
                 }
-                */
 
                 // Now open the modified aaa.pk with PackFolderManager
                 PackFolderManager packFolderManager = new PackFolderManager();
