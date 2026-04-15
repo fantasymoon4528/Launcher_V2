@@ -5,7 +5,6 @@ using KartRider.IO.Packet;
 using Launcher.Properties;
 using LoggerLibrary;
 using Profile;
-using RHOParser;
 using System;
 using System.Diagnostics;
 using System.IO;

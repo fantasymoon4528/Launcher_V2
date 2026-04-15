@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using KartRider.IO.Packet;
 using Profile;
-using RHOParser;
 
 namespace KartRider
 {

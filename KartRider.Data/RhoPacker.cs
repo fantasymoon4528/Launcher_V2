@@ -10,7 +10,6 @@ using KartLibrary.Data;
 using KartLibrary.File;
 using KartLibrary.Xml;
 using KartRider.IO.Packet;
-using RHOParser;
 
 namespace KartRider;
 

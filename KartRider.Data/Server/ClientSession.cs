@@ -5,7 +5,6 @@ using KartRider.Common.Utilities;
 using KartRider.IO.Packet;
 using KartRider_PacketName;
 using Profile;
-using RHOParser;
 using RiderData;
 using System;
 using System.Collections.Generic;

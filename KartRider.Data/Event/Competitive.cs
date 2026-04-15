@@ -8,7 +8,7 @@ using KartRider;
 using KartRider.Common.Utilities;
 using Profile;
 
-namespace RHOParser
+namespace KartRider
 {
     public class CompetitiveData
     {

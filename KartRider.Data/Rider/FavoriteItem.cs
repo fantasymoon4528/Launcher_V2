@@ -5,7 +5,6 @@ using KartRider.IO.Packet;
 using KartRider;
 using System.Xml;
 using System.Linq;
-using RHOParser;
 using Profile;
 
 namespace RiderData

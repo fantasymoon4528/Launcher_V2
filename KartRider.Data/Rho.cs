@@ -18,7 +18,7 @@ using System.Text;
 using System.Xml;
 using System.Xml.Linq;
 
-namespace RHOParser
+namespace KartRider
 {
     public static class KartRhoFile
     {
