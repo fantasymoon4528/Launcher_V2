@@ -1118,20 +1118,12 @@ public static class MultyPlayer
                 Console.WriteLine("GetPlayer Failed, roomId = {0}, Parent.Nickname = {1}", roomId, Parent.Nickname);
                 return;
             }
-            foreach (var member in room._slots)
+
+            using (OutPacket outPacket = new OutPacket("GrRiderEchoPacket"))
             {
-                if (member is Player p)
-                {
-                    if (p.Nickname != Parent.Nickname)
-                    {
-                        using (OutPacket outPacket = new OutPacket("GrRiderEchoPacket"))
-                        {
-                            outPacket.WriteInt(player.ID);
-                            outPacket.WriteString(value);
-                            p.Session.Client.Send(outPacket);
-                        }
-                    }
-                }
+                outPacket.WriteInt(player.ID);
+                outPacket.WriteString(value);
+                BroadCast(roomId, oPacket, Parent.Nickname);
             }
 
             uint pmap = ProfileService.ProfileConfigs[Parent.Nickname].Rider.pmap;
