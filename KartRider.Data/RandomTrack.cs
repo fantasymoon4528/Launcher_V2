@@ -27,6 +27,11 @@ namespace KartRider
 
         public static string GameTrack = "village_R01";
 
+        // 每个 Nickname 独立记录已使用的随机 track
+        private static Dictionary<string, HashSet<uint>> _usedTracksByNickname = new Dictionary<string, HashSet<uint>>();
+        // 记录每个 Nickname 上一次使用的 Track，用于检测 Track 是否改变
+        private static Dictionary<string, uint> _lastTrackByNickname = new Dictionary<string, uint>();
+
         public static string GetTrackName(uint trackId)
         {
             if (TrackList.ContainsKey(trackId))
@@ -41,29 +46,38 @@ namespace KartRider
 
         public static uint GetHash(string trackName)
         {
-            var sourceList = TrackList.Values.Select(t => t.Name);
+            var sourceList = TrackList.Values.Select(t => t.Name).ToList();
             if (string.IsNullOrEmpty(trackName) || sourceList == null)
                 return 0;
 
-            var targetSet = new HashSet<char>(trackName);
-            int targetCharCount = targetSet.Count;
+            // 优先精确匹配
+            var exactMatch = sourceList.FirstOrDefault(s => s == trackName);
+            if (!string.IsNullOrEmpty(exactMatch))
+            {
+                return TrackList.Keys.FirstOrDefault(k => TrackList[k].Name == exactMatch);
+            }
 
             var scored = sourceList
                 .Where(s => !string.IsNullOrEmpty(s))
                 .Select(s => new
                 {
                     Str = s,
-                    Same = s.Distinct().Count(c => targetSet.Contains(c)),
-                    Total = s.Distinct().Count()
+                    // 子串匹配得分
+                    SubstringScore = s.Contains(trackName) ? (double)trackName.Length / s.Length : 0,
+                    // 前缀匹配得分
+                    PrefixScore = s.StartsWith(trackName) ? 1.0 : (s.StartsWith(trackName.Substring(0, Math.Min(trackName.Length, 2))) ? 0.8 : 0),
+                    // 最长公共子序列得分（考虑顺序）
+                    LcseqScore = CalculateLCSeqScore(s, trackName),
+                    // 字符包含得分（基础分）
+                    ContainScore = (double)s.Count(c => trackName.Contains(c)) / s.Length
                 })
                 .Select(x => new
                 {
                     x.Str,
-                    x.Same,
-                    // 相似度 = 相同字符数 / 双方字符数的较大值（更公平）
-                    Similarity = (double)x.Same / Math.Max(x.Total, targetCharCount)
+                    // 综合得分：子串/前缀匹配最高优先，其次是顺序匹配，最后是字符包含
+                    Similarity = Math.Max(Math.Max(x.SubstringScore, x.PrefixScore), Math.Max(x.LcseqScore, x.ContainScore))
                 })
-                .Where(x => x.Same >= 2) // 至少完全匹配两个字符
+                .Where(x => x.Similarity > 0.3) // 提高阈值，过滤低相似度
                 .ToList();
 
             if (!scored.Any()) return 0;
@@ -72,11 +86,49 @@ namespace KartRider
             return TrackList.Keys.FirstOrDefault(k => TrackList[k].Name == name);
         }
 
+        /// <summary>
+        /// 计算最长公共子序列得分（考虑字符顺序）
+        /// </summary>
+        private static double CalculateLCSeqScore(string source, string target)
+        {
+            int m = source.Length;
+            int n = target.Length;
+            int[,] dp = new int[m + 1, n + 1];
+
+            for (int i = 1; i <= m; i++)
+            {
+                for (int j = 1; j <= n; j++)
+                {
+                    if (source[i - 1] == target[j - 1])
+                        dp[i, j] = dp[i - 1, j - 1] + 1;
+                    else
+                        dp[i, j] = Math.Max(dp[i - 1, j], dp[i, j - 1]);
+                }
+            }
+
+            int lcsLength = dp[m, n];
+            // 得分 = LCS长度 / 较长字符串长度
+            return (double)lcsLength / Math.Max(m, n);
+        }
+
         public static uint GetRandomTrack(string Nickname, byte GameType, uint Track, bool ai = false)
         {
             string RandomTrackGameType = "speed";
             string RandomTrackSetRandomTrack = "all";
-            string RandomTrackGameTrack = "village_R01";
+
+            // 检测 Track 是否改变，改变则清除该 Nickname 的记录
+            if (_lastTrackByNickname.TryGetValue(Nickname, out uint lastTrack) && lastTrack != Track)
+            {
+                _usedTracksByNickname.Remove(Nickname);
+            }
+            _lastTrackByNickname[Nickname] = Track;
+
+            // 获取或初始化该 Nickname 的已使用记录
+            if (!_usedTracksByNickname.ContainsKey(Nickname))
+            {
+                _usedTracksByNickname[Nickname] = new HashSet<uint>();
+            }
+            var usedTracks = _usedTracksByNickname[Nickname];
 
             if (GameType == 0)
             {
@@ -150,26 +202,41 @@ namespace KartRider
                     FavoriteTrackList = JsonHelper.DeserializeNoBom<Favorite_Track>(filename.FavoriteTrack_LoadFile) ?? new Favorite_Track();
                 }
                 List<uint> availableTracks = FavoriteTrackList.GetAllTracks();
-                if (availableTracks.Count > 0)
+
+                if (availableTracks == null || availableTracks.Count == 0)
                 {
-                    return availableTracks[random.Next(availableTracks.Count)];
+                    var allTracks = TrackList.Values.Where(t => t.gameType == RandomTrackGameType).ToList();
+
+                    // 如果 ai 为 true，筛选出 basicAi == true 的 track
+                    if (ai)
+                    {
+                        allTracks = allTracks
+                            .Where(t => t.basicAi)
+                            .ToList();
+                    }
+
+                    availableTracks = allTracks.Select(t => t.hash).ToList();
+                }
+
+                // 排除已使用的 track
+                var unusedTracks = availableTracks.Where(t => !usedTracks.Contains(t)).ToList();
+
+                // 如果所有 track 都已使用完，重置记录
+                if (unusedTracks.Count == 0)
+                {
+                    usedTracks.Clear();
+                    unusedTracks = availableTracks;
+                }
+
+                if (unusedTracks.Count > 0)
+                {
+                    uint selectedTrack = unusedTracks[random.Next(unusedTracks.Count)];
+                    usedTracks.Add(selectedTrack);
+                    return selectedTrack;
                 }
                 else
                 {
-                    Random AllRandom = new Random();
-                    var validTracks = TrackList.Values
-                        .Where(t => string.Equals(t.gameType, RandomTrackGameType, StringComparison.OrdinalIgnoreCase) && !string.IsNullOrWhiteSpace(t.Name) && (ai ? t.basicAi == true : true))
-                        .Select(t => t.hash)
-                        .ToList();
-                    if (validTracks.Count > 0)
-                    {
-                        int randomIndex = AllRandom.Next(validTracks.Count);
-                        return validTracks[randomIndex];
-                    }
-                    else
-                    {
-                        return Adler32Helper.GenerateAdler32_UNICODE(RandomTrack.GameTrack, 0);
-                    }
+                    return Adler32Helper.GenerateAdler32_UNICODE(RandomTrack.GameTrack, 0);
                 }
             }
             else if (RandomTrackSetRandomTrack == "Unknown")
@@ -189,11 +256,15 @@ namespace KartRider
                 XDocument doc = randomTrack;
                 var TrackSet = doc.Descendants("RandomTrackSet")
                     .FirstOrDefault(rts => (string)rts.Attribute("gameType") == RandomTrackGameType && (string)rts.Attribute("randomType") == RandomTrackSetRandomTrack);
+
+                List<string> availableTrackIds = new List<string>();
+
                 if (TrackSet != null)
                 {
-                    Random random = new Random();
-                    var randomTrack = TrackSet.Descendants("track").ElementAt(random.Next(TrackSet.Descendants("track").Count()));
-                    RandomTrackGameTrack = (string)randomTrack.Attribute("id");
+                    availableTrackIds = TrackSet.Descendants("track")
+                        .Select(t => (string)t.Attribute("id"))
+                        .Where(id => !string.IsNullOrEmpty(id))
+                        .ToList();
                 }
                 else
                 {
@@ -201,13 +272,57 @@ namespace KartRider
                         .FirstOrDefault(rts => (string)rts.Attribute("randomType") == RandomTrackSetRandomTrack);
                     if (TrackList != null)
                     {
-                        Random random = new Random();
-                        var randomTrack = TrackList.Descendants("track").ElementAt(random.Next(TrackList.Descendants("track").Count()));
-                        RandomTrackGameTrack = (string)randomTrack.Attribute("id");
+                        availableTrackIds = TrackList.Descendants("track")
+                            .Select(t => (string)t.Attribute("id"))
+                            .Where(id => !string.IsNullOrEmpty(id))
+                            .ToList();
                     }
                 }
-                return Adler32Helper.GenerateAdler32_UNICODE(RandomTrackGameTrack, 0);
+
+                // 获取这些 track 对应的 hash
+                var availableHashes = availableTrackIds
+                    .Select(id => Adler32Helper.GenerateAdler32_UNICODE(id, 0))
+                    .Where(hash => hash != 0)
+                    .ToList();
+
+                // 排除已使用的 track
+                var unusedHashes = availableHashes.Where(h => !usedTracks.Contains(h)).ToList();
+
+                // 如果所有 track 都已使用完，重置记录
+                if (unusedHashes.Count == 0)
+                {
+                    usedTracks.Clear();
+                    unusedHashes = availableHashes;
+                }
+
+                if (unusedHashes.Count > 0)
+                {
+                    Random random = new Random();
+                    uint selectedHash = unusedHashes[random.Next(unusedHashes.Count)];
+                    usedTracks.Add(selectedHash);
+                    return selectedHash;
+                }
+
+                return Adler32Helper.GenerateAdler32_UNICODE(RandomTrack.GameTrack, 0);
             }
+        }
+
+        /// <summary>
+        /// 清除指定 Nickname 的已使用记录
+        /// </summary>
+        public static void ClearUsedTracks(string Nickname)
+        {
+            _usedTracksByNickname.Remove(Nickname);
+            _lastTrackByNickname.Remove(Nickname);
+        }
+
+        /// <summary>
+        /// 清除所有已使用记录
+        /// </summary>
+        public static void ClearAllUsedTracks()
+        {
+            _usedTracksByNickname.Clear();
+            _lastTrackByNickname.Clear();
         }
     }
 }

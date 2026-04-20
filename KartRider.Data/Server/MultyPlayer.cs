@@ -575,22 +575,6 @@ public static class MultyPlayer
         {
             string RoomName = iPacket.ReadString();    //room name
             Console.WriteLine("RoomName = {0}, len = {1}", RoomName, RoomName.Length);
-
-            // 校验房间名是否为空或仅包含空白字符
-            if (string.IsNullOrWhiteSpace(RoomName))
-            {
-                Console.WriteLine("创建房间失败: 房间名为空或仅包含空白字符");
-                using (OutPacket oPacket = new OutPacket("ChCreateRoomReplyPacket"))
-                {
-                    oPacket.WriteByte(1); // 失败
-                    oPacket.WriteByte(0);
-                    oPacket.WriteByte(0);
-                    oPacket.WriteEncByte(0);
-                    Parent.Client.Send(oPacket);
-                }
-                return;
-            }
-
             string Password = iPacket.ReadString();
             Console.WriteLine("Password = {0}, len = {1}", Password, Password.Length);
             byte GameType = iPacket.ReadEncodedByte(); //7c
@@ -1146,6 +1130,11 @@ public static class MultyPlayer
                 }
                 else if (value.StartsWith("结束游戏", StringComparison.OrdinalIgnoreCase) || value.StartsWith("結束遊戲", StringComparison.OrdinalIgnoreCase))
                 {
+                    using (OutPacket outPacket = new OutPacket("PcSlaveNotice"))
+                    {
+                        outPacket.WriteString("结束游戏");
+                        BroadCast(roomId, outPacket, Parent.Nickname);
+                    }
                     using (OutPacket outPacket = new OutPacket("GameResultPacket"))
                     {
                         outPacket.WriteByte(0);
@@ -1603,31 +1592,13 @@ public static class MultyPlayer
 
         room.Started = true;
 
-        if (room.track < 100)
+        bool ai = false;
+        if (room.GetAiCount() > 0)
         {
-            if (room.trackList.Count > 30)
-            {
-                room.trackList.Clear();
-            }
-
-            uint track;
-
-            do
-            {
-                bool ai = false;
-                if (room.GetAiCount() > 0)
-                {
-                    ai = true;
-                }
-                track = RandomTrack.GetRandomTrack(Parent.Nickname, room.RandomTrackGameType, room.track, ai);
-            } while (room.trackList.Contains(track));
-            room.trackList.Add(track);
-            room.trackTemp = track;
+            ai = true;
         }
-        else
-        {
-            room.trackTemp = room.track;
-        }
+        uint track = RandomTrack.GetRandomTrack(Parent.Nickname, room.RandomTrackGameType, room.track, ai);
+        room.trackTemp = track;
 
         using (OutPacket oPacket = new OutPacket("GrReplyStartPacket"))
         {
@@ -2132,11 +2103,4 @@ public static class MultyPlayer
             BroadCast(roomId, oPacket);
         }
     }
-}
-
-public class RoomList
-{
-    public byte RandomTrackGameType { get; set; }
-    public byte SpeedType { get; set; }
-    public byte GameType { get; set; }
 }

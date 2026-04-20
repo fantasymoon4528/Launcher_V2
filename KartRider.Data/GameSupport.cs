@@ -51,10 +51,10 @@ namespace KartRider
             Random random = new Random();
             int index = random.Next(keys.Length);
             Keys key = keys[index];
-            string updateUrl = "http://kart.myany.uk/";
+            string updateUrl = "";
             ushort ClientVersion = ProfileService.SettingConfig.ClientVersion;
             var data = await Update.GetUpdateAsync().ConfigureAwait(false);
-            if (data != null)
+            if (data != null && ProfileService.SettingConfig.ServerIP != "127.0.0.1")
             {
                 updateUrl = data.download_prefix;
                 if (data.version.StartsWith('P') && ushort.TryParse(data.version.TrimStart('P'), out ushort version))
