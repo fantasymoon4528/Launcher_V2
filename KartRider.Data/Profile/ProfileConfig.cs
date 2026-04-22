@@ -58,6 +58,8 @@ namespace Profile
         public bool EnableMod { get; set; } = false;
 
         public string Proxy { get; set; } = "https://gh-proxy.com/";
+
+        public string PatchUrl { get; set; } = "";
     }
 
     public class ProfileConfig

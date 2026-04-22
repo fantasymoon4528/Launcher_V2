@@ -526,6 +526,7 @@ public static class MultyPlayer
             iPacket.ReadBytes(length);
             byte channel = (byte)(iPacket.ReadByte() - 1);
             var channelData = GameSupport.Channels.ContainsKey(channel) ? GameSupport.Channels[channel] : null;
+            if (channelData == null) return;
             StartTimeAttack[Parent.Nickname] = channelData.CreateSpeed;
             Console.WriteLine("Channel Switch, channel = {0}", channelData.Name);
             IPEndPoint serverEndPoint = Parent.Client.Socket.LocalEndPoint as IPEndPoint;
@@ -561,13 +562,13 @@ public static class MultyPlayer
                 }
                 ProfileService.ProfileConfigs[nickname].Rider.ClientId = clientId;
                 ProfileService.Save(nickname);
-            }
-            using (OutPacket oPacket = new OutPacket("PrChannelMoveIn"))
-            {
-                oPacket.WriteByte(1);
-                oPacket.WriteEndPoint(IPAddress.Any, ProfileService.SettingConfig.ServerPort);
-                oPacket.WriteEndPoint(IPAddress.Any, (ushort)(ProfileService.SettingConfig.ServerPort + 1));
-                Parent.Client.Send(oPacket);
+                using (OutPacket oPacket = new OutPacket("PrChannelMoveIn"))
+                {
+                    oPacket.WriteByte(1);
+                    oPacket.WriteEndPoint(IPAddress.Any, ProfileService.SettingConfig.ServerPort);
+                    oPacket.WriteEndPoint(IPAddress.Any, (ushort)(ProfileService.SettingConfig.ServerPort + 1));
+                    Parent.Client.Send(oPacket);
+                }
             }
             return;
         }

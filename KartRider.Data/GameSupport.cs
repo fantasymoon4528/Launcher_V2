@@ -33,6 +33,7 @@ namespace KartRider
         public static List<int> quest = new List<int>();
         public static int seasonId = 0;
         public static Dictionary<byte, Channel> Channels = new Dictionary<byte, Channel>();
+        public static List<string> PatchUpdate = new List<string>();
 
         public static Keys[] keys = new Keys[]
         {
@@ -51,15 +52,21 @@ namespace KartRider
             Random random = new Random();
             int index = random.Next(keys.Length);
             Keys key = keys[index];
-            string updateUrl = "";
+            string updateUrl = ProfileService.SettingConfig.PatchUrl;
             ushort ClientVersion = ProfileService.SettingConfig.ClientVersion;
-            var data = await Update.GetUpdateAsync().ConfigureAwait(false);
-            if (data != null && ProfileService.SettingConfig.ServerIP != "127.0.0.1")
+            IPEndPoint clientEndPoint = Parent.Client.Socket.RemoteEndPoint as IPEndPoint;
+            // var data = await Update.GetUpdateAsync().ConfigureAwait(false);
+            if (updateUrl != "" && clientEndPoint != null)
             {
-                updateUrl = data.download_prefix;
-                if (data.version.StartsWith('P') && ushort.TryParse(data.version.TrimStart('P'), out ushort version))
+                // updateUrl = data.download_prefix;
+                // if (data.version.StartsWith('P') && ushort.TryParse(data.version.TrimStart('P'), out ushort version))
+                // {
+                //     ClientVersion = version;
+                // }
+                if (!PatchUpdate.Contains(clientEndPoint.Address.ToString()))
                 {
-                    ClientVersion = version;
+                    ClientVersion = (ushort)(ProfileService.SettingConfig.ClientVersion + 1);
+                    PatchUpdate.Add(clientEndPoint.Address.ToString());
                 }
             }
             using (OutPacket outPacket = new OutPacket("PcFirstMessage"))

@@ -60,7 +60,7 @@ class MemoryModifier
     // 进程内存操作权限（读取+写入+查询内存信息）
     private const uint PROCESS_ACCESS_FLAGS = 0x0010 | 0x0020 | 0x0008; // PROCESS_VM_READ | PROCESS_VM_WRITE | PROCESS_QUERY_INFORMATION
 
-    public async void LaunchAndModifyMemory(string kartRiderDirectory)
+    public void LaunchAndModifyMemory(string kartRiderDirectory)
     {
         DataPacket packet = new DataPacket
         {
@@ -104,8 +104,6 @@ class MemoryModifier
         finally
         {
             process?.Dispose(); // 释放进程资源（不影响目标进程运行）
-            string targetProcessName = "KartRider";
-            await WaitForProcessStartAsync(targetProcessName);
         }
     }
 
@@ -269,24 +267,6 @@ class MemoryModifier
         finally
         {
             CloseHandle(hProcess); // 释放进程句柄
-        }
-    }
-
-    static async Task WaitForProcessStartAsync(string processName)
-    {
-        while (true)
-        {
-            if (Process.GetProcessesByName(processName).Length > 0)
-            {
-                Thread.Sleep(5000);
-                if (File.Exists(Launcher.pinFileBak))
-                {
-                    File.Delete(Launcher.pinFile);
-                    File.Move(Launcher.pinFileBak, Launcher.pinFile);
-                }
-                return;
-            }
-            await Task.Delay(1000);
         }
     }
 }
