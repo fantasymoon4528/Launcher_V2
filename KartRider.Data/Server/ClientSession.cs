@@ -482,7 +482,7 @@ namespace KartRider
                             outPacket.WriteShort((short)ProfileService.ProfileConfigs[this.Parent.Nickname].Rider.Premium);
                             outPacket.WriteByte();
                             outPacket.WriteDateTime(DateTime.Now);
-                            outPacket.WriteInt();
+                            outPacket.WriteInt(0);
                             this.Parent.Client.Send(outPacket);
                         }
                         using (OutPacket outPacket = new OutPacket("PcSlaveNotice"))

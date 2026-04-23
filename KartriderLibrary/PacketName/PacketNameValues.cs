@@ -1631,5 +1631,7 @@ namespace KartRider_PacketName
 		PqUpdateTrainingCenterDataPacket = 3472428179,
 		PqSendMacroChat = 758515133,
 		PcSendMacroChat = 745670063,
+		PqPersonalShopEventTimerPacket = 3099069434,
+		PqPersonalShopActionCheckPacket = 3273198643,
 	}
 }

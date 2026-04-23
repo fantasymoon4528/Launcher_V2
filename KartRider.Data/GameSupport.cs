@@ -312,7 +312,7 @@ namespace KartRider
                 }
                 outPacket.WriteInt(0);
                 outPacket.WriteByte(ProfileService.ProfileConfigs[nickname].Rider.Ranker);
-                outPacket.WriteBytes(new byte[30]);
+                outPacket.WriteBytes(new byte[33]);
                 Parent.Client.Send(outPacket);
             }
         }

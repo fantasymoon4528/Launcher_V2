@@ -196,6 +196,7 @@ public class SpecialKartConfig
             SkillChangeDesc = "特殊道具车：将指定道具变更为特殊道具",
             SkillChange = new Dictionary<ushort, Dictionary<short, SkillMappingConfig>>
             {
+                { 1615, new Dictionary<short, SkillMappingConfig> { {5, new SkillMappingConfig { TargetItemId = 103, Probability = 100 }}, {7, new SkillMappingConfig { TargetItemId = 99, Probability = 100 }} } },
                 { 1612, new Dictionary<short, SkillMappingConfig> { {7, new SkillMappingConfig { TargetItemId = 32, Probability = 100 }} } },
                 { 1610, new Dictionary<short, SkillMappingConfig> { {9, new SkillMappingConfig { TargetItemId = 34, Probability = 100 }} } },
                 { 1605, new Dictionary<short, SkillMappingConfig> { {4, new SkillMappingConfig { TargetItemId = 118, Probability = 100 }} } },
@@ -254,7 +255,7 @@ public class SpecialKartConfig
                 { 1450, new Dictionary<short, SkillMappingConfig> { {7, new SkillMappingConfig { TargetItemId = 5, Probability = 100 }}, {5, new SkillMappingConfig { TargetItemId = 24, Probability = 100 }} } },
                 { 1563, new Dictionary<short, SkillMappingConfig> { {136, new SkillMappingConfig { TargetItemId = 6, Probability = 100 }} } },
                 { 1548, new Dictionary<short, SkillMappingConfig> { {5, new SkillMappingConfig { TargetItemId = 6, Probability = 100 }} } },
-                { 1510, new Dictionary<short, SkillMappingConfig> { {32, new SkillMappingConfig { TargetItemId = 32, Probability = 70 }} } },
+                { 1510, new Dictionary<short, SkillMappingConfig> { {32, new SkillMappingConfig { TargetItemId = 32, Probability = 60 }} } },
                 { 1507, new Dictionary<short, SkillMappingConfig> { {5, new SkillMappingConfig { TargetItemId = 31, Probability = 100 }} } },
                 { 1496, new Dictionary<short, SkillMappingConfig> { {5, new SkillMappingConfig { TargetItemId = 24, Probability = 100 }} } },
                 { 1489, new Dictionary<short, SkillMappingConfig> { {5, new SkillMappingConfig { TargetItemId = 10, Probability = 100 }} } },
@@ -272,7 +273,7 @@ public class SpecialKartConfig
                 { 1588, new Dictionary<short, SkillMappingConfig> { {7, new SkillMappingConfig { TargetItemId = 32, Probability = 100 }} } },
                 { 1581, new Dictionary<short, SkillMappingConfig> { {5, new SkillMappingConfig { TargetItemId = 31, Probability = 100 }}, {7, new SkillMappingConfig { TargetItemId = 31, Probability = 100 }} } },
                 { 1571, new Dictionary<short, SkillMappingConfig> { {8, new SkillMappingConfig { TargetItemId = 6, Probability = 100 }} } },
-                { 1561, new Dictionary<short, SkillMappingConfig> { {7, new SkillMappingConfig { TargetItemId = 111, Probability = 100 }} } },
+                { 1561, new Dictionary<short, SkillMappingConfig> { {7, new SkillMappingConfig { TargetItemId = 111, Probability = 40 }} } },
                 { 1557, new Dictionary<short, SkillMappingConfig> { {7, new SkillMappingConfig { TargetItemId = 32, Probability = 100 }}, {5, new SkillMappingConfig { TargetItemId = 103, Probability = 100 }} } },
                 { 1555, new Dictionary<short, SkillMappingConfig> { {4, new SkillMappingConfig { TargetItemId = 6, Probability = 100 }}, {9, new SkillMappingConfig { TargetItemId = 6, Probability = 100 }} } },
                 { 1551, new Dictionary<short, SkillMappingConfig> { {7, new SkillMappingConfig { TargetItemId = 6, Probability = 100 }} } },
