@@ -528,7 +528,7 @@ public class PatchManager
         try
         {
             using var cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(connectTimeoutMs + readTimeoutMs));
-            
+
             using TcpClient client = new TcpClient(AddressFamily.InterNetwork)
             {
                 NoDelay = true
@@ -537,29 +537,29 @@ public class PatchManager
             // 使用 Task.WhenAny 实现连接超时
             var connectTask = client.ConnectAsync(ip, port);
             var timeoutTask = Task.Delay(connectTimeoutMs, cts.Token);
-            
+
             var completedTask = await Task.WhenAny(connectTask, timeoutTask);
             if (completedTask == timeoutTask)
             {
                 return Array.Empty<byte>();
             }
-            
+
             // 确保连接完成
             await connectTask;
-            
+
             using NetworkStream stream = client.GetStream();
-            
+
             // 读取数据，带超时
             byte[] buffer = new byte[recvBufferSize];
             var readTask = stream.ReadAsync(buffer, 0, buffer.Length, cts.Token);
             var readTimeout = Task.Delay(readTimeoutMs, cts.Token);
-            
+
             completedTask = await Task.WhenAny(readTask, readTimeout);
             if (completedTask == readTimeout)
             {
                 return Array.Empty<byte>();
             }
-            
+
             int readLen = await readTask;
             if (readLen <= 0)
             {
@@ -568,6 +568,9 @@ public class PatchManager
 
             byte[] res = new byte[readLen];
             Buffer.BlockCopy(buffer, 0, res, 0, readLen);
+
+            // 获取数据后断开连接
+            client.Close();
             return res;
         }
         catch
