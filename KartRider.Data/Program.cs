@@ -20,6 +20,7 @@ using System.Globalization;
 using System.Threading.Tasks;
 using KartRider.Common.Data;
 using KartRider.Common.Security;
+using Launcher.Properties;
 
 namespace KartRider
 {
@@ -105,10 +106,22 @@ namespace KartRider
                         File.Move(pinFileBak, pinFile);
                     }
 
-                    if (ProfileService.SettingConfig.ServerIP != "127.0.0.1")
+                    Load_Data();
+
+                    try
                     {
-                        PatchManager.StartUpdateAsync(RootDirectory).Wait();
+                        RouterListener.Start();
                     }
+                    catch (System.Net.Sockets.SocketException)
+                    {
+                        LauncherSystem.MessageBoxType2();
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"启动路由器监听失败: {ex.Message}");
+                    }
+
+                    PatchManager.StartUpdateAsync(RootDirectory).Wait();
 
                     PINFile val = new PINFile(pinFile);
                     ProfileService.SettingConfig.ClientVersion = val.Header.MinorVersion;
@@ -221,6 +234,34 @@ namespace KartRider
             {
                 // 异常时使用系统默认编码作为最后保障
                 Console.WriteLine($"编码设置失败，使用默认编码: {ex.Message}");
+            }
+        }
+
+        public static void Load_Data()
+        {
+            try
+            {
+                string ModelMax = Resources.ModelMax;
+                if (!File.Exists(FileName.ModelMax_LoadFile))
+                {
+                    string directory = Path.GetDirectoryName(FileName.ModelMax_LoadFile);
+                    if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
+                    {
+                        Directory.CreateDirectory(directory);
+                    }
+
+                    File.WriteAllText(FileName.ModelMax_LoadFile, ModelMax);
+                }
+
+                var updater = new XmlFileUpdater.XmlUpdater();
+                updater.UpdateLocalXmlWithResource(FileName.ModelMax_LoadFile, ModelMax);
+
+                SpecialKartConfig.SaveConfigToFile(FileName.SpecialKartConfig);
+                SlotData.kartConfig = SpecialKartConfig.LoadConfigFromFile(FileName.SpecialKartConfig);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"加载数据失败: {ex.Message}");
             }
         }
     }

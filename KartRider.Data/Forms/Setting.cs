@@ -25,10 +25,7 @@ namespace KartRider
             ProfileService.SettingConfig.NgsOn = NgsOn.Checked;
             ProfileService.SettingConfig.AutoUpdate = AutoUpdate.Checked;
             ProfileService.SaveSettings();
-            if (ProfileService.SettingConfig.ServerIP != "127.0.0.1")
-            {
-                PatchManager.StartUpdateAsync(Program.LauncherDlg.kartRiderDirectory);
-            }
+            PatchManager.StartUpdateAsync(Program.LauncherDlg.kartRiderDirectory);
         }
 
         private void OnLoad(object sender, EventArgs e)
@@ -140,20 +137,6 @@ namespace KartRider
                 {
                     Console.WriteLine("Invalid Proxy type selected.");
                 }
-            }
-        }
-
-        private void Save_Click(object sender, EventArgs e)
-        {
-            ProfileService.SettingConfig.Name = PlayerName.Text;
-            ProfileService.SettingConfig.ServerIP = ServerIP.Text;
-            ProfileService.SettingConfig.ServerPort = ushort.Parse(ServerPort.Text);
-            ProfileService.SettingConfig.NgsOn = NgsOn.Checked;
-            ProfileService.SettingConfig.AutoUpdate = AutoUpdate.Checked;
-            ProfileService.SaveSettings();
-            if (ProfileService.SettingConfig.ServerIP != "127.0.0.1")
-            {
-                PatchManager.StartUpdateAsync(Program.LauncherDlg.kartRiderDirectory);
             }
         }
     }

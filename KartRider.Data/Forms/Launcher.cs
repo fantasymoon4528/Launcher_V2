@@ -71,20 +71,6 @@ namespace KartRider
                 Console.WriteLine($"程序编译时间: {CompileTime.Time}");
                 VersionLabel.Text = CompileTime.Time;
                 Console.WriteLine("Process: {0}", KartRider);
-                Load_Data();
-
-                try
-                {
-                    RouterListener.Start();
-                }
-                catch (System.Net.Sockets.SocketException)
-                {
-                    LauncherSystem.MessageBoxType2();
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"启动路由器监听失败: {ex.Message}");
-                }
             }
             catch (Exception ex)
             {
@@ -207,34 +193,6 @@ namespace KartRider
         {
             Program.SettingDlg = new Setting();
             Program.SettingDlg.ShowDialog();
-        }
-
-        public void Load_Data()
-        {
-            try
-            {
-                string ModelMax = Resources.ModelMax;
-                if (!File.Exists(FileName.ModelMax_LoadFile))
-                {
-                    string directory = Path.GetDirectoryName(FileName.ModelMax_LoadFile);
-                    if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
-                    {
-                        Directory.CreateDirectory(directory);
-                    }
-
-                    File.WriteAllText(FileName.ModelMax_LoadFile, ModelMax);
-                }
-
-                var updater = new XmlFileUpdater.XmlUpdater();
-                updater.UpdateLocalXmlWithResource(FileName.ModelMax_LoadFile, ModelMax);
-
-                SpecialKartConfig.SaveConfigToFile(FileName.SpecialKartConfig);
-                SlotData.kartConfig = SpecialKartConfig.LoadConfigFromFile(FileName.SpecialKartConfig);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"加载数据失败: {ex.Message}");
-            }
         }
 
         private void GitHub_Click(object sender, EventArgs e)

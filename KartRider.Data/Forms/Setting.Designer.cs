@@ -24,7 +24,6 @@ namespace KartRider
             Port_label = new Label();
             NgsOn = new CheckBox();
             AutoUpdate = new CheckBox();
-            Save = new Button();
             SuspendLayout();
             // 
             // PlayerName
@@ -157,7 +156,7 @@ namespace KartRider
             // 
             NgsOn.AutoSize = true;
             NgsOn.ForeColor = System.Drawing.Color.Blue;
-            NgsOn.Location = new System.Drawing.Point(190, 136);
+            NgsOn.Location = new System.Drawing.Point(190, 169);
             NgsOn.Name = "NgsOn";
             NgsOn.Size = new System.Drawing.Size(52, 16);
             NgsOn.TabIndex = 8;
@@ -168,22 +167,12 @@ namespace KartRider
             // 
             AutoUpdate.AutoSize = true;
             AutoUpdate.ForeColor = System.Drawing.Color.Blue;
-            AutoUpdate.Location = new System.Drawing.Point(190, 165);
+            AutoUpdate.Location = new System.Drawing.Point(190, 198);
             AutoUpdate.Name = "AutoUpdate";
             AutoUpdate.Size = new System.Drawing.Size(52, 16);
             AutoUpdate.TabIndex = 9;
             AutoUpdate.Text = "自动更新";
             AutoUpdate.UseVisualStyleBackColor = true;
-            // 
-            // Save
-            // 
-            Save.Location = new System.Drawing.Point(190, 194);
-            Save.Name = "Save";
-            Save.Size = new System.Drawing.Size(75, 23);
-            Save.TabIndex = 10;
-            Save.Text = "保存";
-            Save.UseVisualStyleBackColor = true;
-            Save.Click += Save_Click;
             // 
             // Setting
             // 
@@ -207,7 +196,6 @@ namespace KartRider
             Controls.Add(Proxy_label);
             Controls.Add(NgsOn);
             Controls.Add(AutoUpdate);
-            Controls.Add(Save);
             Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 134);
             FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             MaximizeBox = false;
@@ -231,7 +219,6 @@ namespace KartRider
         private ComboBox Proxy_comboBox;
         private CheckBox NgsOn;
         private CheckBox AutoUpdate;
-        private Button Save;
         private Label Name_label;
         private Label IP_label;
         private Label Port_label;
