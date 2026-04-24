@@ -1,6 +1,5 @@
 using ExcData;
 using KartRider;
-using Launcher.Properties;
 using RiderData;
 using System;
 using System.Collections.Generic;

@@ -20,7 +20,6 @@ using System.Globalization;
 using System.Threading.Tasks;
 using KartRider.Common.Data;
 using KartRider.Common.Security;
-using Launcher.Properties;
 
 namespace KartRider
 {
@@ -241,20 +240,61 @@ namespace KartRider
         {
             try
             {
-                string ModelMax = Resources.ModelMax;
-                if (!File.Exists(FileName.ModelMax_LoadFile))
+                string localFilePath = FileName.ModelMax_LoadFile;
+                
+                // 确保目录存在
+                string directory = Path.GetDirectoryName(localFilePath);
+                if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
                 {
-                    string directory = Path.GetDirectoryName(FileName.ModelMax_LoadFile);
-                    if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
-                    {
-                        Directory.CreateDirectory(directory);
-                    }
-
-                    File.WriteAllText(FileName.ModelMax_LoadFile, ModelMax);
+                    Directory.CreateDirectory(directory);
                 }
 
-                var updater = new XmlFileUpdater.XmlUpdater();
-                updater.UpdateLocalXmlWithResource(FileName.ModelMax_LoadFile, ModelMax);
+                // 如果本地文件不存在，直接创建
+                if (!File.Exists(localFilePath))
+                {
+                    File.WriteAllText(localFilePath, ModelMax.XmlContent);
+                    Console.WriteLine($"ModelMax.xml已创建: {localFilePath}");
+                }
+                else
+                {
+                    // 加载本地和资源XML
+                    XDocument localXml = XDocument.Load(localFilePath);
+                    XDocument resourceXml = XDocument.Parse(ModelMax.XmlContent);
+                    
+                    int addedCount = 0;
+                    
+                    // 遍历资源中的所有 kart 节点
+                    foreach (var resourceKart in resourceXml.Root!.Elements("kart"))
+                    {
+                        string? id = resourceKart.Attribute("id")?.Value;
+                        string? name = resourceKart.Attribute("name")?.Value;
+                        
+                        if (id != null)
+                        {
+                            // 检查本地是否已存在该ID
+                            bool exists = localXml.Root!.Elements("kart")
+                                .Any(k => k.Attribute("id")?.Value == id);
+                            
+                            if (!exists)
+                            {
+                                // 复制 kart 元素（包含所有属性）
+                                localXml.Root.Add(new XElement(resourceKart));
+                                Console.WriteLine($"已添加 kart: {name ?? id}");
+                                addedCount++;
+                            }
+                        }
+                    }
+                    
+                    if (addedCount > 0)
+                    {
+                        localXml.Save(localFilePath, SaveOptions.None);
+                        Console.WriteLine($"ModelMax.xml已更新，新增 {addedCount} 个kart");
+                    }
+                    else
+                    {
+                        Console.WriteLine("ModelMax.xml已是最新，无需更新");
+                    }
+                }
 
                 SpecialKartConfig.SaveConfigToFile(FileName.SpecialKartConfig);
                 SlotData.kartConfig = SpecialKartConfig.LoadConfigFromFile(FileName.SpecialKartConfig);

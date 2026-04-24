@@ -266,7 +266,7 @@ namespace KartRider
                 {
                     var xdoc = XDocument.Load(fileStream);
 
-                    var targetNode = xdoc.Descendants("Kart").FirstOrDefault(kart => (short)kart.Attribute("ID") == kartId);
+                    var targetNode = xdoc.Descendants("kart").FirstOrDefault(kart => (short)kart.Attribute("id") == kartId);
 
                     if (targetNode == null)
                     {

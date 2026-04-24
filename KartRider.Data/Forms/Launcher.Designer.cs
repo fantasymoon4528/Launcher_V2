@@ -1,6 +1,6 @@
+using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
-using Launcher.Properties;
 
 namespace KartRider
 {
@@ -148,9 +148,9 @@ namespace KartRider
             Controls.Add(KartInfo);
             Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 134);
             FormBorderStyle = FormBorderStyle.FixedSingle;
+            Icon = Icon.ExtractAssociatedIcon(Process.GetCurrentProcess().MainModule.FileName);
             MaximizeBox = false;
             Name = "Launcher";
-            Icon = new Icon(Resources.icon, new Size(32, 32));
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Launcher";
             FormClosing += OnFormClosing;

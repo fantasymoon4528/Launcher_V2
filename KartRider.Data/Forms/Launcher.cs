@@ -2,7 +2,6 @@ using ExcData;
 using KartRider.Common.Data;
 using KartRider.Common.Utilities;
 using KartRider.IO.Packet;
-using Launcher.Properties;
 using LoggerLibrary;
 using Profile;
 using System;

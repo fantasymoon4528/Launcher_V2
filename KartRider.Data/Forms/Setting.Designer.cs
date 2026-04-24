@@ -1,6 +1,6 @@
+using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
-using Launcher.Properties;
 
 namespace KartRider
 {
@@ -178,7 +178,7 @@ namespace KartRider
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             AutoScaleMode = AutoScaleMode.Font;
-            BackColor = System.Drawing.SystemColors.Control;
+            BackColor = SystemColors.Control;
             ClientSize = new System.Drawing.Size(273, 229);
             Controls.Add(PlayerName);
             Controls.Add(Name_label);
@@ -197,12 +197,12 @@ namespace KartRider
             Controls.Add(NgsOn);
             Controls.Add(AutoUpdate);
             Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 134);
-            FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
+            FormBorderStyle = FormBorderStyle.FixedToolWindow;
+            Icon = Icon.ExtractAssociatedIcon(Process.GetCurrentProcess().MainModule.FileName);
             MaximizeBox = false;
             MinimizeBox = false;
             Name = "Setting";
-            Icon = new Icon(Resources.icon, new Size(32, 32));
-            StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+            StartPosition = FormStartPosition.CenterParent;
             Text = "设置";
             FormClosing += OnFormClosing;
             Load += OnLoad;

@@ -19,13 +19,21 @@ namespace KartRider
 
         private void OnFormClosing(object sender, FormClosingEventArgs e)
         {
+            bool update = false;
+            if (ServerIP.Text != ProfileService.SettingConfig.ServerIP || ushort.Parse(ServerPort.Text) != ProfileService.SettingConfig.ServerPort)
+            {
+                update = true;
+            }
             ProfileService.SettingConfig.Name = PlayerName.Text;
             ProfileService.SettingConfig.ServerIP = ServerIP.Text;
             ProfileService.SettingConfig.ServerPort = ushort.Parse(ServerPort.Text);
             ProfileService.SettingConfig.NgsOn = NgsOn.Checked;
             ProfileService.SettingConfig.AutoUpdate = AutoUpdate.Checked;
             ProfileService.SaveSettings();
-            PatchManager.StartUpdateAsync(Program.LauncherDlg.kartRiderDirectory);
+            if (update)
+            {
+                PatchManager.StartUpdateAsync(Program.LauncherDlg.kartRiderDirectory);
+            }
         }
 
         private void OnLoad(object sender, EventArgs e)

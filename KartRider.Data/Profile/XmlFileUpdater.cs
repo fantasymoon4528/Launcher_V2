@@ -27,13 +27,35 @@ namespace XmlFileUpdater
                 // 加载本地XML文件
                 XDocument localXml = XDocument.Load(localFilePath);
 
-                // 从程序集资源加载XML（修复资源加载逻辑）
-                XDocument resourceXml = XDocument.Parse(resourceName);
-                if (resourceXml == null)
+                // 从程序集资源加载XML
+                XDocument resourceXml = null;
+                if (string.IsNullOrEmpty(resourceName))
                 {
-                    Console.WriteLine($"无法加载资源文件: {resourceName}");
+                    Console.WriteLine("警告: 资源内容为空，将使用默认更新逻辑");
                     return;
                 }
+                
+                try
+                {
+                    resourceXml = XDocument.Parse(resourceName);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"资源XML解析失败: {ex.Message}");
+                    return;
+                }
+                
+                if (resourceXml == null || resourceXml.Root == null)
+                {
+                    Console.WriteLine($"无法加载资源文件");
+                    return;
+                }
+
+                // 调试：输出资源中的Kart数量和本地文件中的Kart数量
+                int resourceKartCount = resourceXml.Root.Elements("Kart").Count();
+                int localKartCount = localXml.Root?.Elements("Kart").Count() ?? 0;
+                Console.WriteLine($"资源文件包含 {resourceKartCount} 个Kart节点");
+                Console.WriteLine($"本地文件包含 {localKartCount} 个Kart节点");
 
                 // 验证XML根节点
                 if (localXml.Root == null || resourceXml.Root == null)

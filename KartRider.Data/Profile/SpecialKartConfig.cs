@@ -171,10 +171,26 @@ public class SpecialKartConfig
             throw new FileNotFoundException("特殊道具车配置文件不存在", filePath);
         }
 
-        var config = JsonHelper.DeserializeNoBom<SpecialKartConfig>(filePath) ?? new SpecialKartConfig();
-        if (config == null)
+        SpecialKartConfig config;
+        try
         {
-            throw new Exception("配置文件解析失败，可能是JSON格式错误");
+            config = JsonHelper.DeserializeNoBom<SpecialKartConfig>(filePath);
+            if (config == null)
+            {
+                throw new Exception("配置文件解析结果为null");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"配置文件格式不正确或解析失败: {ex.Message}");
+            Console.WriteLine("将使用默认配置覆盖本地文件...");
+
+            // 使用默认配置覆盖本地文件
+            config = GetDefaultConfig();
+            File.WriteAllText(filePath, JsonHelper.Serialize(config));
+            Console.WriteLine($"本地文件已用默认配置覆盖: {filePath}");
+
+            return config;
         }
 
         // 确保字典不为null（避免后续使用时的null引用异常）
