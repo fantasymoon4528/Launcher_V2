@@ -223,8 +223,9 @@ namespace KartRider
 
                                             oPacket.WriteBytes(p.ReadBytes(p.Available));
                                             string currentTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-                                            IPEndPoint client = ClientManager.ClientToIPEndPoint(ProfileService.ProfileConfigs[player.Nickname].Rider.ClientId);
-                                            var clientudp = new IPEndPoint(client.Address, ProfileService.ProfileConfigs[player.Nickname].Rider.UdpPort);
+                                            var playerConfig = ProfileService.GetProfileConfig(player.Nickname);
+                                            IPEndPoint client = ClientManager.ClientToIPEndPoint(playerConfig.Rider.ClientId);
+                                            var clientudp = new IPEndPoint(client.Address, playerConfig.Rider.UdpPort);
                                             bool success = BeginSend(oPacket, clientudp);
                                             if (success)
                                                 Console.WriteLine($"[UDP][{currentTime}][{nickname}] " + packetValue + ": " + BitConverter.ToString(oPacket.ToArray()).Replace("-", " "));
@@ -252,8 +253,7 @@ namespace KartRider
                                     if (string.IsNullOrEmpty(member) || string.Equals(member, nickname, StringComparison.OrdinalIgnoreCase))
                                         continue;
 
-                                    if (!Profile.ProfileService.ProfileConfigs.ContainsKey(member))
-                                        Profile.ProfileService.Load(member);
+                                    var memberConfig = ProfileService.GetProfileConfig(member);
 
                                     OutPacket oPacket = new OutPacket();
                                     oPacket.WriteUInt(ClientManager.GetUserNO(member));
@@ -261,8 +261,8 @@ namespace KartRider
                                     oPacket.WriteInt((int)PacketName.RoomSlotPacket);
                                     oPacket.WriteBytes(p.ReadBytes(p.Available));
 
-                                    IPEndPoint client = ClientManager.ClientToIPEndPoint(ProfileService.ProfileConfigs[member].Rider.ClientId);
-                                    var clientudp = new IPEndPoint(client.Address, ProfileService.ProfileConfigs[member].Rider.UdpPort);
+                                    IPEndPoint client = ClientManager.ClientToIPEndPoint(memberConfig.Rider.ClientId);
+                                    var clientudp = new IPEndPoint(client.Address, memberConfig.Rider.UdpPort);
                                     bool success = BeginSend(oPacket, clientudp);
                                     if (success)
                                     {
