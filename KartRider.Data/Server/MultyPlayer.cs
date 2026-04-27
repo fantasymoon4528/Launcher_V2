@@ -544,7 +544,7 @@ public static class MultyPlayer
             StartTimeAttack[Parent.Nickname] = channelData.CreateSpeed;
             Console.WriteLine("Channel Switch, channel = {0}", channelData.Name);
 
-            // 获取服务器IP地址，处理IPv6地址转换
+            // 获取服务器IP地址
             IPEndPoint serverIPEndPoint = GetServerEndPoint(Parent);
 
             using (OutPacket oPacket = new OutPacket("PrChannelSwitch"))
