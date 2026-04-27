@@ -28,7 +28,7 @@ public static class MultyPlayer
     public static Dictionary<string, bool> Ready = new Dictionary<string, bool>();
     public static int[] teamPoints = { 10, 8, 6, 5, 4, 3, 2, 1 };
 
-    public static IPEndPoint GetServerEndPoint()
+    public static IPEndPoint GetServerEndPoint(SessionGroup Parent)
     {
         IPEndPoint serverEndPoint = Parent.Client.Socket.LocalEndPoint as IPEndPoint;
         if (ProfileService.SettingConfig.ServerIP == "127.0.0.1" && serverEndPoint != null)
@@ -545,7 +545,7 @@ public static class MultyPlayer
             Console.WriteLine("Channel Switch, channel = {0}", channelData.Name);
 
             // 获取服务器IP地址，处理IPv6地址转换
-            IPEndPoint serverIPEndPoint = GetServerEndPoint();
+            IPEndPoint serverIPEndPoint = GetServerEndPoint(Parent);
 
             using (OutPacket oPacket = new OutPacket("PrChannelSwitch"))
             {
