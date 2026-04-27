@@ -30,10 +30,17 @@ public static class MultyPlayer
 
     public static IPEndPoint GetServerEndPoint()
     {
-        string serverIP = ProfileService.SettingConfig.ServerIP;
-        int serverPort = ProfileService.SettingConfig.ServerPort;
-
-        return new IPEndPoint(IPAddress.Parse(serverIP), serverPort);
+        IPEndPoint serverEndPoint = Parent.Client.Socket.LocalEndPoint as IPEndPoint;
+        if (ProfileService.SettingConfig.ServerIP == "127.0.0.1" && serverEndPoint != null)
+        {
+            return serverEndPoint;
+        }
+        else
+        {
+            string serverIP = ProfileService.SettingConfig.ServerIP;
+            int serverPort = ProfileService.SettingConfig.ServerPort;
+            return new IPEndPoint(IPAddress.Parse(serverIP), serverPort);
+        }
     }
 
     public static void milTime(uint time)
@@ -536,8 +543,6 @@ public static class MultyPlayer
             if (channelData == null) return;
             StartTimeAttack[Parent.Nickname] = channelData.CreateSpeed;
             Console.WriteLine("Channel Switch, channel = {0}", channelData.Name);
-            IPEndPoint serverEndPoint = Parent.Client.Socket.LocalEndPoint as IPEndPoint;
-            if (serverEndPoint == null) return;
 
             // 获取服务器IP地址，处理IPv6地址转换
             IPEndPoint serverIPEndPoint = GetServerEndPoint();
