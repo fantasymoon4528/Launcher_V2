@@ -47,7 +47,7 @@ public static class Base64Helper
         {
             // 处理无效的 Base64 格式
             return string.Empty;
-            Console.WriteLine("输入不是有效的 Base64 字符串", nameof(base64String));
+            Console.WriteLine("輸入不是有效的 Base64 字串", nameof(base64String));
         }
     }
 }
@@ -121,7 +121,7 @@ public static class JsonHelper
             {
                 if (!File.Exists(filePath))
                 {
-                    Console.WriteLine($"错误: 文件 '{filePath}' 不存在, 且未提供 jsonContent.");
+                    Console.WriteLine($"錯誤: 文件 '{filePath}' 不存在, 且未提供 jsonContent.");
                     jsonData = null;
                     return false;
                 }
@@ -132,7 +132,7 @@ public static class JsonHelper
             // 2. （可选）验证 JSON 格式
             if (validateJson && !IsValidJson(contentToWrite))
             {
-                Console.WriteLine("JSON 格式无效, 已中止保存.");
+                Console.WriteLine("JSON 格式無效, 已中止保存.");
                 jsonData = null;
                 return false;
             }
@@ -192,7 +192,7 @@ public static class JsonHelper
         else
         {
             // 如果都失败，回退到系统默认编码，并给出警告
-            Console.WriteLine("警告：无法可靠检测编码，将使用系统默认编码。可能导致乱码。");
+            Console.WriteLine("警告：無法可靠檢測編碼，將使用系統默認編碼。可能導致亂碼。");
             return Encoding.Default.GetString(bytes);
         }
     }
@@ -266,7 +266,7 @@ public static class JsonHelper
             // 再次验证
             if (string.IsNullOrEmpty(filePath) || !File.Exists(filePath))
             {
-                Console.WriteLine("无法获取有效的程序集路径");
+                Console.WriteLine("無法獲取有效的程序集路徑");
                 return null;
             }
         }

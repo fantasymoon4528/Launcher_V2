@@ -25,11 +25,11 @@ namespace KartRider
         public static async Task<bool> UpdateDataAsync()
         {
             filePath = JsonHelper.GetFilePath();
-            Console.WriteLine("当前程序路径: " + filePath);
+            Console.WriteLine("目前程式路徑: " + filePath);
             name = Path.GetFileName(filePath);
             // 计算文件的SHA256哈希值
             string sha256Hash = "sha256:" + CalculateSHA256(filePath);
-            Console.WriteLine("当前程序SHA256: " + sha256Hash);
+            Console.WriteLine("目前程式SHA256: " + sha256Hash);
             // 删除旧的Update文件夹（如果存在）
             string Update_Folder = Path.Combine(Path.GetDirectoryName(filePath), "Update");
             string Update_File = Path.Combine(Update_Folder, name);
@@ -37,7 +37,7 @@ namespace KartRider
             {
                 Directory.Delete(Update_Folder, true);
             }
-            Console.WriteLine("开始读取GitHub Releases API数据...");
+            Console.WriteLine("開始讀取GitHub Releases API數據...");
             Console.WriteLine("==============================");
             try
             {
@@ -58,7 +58,7 @@ namespace KartRider
                 // 5. 筛选name="Launcher.exe"的资产
                 if (releaseData?.Assets == null || releaseData.Assets.Length == 0)
                 {
-                    Console.WriteLine("错误：API返回的资产列表为空");
+                    Console.WriteLine("錯誤：API返回的資產列表為空");
                     return false;
                 }
 
@@ -112,38 +112,38 @@ namespace KartRider
                         }
                         catch (Exception ex)
                         {
-                            Console.WriteLine($"下载过程中出现错误: {ex.Message}");
+                            Console.WriteLine($"下載過程中出現錯誤: {ex.Message}");
                             return false;
                         }
                     }
                     else
                     {
-                        Console.WriteLine("当前已是最新版本，无需更新。");
+                        Console.WriteLine("目前已是最新版本，無需更新。");
                         return false;
                     }
                 }
                 else
                 {
-                    Console.WriteLine("未找到名称为\"" + name + "\"的文件");
+                    Console.WriteLine("未找到名稱為\"" + name + "\"的文件");
                     return false;
                 }
                 return false;
             }
             catch (HttpRequestException ex)
             {
-                Console.WriteLine($"网络请求错误：{ex.Message}");
-                Console.WriteLine("可能原因：API地址无效、网络断开、GitHub API限流");
+                Console.WriteLine($"網絡請求錯誤：{ex.Message}");
+                Console.WriteLine("可能原因：API地址無效、網絡斷開、GitHub API限流");
                 return false;
             }
             catch (JsonException ex)
             {
-                Console.WriteLine($"JSON反序列化错误：{ex.Message}");
-                Console.WriteLine("可能原因：API返回格式异常");
+                Console.WriteLine($"JSON反序列化錯誤：{ex.Message}");
+                Console.WriteLine("可能原因：API返回格式異常");
                 return false;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"未知错误：{ex.Message}");
+                Console.WriteLine($"未知錯誤：{ex.Message}");
                 return false;
             }
         }
@@ -157,11 +157,11 @@ namespace KartRider
                 try
                 {
                     File.WriteAllText(Update_Bat, script, Program.targetEncoding);
-                    Console.WriteLine("\n写入文件成功。");
+                    Console.WriteLine("\n寫入文件成功。");
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"\n写入文件时出错: {ex.Message}");
+                    Console.WriteLine($"\n寫入文件時出錯: {ex.Message}");
                 }
                 Process.Start(Update_Bat);
                 Process.GetCurrentProcess().Kill();
@@ -169,7 +169,7 @@ namespace KartRider
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"\n应用更新时出错: {ex.Message}");
+                Console.WriteLine($"\n應用更新時出錯: {ex.Message}");
                 return false;
             }
         }
@@ -191,14 +191,14 @@ namespace KartRider
                     }
                     else
                     {
-                        Console.WriteLine($"请求失败，状态码: {response.StatusCode}");
+                        Console.WriteLine($"請求失敗，狀態碼: {response.StatusCode}");
                         return "";
                     }
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"发生异常: {ex.Message}");
+                Console.WriteLine($"發生異常: {ex.Message}");
                 return "";
             }
         }
@@ -272,7 +272,7 @@ namespace KartRider
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"请求或解析失败: {ex.Message}");
+                Console.WriteLine($"請求或解析失敗: {ex.Message}");
                 return null;
             }
         }

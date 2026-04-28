@@ -15,20 +15,20 @@ namespace KartRider
 	{
 		public static void MessageBoxType1()
 		{
-			MessageBox.Show("跑跑卡丁车已经运行了！", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			MessageBox.Show("跑跑卡丁車已經運行了！ ", "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
 		}
 
 		public static void MessageBoxType2()
 		{
-			MessageBox.Show("已经有一个启动器在运行了！\n不可以同时运行多个启动器！\n点击确认退出程序", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			MessageBox.Show("已經有一個啟動器在運行了！\n不可以同時運行多個啟動器！\n點擊確認退出程序", "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
 			Environment.Exit(1);
 		}
 
 		public static void MessageBoxType3(string RootDirectory)
 		{
 			DialogResult result = MessageBox.Show(
-				"找不到游戏文件！\n点击确认下载游戏文件到本程序目录，取消结束程序",
-				"确认操作",
+				"找不到遊戲文件！\n點擊確認下載遊戲文件到本程序目錄，取消結束程序",
+				"確認操作",
 				MessageBoxButtons.OKCancel,
 				MessageBoxIcon.Question);
 			
@@ -68,16 +68,16 @@ namespace KartRider
 				if (data != null)
 				{
 					await new PatchManager().StartPatchAsync(data.update_prefix, kartRiderDirectory).ConfigureAwait(false);
-					Console.WriteLine("游戏更新完成！");
+					Console.WriteLine("遊戲更新完成！");
 				}
 				else
 				{
-					MessageBox.Show("获取游戏版本失败！", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+					MessageBox.Show("獲取遊戲版本失敗！", "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
 				}
 			}
 			catch (Exception ex)
 			{
-				MessageBox.Show($"更新过程发生错误：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show($"更新過程發生錯誤：{ex.Message}", "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
 			finally
 			{
@@ -91,7 +91,7 @@ namespace KartRider
                 var packFolderManager = KartRhoFile.Dump(Path.GetFullPath(Path.Combine(kartRiderDirectory, @"Data\aaa.pk")));
 				if (packFolderManager == null)
 				{
-					MessageBox.Show("游戏文件校验失败，请检查更新服务器或手动修复游戏文件。", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+					MessageBox.Show("遊戲文件校驗失敗，請檢查更新伺服器或手動修復遊戲文件。", "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
 					Environment.Exit(1);
 				}
 				packFolderManager.Reset();
@@ -118,14 +118,14 @@ namespace KartRider
 			{
 				try
 				{
-					Console.WriteLine("[CheckGame] 启动更新线程");
+					Console.WriteLine("[CheckGame] 啟動更新線程");
 					CheckGameAsync(kartRiderDirectory).GetAwaiter().GetResult();
-					Console.WriteLine("[CheckGame] 更新线程完成");
+					Console.WriteLine("[CheckGame] 更新線程完成");
 				}
 				catch (Exception ex)
 				{
-					Console.WriteLine($"[CheckGame] 更新线程异常: {ex.GetType().Name}: {ex.Message}");
-					Console.WriteLine($"[CheckGame] 堆栈: {ex.StackTrace}");
+					Console.WriteLine($"[CheckGame] 更新線程異常: {ex.GetType().Name}: {ex.Message}");
+					Console.WriteLine($"[CheckGame] 堆棧: {ex.StackTrace}");
 					capturedException = ex;
 				}
 			})
@@ -134,15 +134,14 @@ namespace KartRider
 				Name = "GameUpdateThread"
 			};
 
-			Console.WriteLine("[CheckGame] 启动线程");
+			Console.WriteLine("[CheckGame] 啟動線程");
 			thread.Start();
-			Console.WriteLine("[CheckGame] 等待线程完成...");
-			thread.Join(); // 等待线程完成
-			Console.WriteLine("[CheckGame] 线程已结束");
-
+			Console.WriteLine("[CheckGame] 等待線程完成...");
+			thread.Join(); // 等待線程完成
+			Console.WriteLine("[CheckGame] 線程已結束");
 			if (capturedException != null)
 			{
-				MessageBox.Show($"更新过程发生错误：{capturedException.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show($"更新過程發生錯誤：{capturedException.Message}", "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
 		}
 	}

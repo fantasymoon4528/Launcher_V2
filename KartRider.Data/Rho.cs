@@ -144,7 +144,7 @@ namespace KartRider
                             var xdoc = XDocument.Load(tempXmlPath);
                             if (xdoc.Root == null)
                             {
-                                Console.WriteLine("Error: Root element is null");
+                                Console.WriteLine("錯誤：根元素為空");
                                 return null;
                             }
                             var childCounts = CountChildren(xdoc.Root, 0, new List<int>());
@@ -196,7 +196,7 @@ namespace KartRider
                         }
                         catch (Exception ex)
                         {
-                            Console.WriteLine($"Error writing aaa.pk: {ex.Message}");
+                            Console.WriteLine($"錯誤：寫入 aaa.pk 失敗: {ex.Message}");
                             return null;
                         }
                     }
@@ -206,13 +206,13 @@ namespace KartRider
                 PackFolderManager packFolderManager = new PackFolderManager();
                 try
                 {
-                    Console.WriteLine("开始读取游戏Data内文件...");
+                    Console.WriteLine("開始讀取遊戲Data內文件...");
                     Console.WriteLine("==============================");
                     packFolderManager.OpenDataFolder(input);
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Error opening modified aaa.pk: {ex.Message}");
+                    Console.WriteLine($"錯誤：打開修改後的 aaa.pk 失敗: {ex.Message}");
                     return null;
                 }
 
@@ -650,7 +650,7 @@ namespace KartRider
                                     }
                                     else
                                     {
-                                        Console.WriteLine($"无法将 '{idxValue}' 转换为 short 类型");
+                                        Console.WriteLine($"無法將 '{idxValue}' 轉換為 short 類型");
                                     }
                                 }
                             }
@@ -892,11 +892,11 @@ namespace KartRider
                                     // 解析开始时间（格式：yyyy-MM-ddTHH:mm:ss）
                                     if (periodParts.Length != 2 || !DateTime.TryParse(periodParts[0], out DateTime startTime))
                                     {
-                                        Console.WriteLine($"警告：{channelValue.Name} 的openPeriod格式错误，跳过该节点：{openPeriod}");
+                                        Console.WriteLine($"警告：{channelValue.Name} 的openPeriod格式錯誤，跳過該節點：{openPeriod}");
                                         continue;
                                     }
 
-                                    // 当前时间 >= 开始时间 → 加入结果（*表示无结束时间）
+                                    // 當前時間 >= 開始時間 → 加入結果（*表示無結束時間）
                                     if (now >= startTime)
                                     {
                                         GameSupport.Channels.TryAdd(i++, channelValue);
@@ -1243,7 +1243,7 @@ namespace KartRider
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error reading aaa.pk: {ex.Message}");
+                Console.WriteLine($"錯誤：讀取 aaa.pk 失敗: {ex.Message}");
                 // If reading fails, return null
                 return null;
             }
@@ -1306,7 +1306,7 @@ namespace KartRider
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error extracting regionCode: {ex.Message}");
+                Console.WriteLine($"錯誤：提取 regionCode 失敗: {ex.Message}");
             }
             return regionCode;
         }

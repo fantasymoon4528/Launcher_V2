@@ -82,7 +82,7 @@ class MemoryModifier
             };
 
             process = Process.Start(startInfo);
-            Console.WriteLine($"进程已启动, ID: {process.Id}");
+            Console.WriteLine($"進程已啟動, ID: {process.Id}");
 
             // 2. 等待进程初始化（根据实际情况调整等待时间，确保进程加载完成）
             Thread.Sleep(1000); // 等待1秒（可根据需要延长）
@@ -95,20 +95,20 @@ class MemoryModifier
         }
         catch (System.ComponentModel.Win32Exception ex)
         {
-            Console.WriteLine($"UAC取消或权限不足: {ex.Message}");
+            Console.WriteLine($"UAC取消或權限不足: {ex.Message}");
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"操作失败: {ex.Message}");
+            Console.WriteLine($"操作失敗: {ex.Message}");
         }
         finally
         {
-            process?.Dispose(); // 释放进程资源（不影响目标进程运行）
+            process?.Dispose(); // 釋放進程資源（不影響目標進程運行）
         }
     }
 
     /// <summary>
-    /// 在目标进程中查找特征码并修改
+    /// 在目標進程中查找特徵碼並修改
     /// </summary>
     /// <param name="processId">进程ID</param>
     /// <param name="searchBytes">要查找的字节序列</param>
@@ -117,12 +117,11 @@ class MemoryModifier
     private bool ModifyMemory(int processId, byte[] searchBytes, byte[] replaceBytes)
     {
         if (searchBytes.Length != replaceBytes.Length)
-            Console.WriteLine("查找和替换的字节长度必须一致");
+            Console.WriteLine("查找和替換的字節長度必須一致");
 
         IntPtr hProcess = OpenProcess(PROCESS_ACCESS_FLAGS, false, processId);
         if (hProcess == IntPtr.Zero)
-            Console.WriteLine("无法打开进程, 可能权限不足");
-
+            Console.WriteLine("無法打開進程, 可能權限不足");
         try
         {
             IntPtr address = IntPtr.Zero;
@@ -147,7 +146,7 @@ class MemoryModifier
                         {
                             // 计算实际内存地址
                             IntPtr targetAddress = IntPtr.Add(mbi.BaseAddress, index);
-                            Console.WriteLine($"找到特征码, 地址: 0x{targetAddress:X}");
+                            Console.WriteLine($"找到特徵碼, 地址: 0x{targetAddress:X}");
 
                             // 修改内存
                             if (WriteProcessMemory(hProcess, targetAddress, replaceBytes, replaceBytes.Length, out int bytesWritten) && bytesWritten == replaceBytes.Length)
@@ -156,7 +155,7 @@ class MemoryModifier
                             }
                             else
                             {
-                                Console.WriteLine("写入内存失败, 可能没有写入权限");
+                                Console.WriteLine("寫入內存失敗, 可能沒有寫入權限");
                             }
                         }
                     }
@@ -238,7 +237,7 @@ class MemoryModifier
         }
         else
         {
-            Console.WriteLine("不支持的数据类型");
+            Console.WriteLine("不支持的數據類型");
             return false;
         }
 
@@ -246,7 +245,7 @@ class MemoryModifier
         IntPtr hProcess = OpenProcess(PROCESS_ACCESS_FLAGS, false, processId);
         if (hProcess == IntPtr.Zero)
         {
-            Console.WriteLine("无法打开进程, 可能权限不足");
+            Console.WriteLine("無法打開進程, 可能權限不足");
             return false;
         }
 
@@ -255,12 +254,12 @@ class MemoryModifier
             // 写入内存
             if (WriteProcessMemory(hProcess, address, bytesToWrite, bytesToWrite.Length, out int bytesWritten) && bytesWritten == bytesToWrite.Length)
             {
-                Console.WriteLine($"成功修改地址 0x{address:X} 的内存值为 {newValue}");
+                Console.WriteLine($"成功修改地址 0x{address:X} 的內存值為 {newValue}");
                 return true;
             }
             else
             {
-                Console.WriteLine($"写入内存地址 0x{address:X} 失败, 可能没有写入权限");
+                Console.WriteLine($"寫入內存地址 0x{address:X} 失敗, 可能沒有寫入權限");
                 return false;
             }
         }

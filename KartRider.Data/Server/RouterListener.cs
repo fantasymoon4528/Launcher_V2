@@ -51,7 +51,7 @@ namespace KartRider
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"发生异常：{ex.Message}");
+                Console.WriteLine($"發生異常：{ex.Message}");
             }
             finally
             {
@@ -75,7 +75,7 @@ namespace KartRider
                 var RouterIPList = LanIpGetter.GetAllLocalLanIps();
                 foreach (var ip in RouterIPList)
                 {
-                    Console.WriteLine("Load server IP: {0}:{1}", ip, ProfileService.SettingConfig.ServerPort);
+                    Console.WriteLine("載入伺服器 IP: {0}:{1}", ip, ProfileService.SettingConfig.ServerPort);
                 }
                 RouterListener.Listener.Start();
                 RouterListener.Listener.BeginAcceptSocket(OnAcceptSocket, RouterListener.Listener);

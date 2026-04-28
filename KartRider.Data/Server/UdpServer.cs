@@ -48,7 +48,7 @@ namespace KartRider
             {
                 if (_isRunning)
                 {
-                    Console.WriteLine($"[{_serverName}] 服务端已启动，无需重复启动");
+                    Console.WriteLine($"[{_serverName}] 服務端已啟動，無需重複啟動");
                     return;
                 }
 
@@ -58,20 +58,20 @@ namespace KartRider
                     _udpClient = new UdpClient(_listenPort);
                     _isRunning = true;
 
-                    Console.WriteLine($"[{_serverName}] 服务端启动成功，监听端口：{_listenPort}");
-                    Console.WriteLine($"[{_serverName}] 等待客户端数据...\n");
+                    Console.WriteLine($"[{_serverName}] 服務端啟動成功，監聽端口：{_listenPort}");
+                    Console.WriteLine($"[{_serverName}] 等待客戶端數據...\n");
 
-                    // 开始异步接收数据（APM模式）
+                    // 開始異步接收數據（APM模式）
                     BeginReceive();
                 }
                 catch (SocketException ex)
                 {
-                    Console.WriteLine($"[{_serverName}] 启动失败：{ex.Message}（端口可能被占用）");
+                    Console.WriteLine($"[{_serverName}] 啟動失敗：{ex.Message}（端口可能被占用）");
                     _isRunning = false;
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"[{_serverName}] 启动异常：{ex.Message}");
+                    Console.WriteLine($"[{_serverName}] 啟動異常：{ex.Message}");
                     _isRunning = false;
                 }
             }
@@ -86,7 +86,7 @@ namespace KartRider
             {
                 if (!_isRunning)
                 {
-                    Console.WriteLine($"[{_serverName}] 服务端未启动，无需停止");
+                    Console.WriteLine($"[{_serverName}] 服務端未啟動，無需停止");
                     return;
                 }
 
@@ -96,11 +96,11 @@ namespace KartRider
                 {
                     // 关闭UDP客户端（终止异步接收）
                     _udpClient?.Close();
-                    Console.WriteLine($"[{_serverName}] 服务端停止成功");
+                    Console.WriteLine($"[{_serverName}] 服務端停止成功");
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"[{_serverName}] 停止异常：{ex.Message}");
+                    Console.WriteLine($"[{_serverName}] 停止異常：{ex.Message}");
                 }
                 finally
                 {
@@ -127,7 +127,7 @@ namespace KartRider
             {
                 if (_isRunning) // 仅在运行中时打印异常（停止时的异常忽略）
                 {
-                    Console.WriteLine($"[{_serverName}] 接收数据异常：{ex.Message}");
+                    Console.WriteLine($"[{_serverName}] 接收數據異常：{ex.Message}");
                     // 延迟重试接收（避免异常循环）
                     ThreadPool.QueueUserWorkItem(_ =>
                     {
@@ -274,30 +274,30 @@ namespace KartRider
                         }
                         else
                         {
-                            Console.WriteLine($"Unknown Packet on UDP : {packetValue}");
+                            Console.WriteLine($"未知的 UDP 数据包：{packetValue}");
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"[{_serverName}{clientEP.Address}:{clientEP.Port}] 处理数据异常：{ex.Message}");
+                    Console.WriteLine($"[{_serverName}{clientEP.Address}:{clientEP.Port}] 處理數據異常：{ex.Message}");
                 }
             }
             catch (ObjectDisposedException)
             {
-                // 服务端停止时触发，忽略
+                // 服務端停止時觸發，忽略
             }
             catch (SocketException ex)
             {
-                Console.WriteLine($"[{_serverName}{clientEP.Address}:{clientEP.Port}] 处理数据异常：{ex.Message}，错误码：{ex.SocketErrorCode}");
+                Console.WriteLine($"[{_serverName}{clientEP.Address}:{clientEP.Port}] 處理數據異常：{ex.Message}，錯誤碼：{ex.SocketErrorCode}");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[{_serverName}{clientEP.Address}:{clientEP.Port}] 处理数据异常：{ex.Message}");
+                Console.WriteLine($"[{_serverName}{clientEP.Address}:{clientEP.Port}] 處理數據異常：{ex.Message}");
             }
             finally
             {
-                // 持续接收下一个数据包（核心：循环异步接收）
+                // 持續接收下一個數據包（核心：循環異步接收）
                 if (_isRunning)
                 {
                     BeginReceive();
@@ -327,7 +327,7 @@ namespace KartRider
                     }
                     else
                     {
-                        Console.WriteLine($"发送失败（部分发送）：{sentBytes} / {data.Length}");
+                        Console.WriteLine($"發送失敗（部分發送）：{sentBytes} / {data.Length}");
                         return false;
                     }
                 }
@@ -338,12 +338,12 @@ namespace KartRider
             }
             catch (SocketException ex)
             {
-                Console.WriteLine($"发送失败（网络错误）：{ex.Message}，错误码：{ex.SocketErrorCode}");
+                Console.WriteLine($"發送失敗（網絡錯誤）：{ex.Message}，錯誤碼：{ex.SocketErrorCode}");
                 return false;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"发送失败：{ex.Message}");
+                Console.WriteLine($"發送失敗：{ex.Message}");
                 return false;
             }
         }

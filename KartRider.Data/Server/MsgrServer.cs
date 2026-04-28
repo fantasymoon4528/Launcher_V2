@@ -54,7 +54,7 @@ namespace KartRider
             {
                 if (_isRunning)
                 {
-                    Console.WriteLine($"[{_serverName}] 服务端已启动，无需重复启动");
+                    Console.WriteLine($"[{_serverName}] 服務端已啟動，無需重複啟動");
                     return;
                 }
 
@@ -65,20 +65,20 @@ namespace KartRider
                     _tcpListener.Start();
                     _isRunning = true;
 
-                    Console.WriteLine($"[{_serverName}] 服务端启动成功，监听端口：{_listenPort}");
-                    Console.WriteLine($"[{_serverName}] 等待客户端连接...\n");
+                    Console.WriteLine($"[{_serverName}] 服務端啟動成功，監聽端口：{_listenPort}");
+                    Console.WriteLine($"[{_serverName}] 等待客戶端連線...\n");
 
                     // 开始异步接受连接
                     BeginAcceptClient();
                 }
                 catch (SocketException ex)
                 {
-                    Console.WriteLine($"[{_serverName}] 启动失败：{ex.Message}（端口可能被占用）");
+                    Console.WriteLine($"[{_serverName}] 啟動失敗：{ex.Message}（端口可能被占用）");
                     _isRunning = false;
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"[{_serverName}] 启动异常：{ex.Message}");
+                    Console.WriteLine($"[{_serverName}] 啟動異常：{ex.Message}");
                     _isRunning = false;
                 }
             }
@@ -93,7 +93,7 @@ namespace KartRider
             {
                 if (!_isRunning)
                 {
-                    Console.WriteLine($"[{_serverName}] 服务端未启动，无需停止");
+                    Console.WriteLine($"[{_serverName}] 服務端未啟動，無需停止");
                     return;
                 }
 
@@ -103,15 +103,15 @@ namespace KartRider
                 {
                     // 停止TCP监听器
                     _tcpListener?.Stop();
-                    Console.WriteLine($"[{_serverName}] 服务端停止成功");
+                    Console.WriteLine($"[{_serverName}] 服務端停止成功");
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"[{_serverName}] 停止异常：{ex.Message}");
+                    Console.WriteLine($"[{_serverName}] 停止異常：{ex.Message}");
                 }
                 finally
                 {
-                    // 释放资源
+                    // 釋放資源
                     _tcpListener = null;
                 }
             }
@@ -134,7 +134,7 @@ namespace KartRider
             {
                 if (_isRunning) // 仅在运行中时打印异常（停止时的异常忽略）
                 {
-                    Console.WriteLine($"[{_serverName}] 接受连接异常：{ex.Message}");
+                    Console.WriteLine($"[{_serverName}] 接受連線異常：{ex.Message}");
                     // 延迟重试接受连接（避免异常循环）
                     ThreadPool.QueueUserWorkItem(_ =>
                     {
@@ -160,7 +160,7 @@ namespace KartRider
             {
                 // 结束异步接受连接，获取客户端
                 client = _tcpListener.EndAcceptTcpClient(ar);
-                Console.WriteLine($"[{_serverName}] 客户端连接成功：{client.Client.RemoteEndPoint}");
+                Console.WriteLine($"[{_serverName}] 客戶端連線成功：{client.Client.RemoteEndPoint}");
 
                 // 为每个客户端创建一个缓冲区并开始异步接收数据
                 var clientState = new ClientState { Client = client, Buffer = new byte[4096] };
@@ -172,11 +172,11 @@ namespace KartRider
             }
             catch (SocketException ex)
             {
-                Console.WriteLine($"[{_serverName}] 接受连接异常：{ex.Message}，错误码：{ex.SocketErrorCode}");
+                Console.WriteLine($"[{_serverName}] 接受連線異常：{ex.Message}，錯誤碼：{ex.SocketErrorCode}");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[{_serverName}] 接受连接异常：{ex.Message}");
+                Console.WriteLine($"[{_serverName}] 接受連線異常：{ex.Message}");
                 client?.Close();
             }
             finally
@@ -207,7 +207,7 @@ namespace KartRider
             {
                 if (_isRunning)
                 {
-                    Console.WriteLine($"[{_serverName}] 接收数据异常：{ex.Message}");
+                    Console.WriteLine($"[{_serverName}] 接收數據異常：{ex.Message}");
                     CloseClient(clientState);
                 }
             }
@@ -350,16 +350,16 @@ namespace KartRider
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"[{_serverName}] 处理数据异常：{ex.Message}");
+                        Console.WriteLine($"[{_serverName}] 處理數據異常：{ex.Message}");
                     }
 
-                    // 继续接收下一个数据包
+                    // 繼續接收下一個數據包
                     BeginReceive(clientState);
                 }
                 else
                 {
-                    // 客户端关闭连接
-                    Console.WriteLine($"[{_serverName}] 客户端断开连接：{clientState.Client.Client.RemoteEndPoint}");
+                    // 客戶端關閉連線
+                    Console.WriteLine($"[{_serverName}] 客戶端斷開連線：{clientState.Client.Client.RemoteEndPoint}");
                     CloseClient(clientState);
                 }
             }
@@ -369,12 +369,12 @@ namespace KartRider
             }
             catch (SocketException ex)
             {
-                Console.WriteLine($"[{_serverName}] 处理数据异常：{ex.Message}，错误码：{ex.SocketErrorCode}");
+                Console.WriteLine($"[{_serverName}] 處理數據異常：{ex.Message}，錯誤碼：{ex.SocketErrorCode}");
                 CloseClient(clientState);
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[{_serverName}] 处理数据异常：{ex.Message}");
+                Console.WriteLine($"[{_serverName}] 處理數據異常：{ex.Message}");
                 CloseClient(clientState);
             }
         }
@@ -405,13 +405,13 @@ namespace KartRider
             }
             catch (SocketException ex)
             {
-                Console.WriteLine($"发送失败（网络错误）：{ex.Message}，错误码：{ex.SocketErrorCode}");
+                Console.WriteLine($"發送失敗（網絡錯誤）：{ex.Message}，錯誤碼：{ex.SocketErrorCode}");
                 CloseClient(clientState);
                 return false;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"发送失败：{ex.Message}");
+                Console.WriteLine($"發送失敗：{ex.Message}");
                 CloseClient(clientState);
                 return false;
             }
@@ -433,7 +433,7 @@ namespace KartRider
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[{_serverName}] 发送完成异常：{ex.Message}");
+                Console.WriteLine($"[{_serverName}] 發送完成異常：{ex.Message}");
                 CloseClient(clientState);
             }
         }
@@ -459,12 +459,12 @@ namespace KartRider
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[{_serverName}] 关闭客户端异常：{ex.Message}");
+                Console.WriteLine($"[{_serverName}] 關閉客戶端異常：{ex.Message}");
             }
         }
 
         /// <summary>
-        /// 客户端状态类
+        /// 客戶端狀態類
         /// </summary>
         public class ClientState
         {

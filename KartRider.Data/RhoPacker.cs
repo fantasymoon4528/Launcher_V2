@@ -145,7 +145,7 @@ internal static class RhoPacker
         }
         else
         {
-            Console.WriteLine($"路径不存在：{output}");
+            Console.WriteLine($"路徑不存在：{output}");
         }
     }
 

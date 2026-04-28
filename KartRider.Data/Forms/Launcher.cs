@@ -66,10 +66,10 @@ namespace KartRider
             try
             {
                 ClientVersion.Text = ProfileService.SettingConfig.ClientVersion.ToString();
-                Console.WriteLine($"ClientVersion: {ClientVersion.Text}");
+                Console.WriteLine($"客戶端版本: {ClientVersion.Text}");
                 Console.WriteLine($"程序編譯時間: {CompileTime.Time}");
                 VersionLabel.Text = CompileTime.Time;
-                Console.WriteLine("Process: {0}", KartRider);
+                Console.WriteLine("進程: {0}", KartRider);
             }
             catch (Exception ex)
             {
@@ -117,7 +117,7 @@ namespace KartRider
 
             RestorePinFile();
 
-            Console.WriteLine("Backing up old PinFile...");
+            Console.WriteLine("正在備份舊的PinFile檔。.");
             Console.WriteLine(pinFile);
 
             try
@@ -145,7 +145,7 @@ namespace KartRider
             {
                 foreach (PINFile.AuthMethod authMethod in val.AuthMethods)
                 {
-                    Console.WriteLine("Changing IP Addr to local... {0}", authMethod.Name);
+                    Console.WriteLine("將 IP 位址變更為本機... {0}", authMethod.Name);
                     authMethod.LoginServers?.Clear();
                     authMethod.LoginServers?.Add(new PINFile.IPEndPoint
                     {
@@ -163,7 +163,7 @@ namespace KartRider
                     {
                         for (int i = bml.SubObjects.Count - 1; i >= 0; i--)
                         {
-                            Console.WriteLine("Removing {0}", bml.SubObjects[i].Item1);
+                            Console.WriteLine("正在移除 {0}", bml.SubObjects[i].Item1);
                             if (bml.SubObjects[i].Item1 == "NgsOn")
                             {
                                 bml.SubObjects.RemoveAt(i);

@@ -87,7 +87,7 @@ public static class MultyPlayer
         var room = RoomManager.GetRoom(roomId);
         if (room == null)
         {
-            Console.WriteLine($"房间 {roomId} 不存在");
+            Console.WriteLine($"房間 {roomId} 不存在");
             return;
         }
 
@@ -129,7 +129,7 @@ public static class MultyPlayer
         // 场景1：等待所有值变为true（循环直到全部为true）
         while (!allReady)
         {
-            Console.WriteLine("存在未就绪的玩家，等待中...");
+            Console.WriteLine("存在未就緒的玩家，等待中...");
 
             // 模拟：重新检查字典值（实际场景中可替换为刷新数据的逻辑）
             allReady = true;
@@ -174,7 +174,7 @@ public static class MultyPlayer
     {
         if (room.StartTicks != 0)
         {
-            Console.WriteLine("startTrigger: room.StartTicks 已经设置,跳过执行");
+            Console.WriteLine("startTrigger: room.StartTicks 已經設置,跳過執行");
             return;
         }
         room.StartTicks = ConvertTick() + 3000;
@@ -397,7 +397,7 @@ public static class MultyPlayer
                     }
                 }
             }
-            Console.WriteLine("红队得分 {0} 蓝队得分 {1}", redTeam, blueTeam);
+            Console.WriteLine("紅隊得分 {0} 藍隊得分 {1}", redTeam, blueTeam);
             outPacket.WriteBytes(new byte[34]);
             outPacket.WriteHexString("FF FF FF FF 00 00 00 00 00");
             BroadCast(roomId, outPacket);
@@ -930,7 +930,7 @@ public static class MultyPlayer
             int slotId = RoomManager.GetPlayerSlotId(roomId, Parent.Nickname);
             if (slotId != -1)
             {
-                Console.WriteLine($"Leave roomId: {roomId} slotId: {slotId}");
+                Console.WriteLine($"離開房間號: {roomId} slotId: {slotId}");
                 var Leave = RoomManager.RemovePlayer(roomId, (byte)slotId, Parent.Nickname);
                 using (OutPacket oPacket = new OutPacket("ChLeaveRoomReplyPacket"))
                 {
@@ -940,7 +940,7 @@ public static class MultyPlayer
             }
             else
             {
-                Console.WriteLine($"Leave Failed roomId: {roomId} slotId: {slotId}");
+                Console.WriteLine($"離開失敗房間ID: {roomId} slotId: {slotId}");
                 using (OutPacket oPacket = new OutPacket("ChLeaveRoomReplyPacket"))
                 {
                     oPacket.WriteBool(false);
@@ -1000,7 +1000,7 @@ public static class MultyPlayer
                 BroadCast(roomId, oPacket);
             }
             room.TimeData.TryAdd(Id, Time);
-            Console.WriteLine("GameAiGoalinPacket, Id = {0}, Time = {1}", Id, Time);
+            Console.WriteLine("遊戲AI目標在資料包中, Id = {0}, Time = {1}", Id, Time);
             if (room.EndTicks == 0)
             {
                 room.EndTicks = ConvertTick() + 10000;
@@ -1025,7 +1025,7 @@ public static class MultyPlayer
             }
             var team = iPacket.ReadByte();
             var value = iPacket.ReadFloat();
-            Console.WriteLine("GameTeamBoosterRequestAddGaugePacket, teams = {0}, value = {1}", team, value);
+            Console.WriteLine("遊戲隊伍加速請求增加儀表包, 隊伍 = {0}, 值 = {1}", team, value);
 
             if (team == 1)
             {
@@ -1064,12 +1064,12 @@ public static class MultyPlayer
             var player = RoomManager.GetPlayer(roomId, Parent.Nickname);
             if (player == null)
             {
-                Console.WriteLine("GetPlayer Failed, roomId = {0}, Parent.Nickname = {1}", roomId, Parent.Nickname);
+                Console.WriteLine("取得玩家失敗, 房間 ID = {0}, 玩家暱稱 = {1}", roomId, Parent.Nickname);
                 return;
             }
             byte team = iPacket.ReadByte();
             var Bool = RoomManager.ChangeMemberTeam(roomId, player.SlotId, team);
-            Console.WriteLine("ChangeMemberTeam, roomId = {0}, SlotId = {1}, Team = {2}, {3}", roomId, player.SlotId, team, Bool);
+            Console.WriteLine("ChangeMemberTeam, 房間 ID = {0}, 插槽 ID = {1}, 隊伍 = {2}, 結果 = {3}", roomId, player.SlotId, team, Bool);
             using (OutPacket oPacket = new OutPacket("GrChangeTeamPacketReply"))
             {
                 oPacket.WriteInt(player.ID);
@@ -1085,7 +1085,7 @@ public static class MultyPlayer
             var roomId = iPacket.ReadByte();
             var unk = iPacket.ReadByte();
             var pwd = iPacket.ReadString();
-            Console.WriteLine("ChJoinRoomRequestPacket, roomId = {0}, unk = {1}, pwd = {2}", roomId, unk, pwd);
+            Console.WriteLine("加入房間請求資料包, 房間 ID = {0}, unk = {1}, 密碼 = {2}", roomId, unk, pwd);
 
             ChJoinRoomReplyPacket(Parent, roomId, pwd);
             return;
@@ -1101,14 +1101,14 @@ public static class MultyPlayer
             var room = RoomManager.GetRoom(roomId);
             if (room == null)
             {
-                Console.WriteLine("GetRoom Failed, roomId = {0}", roomId);
+                Console.WriteLine("取得房間失敗, 房間 ID = {0}", roomId);
                 return;
             }
 
             var player = RoomManager.GetPlayer(roomId, Parent.Nickname);
             if (player == null)
             {
-                Console.WriteLine("GetPlayer Failed, roomId = {0}, Parent.Nickname = {1}", roomId, Parent.Nickname);
+                Console.WriteLine("取得玩家失敗, 房間 ID = {0}, 玩家暱稱 = {1}", roomId, Parent.Nickname);
                 return;
             }
 
@@ -1173,7 +1173,7 @@ public static class MultyPlayer
             var room = RoomManager.GetRoom(roomId);
             if (room == null)
             {
-                Console.WriteLine("GetRoom Failed, roomId = {0}", roomId);
+                Console.WriteLine("取得房間失敗, 房間 ID = {0}", roomId);
                 return;
             }
             string Target = iPacket.ReadString();
@@ -1233,13 +1233,13 @@ public static class MultyPlayer
             int roomId = RoomManager.TryGetRoomId(Parent.Nickname);
             if (roomId == -1)
             {
-                Console.WriteLine("TryGetRoomId Failed, Parent.Nickname = {0}", Parent.Nickname);
+                Console.WriteLine("取得房間 ID 失敗, 玩家暱稱 = {0}", Parent.Nickname);
                 return;
             }
             var room = RoomManager.GetRoom(roomId);
             if (room == null)
             {
-                Console.WriteLine("GetRoom Failed, roomId = {0}", roomId);
+                Console.WriteLine("取得房間失敗, 房間 ID = {0}", roomId);
                 return;
             }
             room.RoomName = RoomName;
@@ -1269,7 +1269,7 @@ public static class MultyPlayer
             int roomId = RoomManager.TryGetRoomId(Parent.Nickname);
             if (roomId == -1)
             {
-                Console.WriteLine("TryGetRoomId Failed, Parent.Nickname = {0}", Parent.Nickname);
+                Console.WriteLine("取得房間 ID 失敗, 玩家暱稱 = {0}", Parent.Nickname);
                 return;
             }
             int ID = iPacket.ReadInt();
@@ -1446,7 +1446,7 @@ public static class MultyPlayer
             {
                 var pConfig = ProfileService.GetProfileConfig(p.Nickname);
 
-                Console.WriteLine("Player Nickname = {0}, ID = {1}, SlotId = {2}", p.Nickname, p.ID, p.SlotId);
+                Console.WriteLine("玩家暱稱 = {0}, ID = {1}, 插槽 ID = {2}", p.Nickname, p.ID, p.SlotId);
                 if (enter)
                 {
                     outPacket.WriteInt(3);
@@ -1510,7 +1510,7 @@ public static class MultyPlayer
             }
             else if (member is Ai a)
             {
-                Console.WriteLine("Ai ID = {0}, SlotId = {1}", a.ID, a.SlotId);
+                Console.WriteLine("AI ID = {0}, 插槽 ID = {1}", a.ID, a.SlotId);
                 outPacket.WriteInt(7);
                 outPacket.WriteShort(a.Character);
                 outPacket.WriteShort(a.Rid);
@@ -1661,7 +1661,7 @@ public static class MultyPlayer
             oPacket.WriteUInt(Adler32Helper.GenerateAdler32(Encoding.ASCII.GetBytes("MissionInfo")));
             oPacket.WriteHexString("00 00 00 00 00 00 00 00 00 00 FF FF FF FF 00 00 00 00 00 00 00 00 00");
             //oPacket.WriteString("[applied param]\r\ntransAccelFactor='1.8555' driftEscapeForce='4720' steerConstraint='24.95' normalBoosterTime='3860' \r\npartsBoosterLock='1' \r\n\r\n[equipped / default parts param]\r\ntransAccelFactor='1.86' driftEscapeForce='2120' steerConstraint='2.7' normalBoosterTime='860' \r\n\r\n\r\n[gamespeed param]\r\ntransAccelFactor='-0.0045' driftEscapeForce='2600' steerConstraint='22.25' normalBoosterTime='3000' \r\n\r\n\r\n[factory enchant param]\r\n");
-            Console.WriteLine("Track : {0}", RandomTrack.GetTrackName(room.trackTemp));
+            Console.WriteLine("賽道 : {0}", RandomTrack.GetTrackName(room.trackTemp));
             p.Session.Client.Send(oPacket);
         }
     }
@@ -1681,7 +1681,7 @@ public static class MultyPlayer
         var room = RoomManager.GetRoom(roomId);
         if (room == null)
         {
-            Console.WriteLine("GetRoom Failed, roomId = {0}", roomId);
+            Console.WriteLine("取得房間失敗, 房間 ID = {0}", roomId);
         }
         outPacket.WriteString(room.RoomName);
         outPacket.WriteString(room.LockPwd);
@@ -1930,7 +1930,7 @@ public static class MultyPlayer
         var room = RoomManager.GetRoom(roomId);
         if (room == null)
         {
-            Console.WriteLine("GetRoom Failed, roomId = {0}", roomId);
+            Console.WriteLine("取得房間失敗, 房間 ID = {0}", roomId);
         }
         var selector = new DictionaryRandomSelector();
         List<short> randomCharIds = selector.GetRandomCharacterIds(aiCharacterDict, 2);

@@ -32,28 +32,28 @@ public class PatchManager
             string PatchListPath = Path.Combine(gamePath, "NT.txf");
 
             ServicePointManager.DefaultConnectionLimit = 100;
-            Console.WriteLine("=== 跑跑卡丁车自动更新器 ===");
+            Console.WriteLine("=== 跑跑卡丁車自動更新器 ===");
 
             if (!Directory.Exists(TempPath))
                 Directory.CreateDirectory(TempPath);
 
-            Console.WriteLine("正在下载补丁列表...");
+            Console.WriteLine("正在下載補丁列表...");
             Console.WriteLine($"URL: {PatchListUrl}");
-            Console.WriteLine($"保存路径: {PatchListPath}");
+            Console.WriteLine($"保存路徑: {PatchListPath}");
 
-            // 下载补丁列表到 gamePath 目录
+            // 下載補丁列表到 gamePath 目錄
             await DownloadFileAsync(PatchListUrl, PatchListPath);
 
-            Console.WriteLine("补丁列表下载完成，正在解析...");
+            Console.WriteLine("補丁列表下載完成，正在解析...");
 
-            // 从本地文件读取内容
+            // 從本地文件讀取內容
             var content = await File.ReadAllTextAsync(PatchListPath);
             var lines = content.Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries);
             var items = ParsePatchLines(lines);
-            Console.WriteLine($"获取到 {items.Count} 个文件，开始校验更新...\n");
+            Console.WriteLine($"獲取到 {items.Count} 個文件，開始校驗更新...\n");
 
-            // 第一阶段：并行校验所有文件，收集需要下载的文件
-            Console.WriteLine("开始并行校验文件...");
+            // 第一階段：並行校驗所有文件，收集需要下載的文件
+            Console.WriteLine("開始並行校驗文件...");
             var filesToDownload = new List<PatchItem>();
             int checkedCount = 0;
             var checkLock = new object();
@@ -67,7 +67,7 @@ public class PatchManager
                     if (needsDownload)
                     {
                         filesToDownload.Add(item);
-                        Console.WriteLine($"[{checkedCount}/{items.Count}] {item.LocalPath} 需要下载");
+                        Console.WriteLine($"[{checkedCount}/{items.Count}] {item.LocalPath} 需要下載");
                     }
                     else
                     {
@@ -76,25 +76,25 @@ public class PatchManager
                 }
             });
 
-            Console.WriteLine($"\n校验完成：{items.Count - filesToDownload.Count} 个文件已最新，{filesToDownload.Count} 个文件需要下载\n");
+            Console.WriteLine($"\n校驗完成：{items.Count - filesToDownload.Count} 個文件已最新，{filesToDownload.Count} 個文件需要下載\n");
 
-            // 第二阶段：限制并发数并行下载
+            // 第二階段：限制並發數並行下載
             if (filesToDownload.Count > 0)
             {
-                Console.WriteLine($"开始并行下载（最多 {MaxParallelDownloads} 个文件同时下载）...\n");
+                Console.WriteLine($"開始並行下載（最多 {MaxParallelDownloads} 個文件同時下載）...\n");
                 var semaphore = new SemaphoreSlim(MaxParallelDownloads);
                 var downloadTasks = filesToDownload.Select(async item =>
                 {
                     await semaphore.WaitAsync();
                     try
                     {
-                        Console.WriteLine($"[下载开始] {item.LocalPath}");
+                        Console.WriteLine($"[下載開始] {item.LocalPath}");
                         await ProcessFileDownloadAsync(item, update_prefix, TempPath, gamePath);
-                        Console.WriteLine($"[下载完成] {item.LocalPath}");
+                        Console.WriteLine($"[下載完成] {item.LocalPath}");
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"[下载失败] {item.LocalPath}: {ex.Message}");
+                        Console.WriteLine($"[下載失敗] {item.LocalPath}: {ex.Message}");
                     }
                     finally
                     {
@@ -127,7 +127,7 @@ public class PatchManager
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"\n更新过程发生严重错误: {ex.Message}");
+            Console.WriteLine($"\n更新過程發生嚴重錯誤: {ex.Message}");
             Console.WriteLine($"堆栈: {ex.StackTrace}");
             throw;
         }
@@ -203,9 +203,9 @@ public class PatchManager
             var downMd5 = await Task.Run(() => GetFileMd5(tempFile));
             if (!string.Equals(downMd5, item.ServerMd5, StringComparison.OrdinalIgnoreCase))
             {
-                Console.WriteLine($"  {item.LocalPath} 下载MD5校验失败！");
+                Console.WriteLine($"  {item.LocalPath} 下載MD5校驗失敗！");
                 File.Delete(tempFile);
-                throw new Exception("MD5校验失败");
+                throw new Exception("MD5校驗失敗");
             }
 
             // 移动到目标位置
@@ -218,14 +218,14 @@ public class PatchManager
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"  {item.LocalPath} 处理失败：{ex.Message}");
+            Console.WriteLine($"  {item.LocalPath} 處理失敗：{ex.Message}");
             throw;
         }
     }
 
     private async Task ProcessFileAsync(PatchItem item, string update_prefix, string TempPath, string gamePath)
     {
-        Console.WriteLine($"检查：{item.LocalPath}");
+        Console.WriteLine($"檢查：{item.LocalPath}");
 
         try
         {
@@ -236,18 +236,18 @@ public class PatchManager
             // 检查文件是否存在且MD5匹配
             if (File.Exists(filePath))
             {
-                Console.WriteLine($"→ 计算本地MD5...");
+                Console.WriteLine($"→ 計算本地MD5...");
                 var localMd5 = GetFileMd5(filePath);
                 if (string.Equals(localMd5, item.ServerMd5, StringComparison.OrdinalIgnoreCase))
                 {
-                    Console.WriteLine($"→ {filePath} 已最新，跳过\n");
+                    Console.WriteLine($"→ {filePath} 已最新，跳過\n");
                     return;
                 }
                 Console.WriteLine($"→ {filePath} MD5不匹配，需要更新");
             }
             else
             {
-                Console.WriteLine($"→ {filePath} 不存在，开始下载");
+                Console.WriteLine($"→ {filePath} 不存在，開始下載");
             }
 
             // 准备下载
@@ -255,7 +255,7 @@ public class PatchManager
             var url = update_prefix + "/" + item.LocalPath;
 
             Console.WriteLine($"→ URL: {url}");
-            Console.WriteLine($"→ 临时文件: {tempFile}");
+            Console.WriteLine($"→ 臨時文件: {tempFile}");
 
             // 确保临时目录存在
             var tempDir = Path.GetDirectoryName(tempFile);
@@ -266,11 +266,11 @@ public class PatchManager
             await DownloadWithRetryAsync(url, tempFile, item.TotalSize);
 
             // 校验MD5
-            Console.WriteLine($"→ 校验下载文件MD5...");
+            Console.WriteLine($"→ 校驗下載文件MD5...");
             var downMd5 = GetFileMd5(tempFile);
             if (!string.Equals(downMd5, item.ServerMd5, StringComparison.OrdinalIgnoreCase))
             {
-                Console.WriteLine($"→ {filePath} 下载MD5校验失败！");
+                Console.WriteLine($"→ {filePath} 下載MD5校驗失敗！");
                 File.Delete(tempFile);
                 return;
             }
@@ -287,8 +287,8 @@ public class PatchManager
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"→ {item.LocalPath} 处理失败：{ex.GetType().Name}: {ex.Message}");
-            Console.WriteLine($"→ 详细错误：{ex.StackTrace}\n");
+            Console.WriteLine($"→ {item.LocalPath} 處理失敗：{ex.GetType().Name}: {ex.Message}");
+            Console.WriteLine($"→ 詳細錯誤：{ex.StackTrace}\n");
             throw;
         }
     }
@@ -305,12 +305,12 @@ public class PatchManager
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"\n→ 下载失败 ({i + 1}/{MaxRetryCount}): {ex.Message}");
+                Console.WriteLine($"\n→ 下載失敗 ({i + 1}/{MaxRetryCount}): {ex.Message}");
                 if (i < MaxRetryCount - 1)
                     await Task.Delay(1000 * (i + 1));
             }
         }
-        throw new Exception("重试失败");
+        throw new Exception("重試失敗");
     }
 
     // 单线程下载（服务器不支持多线程），带进度显示
@@ -319,13 +319,13 @@ public class PatchManager
         var fileName = Path.GetFileName(savePath);
         var startTime = DateTime.Now;
 
-        Console.WriteLine($"→ 开始下载: {url}");
+        Console.WriteLine($"→ 開始下載: {url}");
 
-        // 使用 WebRequest 替代 HttpClient，避免同步上下文问题
+        // 使用 WebRequest 替代 HttpClient，避免同步上下文問題
         try
         {
             var request = (HttpWebRequest)WebRequest.Create(url);
-            request.Timeout = 600000; // 10分钟
+            request.Timeout = 600000; // 10分鐘
             request.ReadWriteTimeout = 600000;
             request.KeepAlive = true;
 
@@ -381,7 +381,7 @@ public class PatchManager
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"\n→ 下载异常: {ex.GetType().Name}: {ex.Message}");
+            Console.WriteLine($"\n→ 下載異常: {ex.GetType().Name}: {ex.Message}");
             throw;
         }
     }
@@ -425,7 +425,7 @@ public class PatchManager
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"  计算MD5失败: {ex.Message}");
+            Console.WriteLine($"  計算MD5失敗: {ex.Message}");
             throw;
         }
     }
@@ -495,7 +495,7 @@ public class PatchManager
 
     private async Task DownloadFileAsync(string url, string path)
     {
-        Console.WriteLine($"  [DownloadFile] 开始下载到: {path}");
+        Console.WriteLine($"  [DownloadFile] 開始下載到: {path}");
         try
         {
             var request = (HttpWebRequest)WebRequest.Create(url);
@@ -511,7 +511,7 @@ public class PatchManager
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"  [DownloadFile] 错误: {ex.GetType().Name}: {ex.Message}");
+            Console.WriteLine($"  [DownloadFile] 錯誤: {ex.GetType().Name}: {ex.Message}");
             throw;
         }
     }
@@ -598,15 +598,15 @@ public class PatchManager
 
         if (ClientVersion != ProfileService.SettingConfig.ClientVersion)
         {
-            // 弹出“是否”确认框
+            // 彈出“是否”確認框
             DialogResult result = MessageBox.Show(
-                $"与服务器版本不一致，是否需要更新游戏？",
-                "确认操作",
+                $"與伺服器版本不一致，是否需要更新遊戲？",
+                "確認操作",
                 MessageBoxButtons.YesNo,
                 MessageBoxIcon.Question
             );
 
-            // 根据用户选择执行对应逻辑
+            // 根據用戶選擇執行對應邏輯
             if (result == DialogResult.Yes)
             {
                 LauncherSystem.CheckGame(RootDirectory);
@@ -623,14 +623,14 @@ public class PatchManager
             return;
         }
 
-        // 拼接补丁程序路径
+        // 拼接補丁程序路徑
         string Patcher = Path.GetFullPath(Path.Combine(RootDirectory, "Patcher.exe"));
-        Console.WriteLine("启动路径：" + Patcher);
+        Console.WriteLine("啟動路徑：" + Patcher);
 
-        // 安全判断：文件必须存在
+        // 安全判斷：文件必須存在
         if (!File.Exists(Patcher))
         {
-            Console.WriteLine($"错误：找不到文件 {Patcher}");
+            Console.WriteLine($"錯誤：找不到文件 {Patcher}");
             return;
         }
 
@@ -647,9 +647,9 @@ public class PatchManager
 
             using (Process process = Process.Start(startInfo))
             {
-                Console.WriteLine("Patcher 已启动，等待更新完成...");
+                Console.WriteLine("Patcher 已啟動，等待更新完成...");
 
-                // ✅ 异步等待，不卡死，真正等它结束
+                // ✅ 異步等待，不卡死，真正等它結束
                 await process.WaitForExitAsync();
 
                 int exitCode = process.ExitCode;
@@ -657,7 +657,7 @@ public class PatchManager
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"更新启动失败：{ex.Message}");
+            Console.WriteLine($"更新啟動失敗：{ex.Message}");
         }
     }
 

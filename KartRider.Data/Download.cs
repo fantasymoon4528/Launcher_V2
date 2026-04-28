@@ -56,14 +56,14 @@ class MultiThreadedDownloader
             _fileTotalSize = await GetFileSizeAsync(_downloadUrl);
             if (_fileTotalSize <= 0)
             {
-                Console.WriteLine("无法获取文件大小，可能服务器不支持分片下载");
+                Console.WriteLine("無法取得檔案大小，可能伺服器不支援分片下載");
                 return false;
             }
 
             Console.WriteLine("==============================");
-            Console.WriteLine($"下载地址: {_downloadUrl}");
-            Console.WriteLine($"文件总大小: {FormatFileSize(_fileTotalSize)}");
-            Console.WriteLine($"使用 {_threadCount} 线程下载...");
+            Console.WriteLine($"下載地址: {_downloadUrl}");
+            Console.WriteLine($"檔案總大小: {FormatFileSize(_fileTotalSize)}");
+            Console.WriteLine($"使用 {_threadCount} 線程下載...");
 
             // 2. 创建临时目录
             if (!Directory.Exists(_tempDir))
@@ -120,16 +120,16 @@ class MultiThreadedDownloader
             // 区分是下载取消还是进度显示取消
             if (ex.CancellationToken == _downloadCancellationToken)
             {
-                Console.WriteLine($"\n下载已取消");
+                Console.WriteLine($"\n下載已取消");
             }
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"\n下载出错: {ex.Message}");
+            Console.WriteLine($"\n下載出錯: {ex.Message}");
         }
         finally
         {
-            // 确保清理资源
+            // 確保清理資源
             _downloadCancellationTokenSource?.Dispose();
             _progressCancellationTokenSource?.Dispose();
             // 清理临时文件
@@ -193,7 +193,7 @@ class MultiThreadedDownloader
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"\n线程 {threadIndex} 下载失败: {ex.Message}");
+            Console.WriteLine($"\n線程 {threadIndex} 下載失敗: {ex.Message}");
             // 下载失败，取消所有下载线程
             _downloadCancellationTokenSource.Cancel();
             throw;

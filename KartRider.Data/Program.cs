@@ -119,7 +119,7 @@ namespace KartRider
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"启动路由器监听失败: {ex.Message}");
+                        Console.WriteLine($"啟動路由器監聽失敗: {ex.Message}");
                     }
 
                     PatchManager.StartUpdateAsync(RootDirectory).Wait();
@@ -135,13 +135,13 @@ namespace KartRider
                     {
                         // 弹出“是否”确认框
                         DialogResult result = MessageBox.Show(
-                            $"读取游戏文件失败，是否需要更新或校验游戏？",
-                            "确认操作",
+                            $"讀取遊戲檔案失敗，是否需要更新或校驗遊戲？",
+                            "確認操作",
                             MessageBoxButtons.YesNo,
                             MessageBoxIcon.Question
                         );
 
-                        // 根据用户选择执行对应逻辑
+                        // 根據用戶選擇執行對應邏輯
                         if (result == DialogResult.Yes)
                         {
                             LauncherSystem.CheckGame(RootDirectory);
@@ -229,12 +229,12 @@ namespace KartRider
                 Console.InputEncoding = targetEncoding;
 
                 // 5. 验证编码是否生效（可选）
-                Console.WriteLine($"已适配编码: {targetEncoding.EncodingName}");
+                Console.WriteLine($"已適配編碼: {targetEncoding.EncodingName}");
             }
             catch (Exception ex)
             {
-                // 异常时使用系统默认编码作为最后保障
-                Console.WriteLine($"编码设置失败，使用默认编码: {ex.Message}");
+                // 異常時使用系統默認編碼作為最後保障
+                Console.WriteLine($"編碼設置失敗，使用默認編碼: {ex.Message}");
             }
         }
 
@@ -255,7 +255,7 @@ namespace KartRider
                 if (!File.Exists(localFilePath))
                 {
                     File.WriteAllText(localFilePath, ModelMax.XmlContent);
-                    Console.WriteLine($"ModelMax.xml已创建: {localFilePath}");
+                    Console.WriteLine($"ModelMax.xml已創建: {localFilePath}");
                 }
                 else
                 {
@@ -290,11 +290,11 @@ namespace KartRider
                     if (addedCount > 0)
                     {
                         localXml.Save(localFilePath, SaveOptions.None);
-                        Console.WriteLine($"ModelMax.xml已更新，新增 {addedCount} 个kart");
+                        Console.WriteLine($"ModelMax.xml已更新，新增 {addedCount} 個kart");
                     }
                     else
                     {
-                        Console.WriteLine("ModelMax.xml已是最新，无需更新");
+                        Console.WriteLine("ModelMax.xml已是最新，無需更新");
                     }
                 }
 
@@ -302,7 +302,7 @@ namespace KartRider
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"加载数据失败: {ex.Message}");
+                Console.WriteLine($"加載數據失敗: {ex.Message}");
             }
         }
     }
