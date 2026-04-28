@@ -18,6 +18,9 @@ public class TrackRank
 
 public static class TrackRankData
 {
+    public static Dictionary<byte, string> SpeedTypes = new Dictionary<byte, string> { {7, "标准"}, { 4, "无限" } };
+    public static Dictionary<byte, string> GameTypes = new Dictionary<byte, string> { { 0, "个人赛" }, { 4, "组队赛" } };
+
     public static void LoRpGetTrackRankPacket(SessionGroup Parent, uint track, byte SpeedType, byte GameType)
     {
         if (!Directory.Exists(FileName.Load_TrackRank))
@@ -73,9 +76,10 @@ public static class TrackRankData
         if (trackRanks.Contains(newRank))
         {
             var timeSpan = GetTimeSpan(newRank.Time);
+            int ranking = trackRanks.IndexOf(newRank) + 1;
             using (OutPacket outPacket = new OutPacket("PcSlaveNotice"))
             {
-                outPacket.WriteString($"{newRank.Nickname} / {RandomTrack.GetTrackName(track)} / {timeSpan.min}:{timeSpan.sec}:{timeSpan.mil}");
+                outPacket.WriteString($"{newRank.Nickname} / {SpeedTypes[SpeedType]}[{GameTypes[GameType]}] / 第{ranking}名 / {RandomTrack.GetTrackName(track)} / {timeSpan.min}:{timeSpan.sec}:{timeSpan.mil}");
                 foreach (SessionGroup Session in ClientManager._clientSessions.Values)
                 {
                     Session.Client.Send(outPacket);
