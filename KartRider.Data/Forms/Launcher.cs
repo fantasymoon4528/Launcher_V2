@@ -45,7 +45,7 @@ namespace KartRider
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"恢复 PIN 文件失败: {ex.Message}");
+                    Console.WriteLine($"恢復 PIN 檔案失敗: {ex.Message}");
                 }
             }
         }
@@ -59,7 +59,7 @@ namespace KartRider
         {
             if (string.IsNullOrEmpty(pinFile) || !File.Exists(pinFile))
             {
-                MessageBox.Show("PIN 文件路径无效或文件不存在！", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("PIN 檔案路徑無效或檔案不存在！ ", "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
@@ -67,13 +67,13 @@ namespace KartRider
             {
                 ClientVersion.Text = ProfileService.SettingConfig.ClientVersion.ToString();
                 Console.WriteLine($"ClientVersion: {ClientVersion.Text}");
-                Console.WriteLine($"程序编译时间: {CompileTime.Time}");
+                Console.WriteLine($"程序編譯時間: {CompileTime.Time}");
                 VersionLabel.Text = CompileTime.Time;
                 Console.WriteLine("Process: {0}", KartRider);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"加载 PIN 文件失败: {ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"加載 PIN 檔案失敗: {ex.Message}", "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -93,7 +93,7 @@ namespace KartRider
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"启动游戏失败: {ex.Message}");
+                        Console.WriteLine($"啟動遊戲失敗: {ex.Message}");
                     }
                 })
                 {
@@ -111,7 +111,7 @@ namespace KartRider
         {
             if (string.IsNullOrEmpty(pinFile) || !File.Exists(pinFile))
             {
-                Console.WriteLine("PIN 文件不存在，无法启动游戏");
+                Console.WriteLine("PIN 檔案不存在，無法啟動遊戲");
                 return;
             }
 
@@ -126,7 +126,7 @@ namespace KartRider
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"备份 PIN 文件失败: {ex.Message}");
+                Console.WriteLine($"備份 PIN 檔案失敗: {ex.Message}");
                 return;
             }
 
@@ -137,7 +137,7 @@ namespace KartRider
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"读取 PIN 文件失败: {ex.Message}");
+                Console.WriteLine($"讀取 PIN 檔案失敗: {ex.Message}");
                 return;
             }
 
@@ -180,7 +180,7 @@ namespace KartRider
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"写入 PIN 文件失败: {ex.Message}");
+                Console.WriteLine($"寫入 PIN 檔案失敗: {ex.Message}");
                 return;
             }
 
@@ -203,7 +203,7 @@ namespace KartRider
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"错误: {ex.Message}");
+                Console.WriteLine($"錯誤: {ex.Message}");
             }
         }
 
@@ -216,7 +216,7 @@ namespace KartRider
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"错误: {ex.Message}");
+                Console.WriteLine($"錯誤: {ex.Message}");
             }
         }
 
@@ -231,8 +231,8 @@ namespace KartRider
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"检查更新时出错: {ex.Message}");
-                MessageBox.Show($"检查更新失败: {ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Console.WriteLine($"檢查更新時出錯: {ex.Message}");
+                MessageBox.Show($"檢查更新失敗: {ex.Message}", "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -244,14 +244,14 @@ namespace KartRider
             var data = await global::KartRider.Update.GetUpdateAsync();
             if (data == null)
             {
-                MessageBox.Show("获取游戏版本失败！", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("獲取遊戲版本失敗！", "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
-            // 弹出“是否”确认框
+            // 彈出“是否”確認框
             DialogResult result = MessageBox.Show(
-                $"当前版本为：P{ClientVersion.Text}\n最新版本为：{data.version}\n是否需要更新？",
-                "确认操作",
+                $"當前版本為：P{ClientVersion.Text}\n最新版本為：{data.version}\n是否需要更新？",
+                "確認操作",
                 MessageBoxButtons.YesNo,
                 MessageBoxIcon.Question
             );
@@ -297,7 +297,7 @@ namespace KartRider
             catch (Exception ex)
             {
                 // 捕获可能的异常（比如权限不足）
-                Console.WriteLine($"检查进程时出错：{ex.Message}");
+                Console.WriteLine($"檢查進程時發生錯誤：{ex.Message}");
                 return false;
             }
         }
