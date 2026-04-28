@@ -1463,11 +1463,10 @@ namespace KartRider
                     {
                         short ItemType = iPacket.ReadShort();
                         short Type = iPacket.ReadShort();
-                        var slotConfig = ProfileService.GetProfileConfig(this.Parent.Nickname);
-                        slotConfig.Rider.SlotChanger = iPacket.ReadUShort();
+                        ushort slotChanger = iPacket.ReadUShort();
                         if (Type == 1)
                         {
-                            ProfileService.Save(this.Parent.Nickname, slotConfig);
+
                         }
                         return;
                     }
