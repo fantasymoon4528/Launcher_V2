@@ -166,12 +166,12 @@ public class SlotData
             // 触发几率判断
             if (skillConfig.Probability >= 100 || _random.Next(100) < skillConfig.Probability)
             {
-                Console.WriteLine("[SkillChange] 玩家 {0} 道具变更 {1} -> {2} (概率: {3}%)", Nickname, skill, skillConfig.TargetItemId, skillConfig.Probability);
+                Console.WriteLine("[SkillChange] 玩家 {0} 道具變更 {1} -> {2} (概率: {3}%)", Nickname, skill, skillConfig.TargetItemId, skillConfig.Probability);
                 return skillConfig.TargetItemId;
             }
             else
             {
-                Console.WriteLine("[SkillChange] 玩家 {0} 道具变更未触发 {1} (概率: {2}%)", Nickname, skill, skillConfig.Probability);
+                Console.WriteLine("[SkillChange] 玩家 {0} 道具變更未觸發 {1} (概率: {2}%)", Nickname, skill, skillConfig.Probability);
             }
         }
         return skill;
@@ -182,7 +182,7 @@ public class SlotData
         // 概率判断：不触发时直接返回，不发送数据包
         if (probability < 100 && _random.Next(100) >= probability)
         {
-            Console.WriteLine("[AddItemSkill] 玩家 {0} 技能 {1} 未触发 (概率: {2}%)", Parent.Nickname, skill, probability);
+            Console.WriteLine("[AddItemSkill] 玩家 {0} 技能 {1} 未觸發 (概率: {2}%)", Parent.Nickname, skill, probability);
             return;
         }
 
@@ -209,7 +209,7 @@ public class SlotData
         // 概率判断：不触发时直接返回，不发送数据包
         if (probability < 100 && _random.Next(100) >= probability)
         {
-            Console.WriteLine("[AttackedSkill] 玩家 {0} 技能 {1} 未触发 (概率: {2}%)", Parent.Nickname, skill, probability);
+            Console.WriteLine("[AttackedSkill] 玩家 {0} 技能 {1} 未觸發 (概率: {2}%)", Parent.Nickname, skill, probability);
             return;
         }
 

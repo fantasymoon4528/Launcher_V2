@@ -54,11 +54,11 @@ namespace LoggerLibrary
                 // 生成带时间戳的文件名
                 string fileName = $"{DateTime.Now:yyyyMMddHHmmss}.log";
                 File.WriteAllText(fileName, cachedWriter.Cache);
-                Console.WriteLine($"控制台输出到文件: {fileName}");
+                Console.WriteLine($"控制台輸出文件: {fileName}");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"保存文件失败: {ex.Message}");
+                Console.WriteLine($"保存文件失敗: {ex.Message}");
             }
         }
     }

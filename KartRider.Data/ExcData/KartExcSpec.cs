@@ -138,15 +138,15 @@ namespace ExcData
                     excSpecs.Tune_DriftEscapeForce = Tune_DriftEscapeForce_List[3];
                 }
                 Console.WriteLine("-------------------------------------------------------------");
-                Console.WriteLine("TuneSpec DragFactor:{0}", excSpecs.Tune_DragFactor);
-                Console.WriteLine("TuneSpec ForwardAccel:{0}", excSpecs.Tune_ForwardAccel);
-                Console.WriteLine("TuneSpec CornerDrawFactor:{0}", excSpecs.Tune_CornerDrawFactor);
-                Console.WriteLine("TuneSpec TeamBoosterTime:{0}", excSpecs.Tune_TeamBoosterTime);
-                Console.WriteLine("TuneSpec NormalBoosterTime:{0}", excSpecs.Tune_NormalBoosterTime);
-                Console.WriteLine("TuneSpec StartBoosterTimeSpeed:{0}", excSpecs.Tune_StartBoosterTimeSpeed);
-                Console.WriteLine("TuneSpec TransAccelFactor:{0}", excSpecs.Tune_TransAccelFactor);
-                Console.WriteLine("TuneSpec DriftMaxGauge:{0}", excSpecs.Tune_DriftMaxGauge);
-                Console.WriteLine("TuneSpec DriftEscapeForce:{0}", excSpecs.Tune_DriftEscapeForce);
+                Console.WriteLine("改裝設定 TuneSpec DragFactor:{0}", excSpecs.Tune_DragFactor);
+                Console.WriteLine("改裝設定 TuneSpec ForwardAccel:{0}", excSpecs.Tune_ForwardAccel);
+                Console.WriteLine("改裝設定 TuneSpec CornerDrawFactor:{0}", excSpecs.Tune_CornerDrawFactor);
+                Console.WriteLine("改裝設定 TuneSpec TeamBoosterTime:{0}", excSpecs.Tune_TeamBoosterTime);
+                Console.WriteLine("改裝設定 TuneSpec NormalBoosterTime:{0}", excSpecs.Tune_NormalBoosterTime);
+                Console.WriteLine("改裝設定 TuneSpec StartBoosterTimeSpeed:{0}", excSpecs.Tune_StartBoosterTimeSpeed);
+                Console.WriteLine("改裝設定 TuneSpec TransAccelFactor:{0}", excSpecs.Tune_TransAccelFactor);
+                Console.WriteLine("改裝設定 TuneSpec DriftMaxGauge:{0}", excSpecs.Tune_DriftMaxGauge);
+                Console.WriteLine("改裝設定 TuneSpec DriftEscapeForce:{0}", excSpecs.Tune_DriftEscapeForce);
                 Console.WriteLine("-------------------------------------------------------------");
             }
         }
@@ -1032,41 +1032,41 @@ namespace ExcData
                     }
                 }
                 Console.WriteLine("-------------------------------------------------------------");
-                Console.WriteLine("Plant43 TransAccelFactor:{0}", excSpecs.Plant43_TransAccelFactor);
-                Console.WriteLine("Plant43 DragFactor:{0}", excSpecs.Plant43_DragFactor);
-                Console.WriteLine("Plant43 StartForwardAccelSpeed:{0}", excSpecs.Plant43_StartForwardAccelSpeed);
-                Console.WriteLine("Plant43 ForwardAccel:{0}", excSpecs.Plant43_ForwardAccel);
-                Console.WriteLine("Plant43 StartBoosterTimeSpeed:{0}", excSpecs.Plant43_StartBoosterTimeSpeed);
+                Console.WriteLine("工廠配件 Plant43 (引擎) TransAccelFactor:{0}", excSpecs.Plant43_TransAccelFactor);
+                Console.WriteLine("工廠配件 Plant43 (引擎) DragFactor:{0}", excSpecs.Plant43_DragFactor);
+                Console.WriteLine("工廠配件 Plant43 (引擎) StartForwardAccelSpeed:{0}", excSpecs.Plant43_StartForwardAccelSpeed);
+                Console.WriteLine("工廠配件 Plant43 (引擎) ForwardAccel:{0}", excSpecs.Plant43_ForwardAccel);
+                Console.WriteLine("工廠配件 Plant43 (引擎) StartBoosterTimeSpeed:{0}", excSpecs.Plant43_StartBoosterTimeSpeed);
 
-                Console.WriteLine("Plant44 SlipBrake:{0}", excSpecs.Plant44_SlipBrake);
-                Console.WriteLine("Plant44 GripBrake:{0}", excSpecs.Plant44_GripBrake);
-                Console.WriteLine("Plant44 RearGripFactor:{0}", excSpecs.Plant44_RearGripFactor);
-                Console.WriteLine("Plant44 FrontGripFactor:{0}", excSpecs.Plant44_FrontGripFactor);
-                Console.WriteLine("Plant44 CornerDrawFactor:{0}", excSpecs.Plant44_CornerDrawFactor);
-                Console.WriteLine("Plant44 SteerConstraint:{0}", excSpecs.Plant44_SteerConstraint);
+                Console.WriteLine("工廠配件 Plant44 (方向盤) SlipBrake:{0}", excSpecs.Plant44_SlipBrake);
+                Console.WriteLine("工廠配件 Plant44 (方向盤) GripBrake:{0}", excSpecs.Plant44_GripBrake);
+                Console.WriteLine("工廠配件 Plant44 (方向盤) RearGripFactor:{0}", excSpecs.Plant44_RearGripFactor);
+                Console.WriteLine("工廠配件 Plant44 (方向盤) FrontGripFactor:{0}", excSpecs.Plant44_FrontGripFactor);
+                Console.WriteLine("工廠配件 Plant44 (方向盤) CornerDrawFactor:{0}", excSpecs.Plant44_CornerDrawFactor);
+                Console.WriteLine("工廠配件 Plant44 (方向盤) SteerConstraint:{0}", excSpecs.Plant44_SteerConstraint);
 
-                Console.WriteLine("Plant45 DriftEscapeForce:{0}", excSpecs.Plant45_DriftEscapeForce);
-                Console.WriteLine("Plant45 DriftMaxGauge:{0}", excSpecs.Plant45_DriftMaxGauge);
-                Console.WriteLine("Plant45 CornerDrawFactor:{0}", excSpecs.Plant45_CornerDrawFactor);
-                Console.WriteLine("Plant45 SlipBrake:{0}", excSpecs.Plant45_SlipBrake);
-                Console.WriteLine("Plant45 AnimalBoosterTime:{0}", excSpecs.Plant45_AnimalBoosterTime);
-                Console.WriteLine("Plant45 AntiCollideBalance:{0}", excSpecs.Plant45_AntiCollideBalance);
-                Console.WriteLine("Plant45 DragFactor:{0}", excSpecs.Plant45_DragFactor);
+                Console.WriteLine("工廠配件 Plant45 (輪胎) DriftEscapeForce:{0}", excSpecs.Plant45_DriftEscapeForce);
+                Console.WriteLine("工廠配件 Plant45 (輪胎) DriftMaxGauge:{0}", excSpecs.Plant45_DriftMaxGauge);
+                Console.WriteLine("工廠配件 Plant45 (輪胎) CornerDrawFactor:{0}", excSpecs.Plant45_CornerDrawFactor);
+                Console.WriteLine("工廠配件 Plant45 (輪胎) SlipBrake:{0}", excSpecs.Plant45_SlipBrake);
+                Console.WriteLine("工廠配件 Plant45 (輪胎) AnimalBoosterTime:{0}", excSpecs.Plant45_AnimalBoosterTime);
+                Console.WriteLine("工廠配件 Plant45 (輪胎) AntiCollideBalance:{0}", excSpecs.Plant45_AntiCollideBalance);
+                Console.WriteLine("工廠配件 Plant45 (輪胎) DragFactor:{0}", excSpecs.Plant45_DragFactor);
 
-                Console.WriteLine("Plant46 DriftMaxGauge:{0}", excSpecs.Plant46_DriftMaxGauge);
-                Console.WriteLine("Plant46 NormalBoosterTime:{0}", excSpecs.Plant46_NormalBoosterTime);
-                Console.WriteLine("Plant46 DriftSlipFactor:{0}", excSpecs.Plant46_DriftSlipFactor);
-                Console.WriteLine("Plant46 ForwardAccel:{0}", excSpecs.Plant46_ForwardAccel);
-                Console.WriteLine("Plant46 AnimalBoosterTime:{0}", excSpecs.Plant46_AnimalBoosterTime);
-                Console.WriteLine("Plant46 TeamBoosterTime:{0}", excSpecs.Plant46_TeamBoosterTime);
-                Console.WriteLine("Plant46 StartForwardAccelSpeed:{0}", excSpecs.Plant46_StartForwardAccelSpeed);
-                Console.WriteLine("Plant46 StartForwardAccelItem:{0}", excSpecs.Plant46_StartForwardAccelItem);
-                Console.WriteLine("Plant46 StartBoosterTimeSpeed:{0}", excSpecs.Plant46_StartBoosterTimeSpeed);
-                Console.WriteLine("Plant46 StartBoosterTimeItem:{0}", excSpecs.Plant46_StartBoosterTimeItem);
-                Console.WriteLine("Plant46 ItemSlotCapacity:{0}", excSpecs.Plant46_ItemSlotCapacity);
-                Console.WriteLine("Plant46 SpeedSlotCapacity:{0}", excSpecs.Plant46_SpeedSlotCapacity);
-                Console.WriteLine("Plant46 GripBrake:{0}", excSpecs.Plant46_GripBrake);
-                Console.WriteLine("Plant46 SlipBrake:{0}", excSpecs.Plant46_SlipBrake);
+                Console.WriteLine("工廠配件 Plant46 (套件) DriftMaxGauge:{0}", excSpecs.Plant46_DriftMaxGauge);
+                Console.WriteLine("工廠配件 Plant46 (套件) NormalBoosterTime:{0}", excSpecs.Plant46_NormalBoosterTime);
+                Console.WriteLine("工廠配件 Plant46 (套件) DriftSlipFactor:{0}", excSpecs.Plant46_DriftSlipFactor);
+                Console.WriteLine("工廠配件 Plant46 (套件) ForwardAccel:{0}", excSpecs.Plant46_ForwardAccel);
+                Console.WriteLine("工廠配件 Plant46 (套件) AnimalBoosterTime:{0}", excSpecs.Plant46_AnimalBoosterTime);
+                Console.WriteLine("工廠配件 Plant46 (套件) TeamBoosterTime:{0}", excSpecs.Plant46_TeamBoosterTime);
+                Console.WriteLine("工廠配件 Plant46 (套件) StartForwardAccelSpeed:{0}", excSpecs.Plant46_StartForwardAccelSpeed);
+                Console.WriteLine("工廠配件 Plant46 (套件) StartForwardAccelItem:{0}", excSpecs.Plant46_StartForwardAccelItem);
+                Console.WriteLine("工廠配件 Plant46 (套件) StartBoosterTimeSpeed:{0}", excSpecs.Plant46_StartBoosterTimeSpeed);
+                Console.WriteLine("工廠配件 Plant46 (套件) StartBoosterTimeItem:{0}", excSpecs.Plant46_StartBoosterTimeItem);
+                Console.WriteLine("工廠配件 Plant46 (套件) ItemSlotCapacity:{0}", excSpecs.Plant46_ItemSlotCapacity);
+                Console.WriteLine("工廠配件 Plant46 (套件) SpeedSlotCapacity:{0}", excSpecs.Plant46_SpeedSlotCapacity);
+                Console.WriteLine("工廠配件 Plant46 (套件) GripBrake:{0}", excSpecs.Plant46_GripBrake);
+                Console.WriteLine("工廠配件 Plant46 (套件) SlipBrake:{0}", excSpecs.Plant46_SlipBrake);
                 Console.WriteLine("-------------------------------------------------------------");
             }
         }
@@ -1108,15 +1108,15 @@ namespace ExcData
                 excSpecs.KartLevel_StartBoosterTimeItem = KartLevel_StartBoosterTimeItem[existingLevel.Level4];
                 excSpecs.KartLevel_BoostAccelFactorOnlyItem = KartLevel_BoostAccelFactorOnlyItem[existingLevel.Level4];
                 Console.WriteLine("-------------------------------------------------------------");
-                Console.WriteLine("KartLevel DragFactor:{0}", excSpecs.KartLevel_DragFactor);
-                Console.WriteLine("KartLevel ForwardAccel:{0}", excSpecs.KartLevel_ForwardAccel);
-                Console.WriteLine("KartLevel CornerDrawFactor:{0}", excSpecs.KartLevel_CornerDrawFactor);
-                Console.WriteLine("KartLevel SteerConstraint:{0}", excSpecs.KartLevel_SteerConstraint);
-                Console.WriteLine("KartLevel DriftEscapeForce:{0}", excSpecs.KartLevel_DriftEscapeForce);
-                Console.WriteLine("KartLevel TransAccelFactor:{0}", excSpecs.KartLevel_TransAccelFactor);
-                Console.WriteLine("KartLevel StartBoosterTimeSpeed:{0}", excSpecs.KartLevel_StartBoosterTimeSpeed);
-                Console.WriteLine("KartLevel StartBoosterTimeItem:{0}", excSpecs.KartLevel_StartBoosterTimeItem);
-                Console.WriteLine("KartLevel BoostAccelFactorOnlyItem:{0}", excSpecs.KartLevel_BoostAccelFactorOnlyItem);
+                Console.WriteLine("賽車等級 KartLevel DragFactor:{0}", excSpecs.KartLevel_DragFactor);
+                Console.WriteLine("賽車等級 KartLevel ForwardAccel:{0}", excSpecs.KartLevel_ForwardAccel);
+                Console.WriteLine("賽車等級 KartLevel CornerDrawFactor:{0}", excSpecs.KartLevel_CornerDrawFactor);
+                Console.WriteLine("賽車等級 KartLevel SteerConstraint:{0}", excSpecs.KartLevel_SteerConstraint);
+                Console.WriteLine("賽車等級 KartLevel DriftEscapeForce:{0}", excSpecs.KartLevel_DriftEscapeForce);
+                Console.WriteLine("賽車等級 KartLevel TransAccelFactor:{0}", excSpecs.KartLevel_TransAccelFactor);
+                Console.WriteLine("賽車等級 KartLevel StartBoosterTimeSpeed:{0}", excSpecs.KartLevel_StartBoosterTimeSpeed);
+                Console.WriteLine("賽車等級 KartLevel StartBoosterTimeItem:{0}", excSpecs.KartLevel_StartBoosterTimeItem);
+                Console.WriteLine("賽車等級 KartLevel BoostAccelFactorOnlyItem:{0}", excSpecs.KartLevel_BoostAccelFactorOnlyItem);
                 Console.WriteLine("-------------------------------------------------------------");
             }
         }
@@ -1191,10 +1191,10 @@ namespace ExcData
                     }
                 }
                 Console.WriteLine("-------------------------------------------------------------");
-                Console.WriteLine("PartSpec TransAccelFactor:{0}", excSpecs.PartSpec_TransAccelFactor);
-                Console.WriteLine("PartSpec SteerConstraint:{0}", excSpecs.PartSpec_SteerConstraint);
-                Console.WriteLine("PartSpec DriftEscapeForce:{0}", excSpecs.PartSpec_DriftEscapeForce);
-                Console.WriteLine("PartSpec NormalBoosterTime:{0}", excSpecs.PartSpec_NormalBoosterTime);
+                Console.WriteLine("零件設定 PartSpec TransAccelFactor:{0}", excSpecs.PartSpec_TransAccelFactor);
+                Console.WriteLine("零件設定 PartSpec SteerConstraint:{0}", excSpecs.PartSpec_SteerConstraint);
+                Console.WriteLine("零件設定 PartSpec DriftEscapeForce:{0}", excSpecs.PartSpec_DriftEscapeForce);
+                Console.WriteLine("零件設定 PartSpec NormalBoosterTime:{0}", excSpecs.PartSpec_NormalBoosterTime);
                 Console.WriteLine("-------------------------------------------------------------");
             }
         }

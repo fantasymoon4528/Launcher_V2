@@ -161,7 +161,7 @@ namespace KartRider
                 ushort KartID = ProfileService.GetProfileConfig(Nickname).RiderItem.Set_Kart;
                 if (School || KartID == 0)
                 {
-                    Console.WriteLine("[KartSpec] 卡丁车ID=0, 加载练习车数据");
+                    Console.WriteLine("[KartSpec] 卡丁車ID=0, 載入練習車數據");
                 }
                 // 2. 处理非默认卡丁车ID
                 else
@@ -169,15 +169,15 @@ namespace KartRider
                     // 2.1 检查KartName字典是否存在该ID
                     if (!Kart.kartName.TryGetValue(KartID, out var Name))
                     {
-                        Console.WriteLine($"[KartSpec] 警告: KartName中未找到ID={KartID}, 加载练习车数据");
+                        Console.WriteLine($"[KartSpec] 警告: KartName中未找到ID={KartID}, 載入練習車數據");
                     }
 
-                    Console.WriteLine($"[KartSpec] 加载卡丁车: ID={KartID}, 名称={Name}");
+                    Console.WriteLine($"[KartSpec] 載入卡丁車: ID={KartID}, 名稱={Name}");
 
-                    // 2.2 检查KartSpec字典是否存在该规格
+                    // 2.2 檢查KartSpec字典是否存在該規格
                     if (!Kart.kartSpec.TryGetValue(Name, out var kartSpecDoc))
                     {
-                        Console.WriteLine($"[KartSpec] 警告: KartSpec中未找到名称={Name}的规格, 使用默认");
+                        Console.WriteLine($"[KartSpec] 警告: KartSpec中未找到名稱={Name}的規格, 使用預設");
                     }
 
                     // 2.3 解析规格XML并赋值
@@ -186,30 +186,30 @@ namespace KartRider
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[KartSpec] 错误: 获取规格时异常 - {ex.Message}\n堆栈: {ex.StackTrace}, 使用默认");
-                // 异常降级: 确保加载默认规格, 避免程序崩溃
+                Console.WriteLine($"[KartSpec] 錯誤: 獲取規格時異常 - {ex.Message}\n堆棧: {ex.StackTrace}, 使用預設");
+                // 異常降級: 確保加載預設規格, 避免程序崩潰
             }
         }
 
-        /// <summary>解析卡丁车规格XML文档</summary>
+        /// <summary>解析卡丁車規格XML文檔</summary>
         private void ParseKartSpecXml(string Nickname, ushort kartId, XmlDocument specDoc)
         {
             var bodyParams = specDoc.GetElementsByTagName("BodyParam");
-            // 检查是否存在BodyParam节点且为XmlElement类型
+            // 檢查是否存在BodyParam節點且為XmlElement類型
             if (bodyParams.Count > 0 && bodyParams[0] is XmlElement bodyParamElement)
             {
                 AssignKartProperties(kartId, bodyParamElement);
             }
             else
             {
-                Console.WriteLine($"[KartSpec] 警告: ID={kartId}的规格XML中无BodyParam节点, 使用默认");
+                Console.WriteLine($"[KartSpec] 警告: ID={kartId}的規格XML中無BodyParam節點, 使用預設");
             }
         }
 
-        /// <summary>给Kart静态字段赋值（核心数据映射）</summary>
+        /// <summary>給Kart靜態字段賦值（核心數據映射）</summary>
         private void AssignKartProperties(ushort kartId, XmlElement bodyParamElement)
         {
-            // 1. 赋值基础规格属性
+            // 1. 賦值基礎規格屬性
             foreach (var config in KartSpecConfigs)
             {
                 var attrValueStr = GetAttributeValue(
@@ -226,19 +226,19 @@ namespace KartRider
                 }
                 else
                 {
-                    Console.WriteLine($"[KartSpec] 警告: 属性{config.AttributeName}值{attrValueStr}无效, 用默认值{config.DefaultValue}");
+                    Console.WriteLine($"[KartSpec] 警告: 屬性{config.AttributeName}值{attrValueStr}無效, 用預設值{config.DefaultValue}");
                     config.SetKartProperty(config.DefaultValue);
                 }
             }
 
-            // 2. 加载模型尺寸（单独处理ModelMax.xml）
+            // 2. 加載模型尺寸（單獨處理ModelMax.xml）
             var modelMax = LoadModelMaxDimensions(kartId);
             modelMaxX = modelMax.modelMaxX;
-            Console.WriteLine($"[KartSpec] 警告: 属性modelMaxX值为: {modelMaxX}");
+            Console.WriteLine($"[KartSpec] 警告: 屬性modelMaxX值為: {modelMaxX}");
             modelMaxY = modelMax.modelMaxY;
-            Console.WriteLine($"[KartSpec] 警告: 属性modelMaxY值为: {modelMaxY}");
+            Console.WriteLine($"[KartSpec] 警告: 屬性modelMaxY值為: {modelMaxY}");
 
-            // 3. 设置默认部件类型（Engine/Handle等）
+            // 3. 設置默認部件類型（Engine/Handle等）
             EngineType = DefaultPartType;
             HandleType = DefaultPartType;
             WheelType = DefaultPartType;
@@ -255,7 +255,7 @@ namespace KartRider
             // 检查文件是否存在
             if (!File.Exists(FileName.ModelMax_LoadFile))
             {
-                Console.WriteLine($"[KartSpec] 警告: ModelMax.xml不存在 - 路径: {FileName.ModelMax_LoadFile}");
+                Console.WriteLine($"[KartSpec] 警告: ModelMax.xml不存在 - 路徑: {FileName.ModelMax_LoadFile}");
                 return (DefaultModelDimension, DefaultModelDimension);
             }
 
@@ -270,7 +270,7 @@ namespace KartRider
 
                     if (targetNode == null)
                     {
-                        Console.WriteLine($"[KartSpec] 警告: ModelMax.xml中无节点ID={kartId}");
+                        Console.WriteLine($"[KartSpec] 警告: ModelMax.xml中無節點ID={kartId}");
                         return (DefaultModelDimension, DefaultModelDimension);
                     }
 
@@ -279,14 +279,14 @@ namespace KartRider
 
                     if (maxXAttr == null || maxYAttr == null)
                     {
-                        Console.WriteLine($"[KartSpec] 警告: ID={kartId} 缺少modelMaxX或modelMaxY属性");
+                        Console.WriteLine($"[KartSpec] 警告: ID={kartId} 缺少modelMaxX或modelMaxY屬性");
                         return (DefaultModelDimension, DefaultModelDimension);
                     }
 
                     if (!float.TryParse(maxXAttr.Value, CultureInfo.InvariantCulture, out float modelMaxX) ||
                         !float.TryParse(maxYAttr.Value, CultureInfo.InvariantCulture, out float modelMaxY))
                     {
-                        Console.WriteLine($"[KartSpec] 警告: ID={kartId} 的属性值无法解析为浮点数");
+                        Console.WriteLine($"[KartSpec] 警告: ID={kartId} 的屬性值無法解析為浮點數");
                         return (DefaultModelDimension, DefaultModelDimension);
                     }
 
@@ -295,12 +295,12 @@ namespace KartRider
             }
             catch (XmlException ex)
             {
-                Console.WriteLine($"[KartSpec] 错误: 解析ModelMax.xml失败 - {ex.Message}");
+                Console.WriteLine($"[KartSpec] 錯誤: 解析ModelMax.xml失敗 - {ex.Message}");
                 return (DefaultModelDimension, DefaultModelDimension);
             }
             catch (IOException ex)
             {
-                Console.WriteLine($"[KartSpec] 错误: 读取ModelMax.xml失败 - {ex.Message}");
+                Console.WriteLine($"[KartSpec] 錯誤: 讀取ModelMax.xml失敗 - {ex.Message}");
                 return (DefaultModelDimension, DefaultModelDimension);
             }
         }
@@ -321,23 +321,23 @@ namespace KartRider
                 {
                     return (boolVal ? 1M : 0M).ToString(CultureInfo.InvariantCulture);
                 }
-                Console.WriteLine($"[KartSpec] 警告: 布尔属性{attributeName}值{attrValue}无效, 用默认值{defaultValue}");
+                Console.WriteLine($"[KartSpec] 警告: 布爾屬性{attributeName}值{attrValue}無效, 用預設值{defaultValue}");
                 return defaultValue.ToString(CultureInfo.InvariantCulture);
             }
 
-            // 2. 处理特殊属性: StartForwardAccelForceItem（读取Factor属性）
+            // 2. 處理特殊屬性: StartForwardAccelForceItem（讀取Factor屬性）
             if (attributeName == "StartForwardAccelForceItem")
             {
                 return GetScaledValue(element, "StartForwardAccelFactorItem", fallbackValue, defaultValue, scale);
             }
 
-            // 3. 处理特殊属性: StartForwardAccelForceSpeed（读取Factor属性）
+            // 3. 處理特殊屬性: StartForwardAccelForceSpeed（讀取Factor屬性）
             if (attributeName == "StartForwardAccelForceSpeed")
             {
                 return GetScaledValue(element, "StartForwardAccelFactorSpeed", fallbackValue, defaultValue, scale);
             }
 
-            // 4. 处理特殊属性: instAccelGaugeMinUsable（依赖instAccelGaugeLength）
+            // 4. 處理特殊屬性: instAccelGaugeMinUsable（依賴instAccelGaugeLength）
             if (attributeName == "instAccelGaugeMinUsable")
             {
                 // 先获取instAccelGaugeLength的值
@@ -369,7 +369,7 @@ namespace KartRider
                 return result.ToString(CultureInfo.InvariantCulture);
             }
 
-            Console.WriteLine($"[KartSpec] 警告: 属性{actualAttrName}值{attrValue}无效, 用默认值{defaultValue}");
+            Console.WriteLine($"[KartSpec] 警告: 屬性{actualAttrName}值{attrValue}無效, 用預設值{defaultValue}");
             return defaultValue.ToString(CultureInfo.InvariantCulture);
         }
 

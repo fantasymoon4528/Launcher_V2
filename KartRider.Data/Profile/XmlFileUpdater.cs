@@ -31,7 +31,7 @@ namespace XmlFileUpdater
                 XDocument resourceXml = null;
                 if (string.IsNullOrEmpty(resourceName))
                 {
-                    Console.WriteLine("警告: 资源内容为空，将使用默认更新逻辑");
+                    Console.WriteLine("警告: 資源內容為空，將使用預設更新邏輯");
                     return;
                 }
                 
@@ -41,26 +41,26 @@ namespace XmlFileUpdater
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"资源XML解析失败: {ex.Message}");
+                    Console.WriteLine($"資源XML解析失敗: {ex.Message}");
                     return;
                 }
                 
                 if (resourceXml == null || resourceXml.Root == null)
                 {
-                    Console.WriteLine($"无法加载资源文件");
+                    Console.WriteLine($"無法載入資源文件");
                     return;
                 }
 
                 // 调试：输出资源中的Kart数量和本地文件中的Kart数量
                 int resourceKartCount = resourceXml.Root.Elements("Kart").Count();
                 int localKartCount = localXml.Root?.Elements("Kart").Count() ?? 0;
-                Console.WriteLine($"资源文件包含 {resourceKartCount} 个Kart节点");
-                Console.WriteLine($"本地文件包含 {localKartCount} 个Kart节点");
+                Console.WriteLine($"資源文件包含 {resourceKartCount} 個Kart節點");
+                Console.WriteLine($"本地文件包含 {localKartCount} 個Kart節點");
 
-                // 验证XML根节点
+                // 驗證XML根節點
                 if (localXml.Root == null || resourceXml.Root == null)
                 {
-                    Console.WriteLine("XML文件结构不完整，缺少根节点");
+                    Console.WriteLine("XML文件結構不完整，缺少根節點");
                     return;
                 }
 
@@ -76,13 +76,13 @@ namespace XmlFileUpdater
                 }
                 else
                 {
-                    Console.WriteLine("ModelMax.xml文件已是最新，无需更新");
+                    Console.WriteLine("ModelMax.xml文件已是最新，無需更新");
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"处理ModelMax.xml文件时出错: {ex.Message}");
-                Console.WriteLine($"堆栈跟踪: {ex.StackTrace}");
+                Console.WriteLine($"處理ModelMax.xml文件時出錯: {ex.Message}");
+                Console.WriteLine($"堆棧跟蹤: {ex.StackTrace}");
             }
         }
 

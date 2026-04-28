@@ -33,7 +33,7 @@ namespace KartRider
             if (FlyingPet.flyingName.ContainsKey(FlyingPetID))
             {
                 string Name = FlyingPet.flyingName[FlyingPetID];
-                Console.WriteLine($"flying:{FlyingPetID},Name:{Name}");
+                Console.WriteLine($"飛行寵物ID:{FlyingPetID},名稱:{Name}");
                 if (FlyingPet.flyingSpec.ContainsKey(Name))
                 {
                     XmlDocument Spec = FlyingPet.flyingSpec[Name];
@@ -125,15 +125,15 @@ namespace KartRider
                 }
             }
             Console.WriteLine($"-------------------------------------------------------------");
-            Console.WriteLine($"FlyingPet DragFactor:{this.DragFactor}");
-            Console.WriteLine($"FlyingPet ForwardAccelForce:{this.ForwardAccelForce}");
-            Console.WriteLine($"FlyingPet DriftEscapeForce:{this.DriftEscapeForce}");
-            Console.WriteLine($"FlyingPet CornerDrawFactor:{this.CornerDrawFactor}");
-            Console.WriteLine($"FlyingPet NormalBoosterTime:{this.NormalBoosterTime}");
-            Console.WriteLine($"FlyingPet ItemBoosterTime:{this.ItemBoosterTime}");
-            Console.WriteLine($"FlyingPet TeamBoosterTime:{this.TeamBoosterTime}");
-            Console.WriteLine($"FlyingPet StartForwardAccelForceItem:{this.StartForwardAccelForceItem}");
-            Console.WriteLine($"FlyingPet StartForwardAccelForceSpeed:{this.StartForwardAccelForceSpeed}");
+            Console.WriteLine($"飛行寵物設定 DragFactor (空氣阻力):{this.DragFactor}");
+            Console.WriteLine($"飛行寵物設定 ForwardAccelForce (平跑加速):{this.ForwardAccelForce}");
+            Console.WriteLine($"飛行寵物設定 DriftEscapeForce (飄移脫離):{this.DriftEscapeForce}");
+            Console.WriteLine($"飛行寵物設定 CornerDrawFactor (彎道加速):{this.CornerDrawFactor}");
+            Console.WriteLine($"飛行寵物設定 NormalBoosterTime (一般氮氣時間):{this.NormalBoosterTime}");
+            Console.WriteLine($"飛行寵物設定 ItemBoosterTime (道具氮氣時間):{this.ItemBoosterTime}");
+            Console.WriteLine($"飛行寵物設定 TeamBoosterTime (團隊氮氣時間):{this.TeamBoosterTime}");
+            Console.WriteLine($"飛行寵物設定 StartForwardAccelForceItem (道具起步加速):{this.StartForwardAccelForceItem}");
+            Console.WriteLine($"飛行寵物設定 StartForwardAccelForceSpeed (競速起步加速):{this.StartForwardAccelForceSpeed}");
             Console.WriteLine($"-------------------------------------------------------------");
         }
     }

@@ -5,78 +5,78 @@ using System.IO;
 namespace KartRider;
 
 /// <summary>
-/// 技能映射配置项（包含目标道具ID和触发概率）
+/// 技能映射設定項（包含目標道具ID和觸發機率）
 /// </summary>
 public class SkillMappingConfig
 {
     /// <summary>
-    /// 目标道具ID
+    /// 目標道具ID
     /// </summary>
     public short TargetItemId { get; set; }
 
     /// <summary>
-    /// 触发概率（0-100，100表示100%触发）
+    /// 觸發機率（0-100，100表示100%觸發）
     /// </summary>
     public byte Probability { get; set; } = 100;
 }
 
 /// <summary>
-/// 特殊道具车配置类
+/// 特殊道具車設定類別
 /// </summary>
 public class SpecialKartConfig
 {
     /// <summary>
-    /// 特殊道具车：将指定道具变更为特殊道具
+    /// 特殊道具車：將指定道具變更為特殊道具
     /// </summary>
     public string SkillChangeDesc { get; set; }
     public Dictionary<ushort, Dictionary<short, SkillMappingConfig>> SkillChange { get; set; } = new();
 
     /// <summary>
-    /// 特殊道具车：使用指定道具后获得特殊道具
+    /// 特殊道具車：使用指定道具後獲得特殊道具
     /// </summary>
     public string SkillMappingsDesc { get; set; }
     public Dictionary<ushort, Dictionary<short, SkillMappingConfig>> SkillMappings { get; set; } = new();
 
     /// <summary>
-    /// 特殊道具车：被指定道具攻击后获得特殊道具
+    /// 特殊道具車：被指定道具攻擊後獲得特殊道具
     /// </summary>
     public string SkillAttackedDesc { get; set; }
     public Dictionary<ushort, Dictionary<short, SkillMappingConfig>> SkillAttacked { get; set; } = new();
 
     /// <summary>
-    /// 将特殊道具车配置存储到JSON文件（存在时补充缺失内容，保留额外内容）
+    /// 將特殊道具車設定儲存到 JSON 檔案（存在時補充缺失內容，保留額外內容）
     /// </summary>
-    /// <param name="filePath">文件路径（如：./Config/SpecialKartConfig.json）</param>
+    /// <param name="filePath">檔案路徑（如：./Config/SpecialKartConfig.json）</param>
     public static void SaveConfigToFile(string filePath)
     {
-        // 1. 创建默认配置模板
+        // 1. 建立預設設定模板
         var defaultConfig = GetDefaultConfig();
 
-        // 2. 确保目录存在
+        // 2. 確保目錄存在
         var directory = Path.GetDirectoryName(filePath);
         if (!Directory.Exists(directory))
         {
             Directory.CreateDirectory(directory);
         }
 
-        // 3. 处理文件内容
+        // 3. 處理檔案內容
         SpecialKartConfig finalConfig;
         if (File.Exists(filePath))
         {
-            // 3.1 读取现有配置
+            // 3.1 讀取現有設定
             var existingConfig = JsonHelper.DeserializeNoBom<SpecialKartConfig>(filePath) ?? new SpecialKartConfig();
 
-            // 3.2 初始化现有配置的字典（避免null引用）
+            // 3.2 初始化現有設定的字典（避免 null 參考）
             existingConfig.SkillChange ??= new Dictionary<ushort, Dictionary<short, SkillMappingConfig>>();
             existingConfig.SkillMappings ??= new Dictionary<ushort, Dictionary<short, SkillMappingConfig>>();
             existingConfig.SkillAttacked ??= new Dictionary<ushort, Dictionary<short, SkillMappingConfig>>();
 
-            // 3.3 补充缺失的描述文本
+            // 3.3 補充缺失的描述文字
             existingConfig.SkillChangeDesc ??= defaultConfig.SkillChangeDesc;
             existingConfig.SkillMappingsDesc ??= defaultConfig.SkillMappingsDesc;
             existingConfig.SkillAttackedDesc ??= defaultConfig.SkillAttackedDesc;
 
-            // 3.4 补充SkillChange中缺失的配置
+            // 3.4 補充 SkillChange 中缺失的設定
             foreach (var (key, valueDict) in defaultConfig.SkillChange)
             {
                 if (!existingConfig.SkillChange.ContainsKey(key))
@@ -99,7 +99,7 @@ public class SpecialKartConfig
                 }
             }
 
-            // 3.5 补充SkillMappings中缺失的配置
+            // 3.5 補充 SkillMappings 中缺失的設定
             foreach (var (key, valueDict) in defaultConfig.SkillMappings)
             {
                 if (!existingConfig.SkillMappings.ContainsKey(key))
@@ -122,7 +122,7 @@ public class SpecialKartConfig
                 }
             }
 
-            // 3.6 补充SkillAttacked中缺失的配置
+            // 3.6 補充 SkillAttacked 中缺失的設定
             foreach (var (key, valueDict) in defaultConfig.SkillAttacked)
             {
                 if (!existingConfig.SkillAttacked.ContainsKey(key))
@@ -146,29 +146,29 @@ public class SpecialKartConfig
             }
 
             finalConfig = existingConfig;
-            Console.WriteLine($"配置已更新（补充缺失内容）：{filePath}");
+            Console.WriteLine($"設定已更新（補充缺失內容）：{filePath}");
         }
         else
         {
-            // 4. 文件不存在时直接使用默认配置
+            // 4. 檔案不存在時直接使用預設設定
             finalConfig = defaultConfig;
-            Console.WriteLine($"配置已创建：{filePath}");
+            Console.WriteLine($"設定已建立：{filePath}");
         }
 
-        // 5. 写入最终配置
+        // 5. 寫入最終設定
         File.WriteAllText(filePath, JsonHelper.Serialize(finalConfig));
     }
 
     /// <summary>
-    /// 从JSON文件读取特殊道具车配置
+    /// 從 JSON 檔案讀取特殊道具車設定
     /// </summary>
-    /// <param name="filePath">配置文件路径</param>
-    /// <returns>特殊道具车配置对象（SpecialKartConfig）</returns>
+    /// <param name="filePath">設定檔路徑</param>
+    /// <returns>特殊道具車設定物件（SpecialKartConfig）</returns>
     public static SpecialKartConfig LoadConfigFromFile(string filePath)
     {
         if (!File.Exists(filePath))
         {
-            throw new FileNotFoundException("特殊道具车配置文件不存在", filePath);
+            throw new FileNotFoundException("特殊道具車設定檔不存在", filePath);
         }
 
         SpecialKartConfig config;
@@ -177,39 +177,39 @@ public class SpecialKartConfig
             config = JsonHelper.DeserializeNoBom<SpecialKartConfig>(filePath);
             if (config == null)
             {
-                throw new Exception("配置文件解析结果为null");
+                throw new Exception("設定檔解析結果為 null");
             }
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"配置文件格式不正确或解析失败: {ex.Message}");
-            Console.WriteLine("将使用默认配置覆盖本地文件...");
+            Console.WriteLine($"設定檔格式不正確或解析失敗: {ex.Message}");
+            Console.WriteLine("將使用預設設定覆蓋本機檔案...");
 
-            // 使用默认配置覆盖本地文件
+            // 使用預設設定覆蓋本機檔案
             config = GetDefaultConfig();
             File.WriteAllText(filePath, JsonHelper.Serialize(config));
-            Console.WriteLine($"本地文件已用默认配置覆盖: {filePath}");
+            Console.WriteLine($"本機檔案已用預設設定覆蓋: {filePath}");
 
             return config;
         }
 
-        // 确保字典不为null（避免后续使用时的null引用异常）
+        // 確保字典不為 null（避免後續使用時的 null 參考例外）
         config.SkillChange ??= new Dictionary<ushort, Dictionary<short, SkillMappingConfig>>();
         config.SkillMappings ??= new Dictionary<ushort, Dictionary<short, SkillMappingConfig>>();
         config.SkillAttacked ??= new Dictionary<ushort, Dictionary<short, SkillMappingConfig>>();
 
-        Console.WriteLine($"道具车特性配置已成功从 {filePath} 读取");
+        Console.WriteLine($"道具車特性設定已成功從 {filePath} 讀取");
         return config;
     }
 
     /// <summary>
-    /// 创建默认配置模板（提取为单独方法便于维护）
+    /// 建立預設設定模板（提取為獨立方法便於維護）
     /// </summary>
     private static SpecialKartConfig GetDefaultConfig()
     {
         return new SpecialKartConfig
         {
-            SkillChangeDesc = "特殊道具车：将指定道具变更为特殊道具",
+            SkillChangeDesc = "特殊道具車：將指定道具變更為特殊道具",
             SkillChange = new Dictionary<ushort, Dictionary<short, SkillMappingConfig>>
             {
                 { 1615, new Dictionary<short, SkillMappingConfig> { {5, new SkillMappingConfig { TargetItemId = 103, Probability = 100 }}, {7, new SkillMappingConfig { TargetItemId = 99, Probability = 100 }} } },
@@ -259,7 +259,7 @@ public class SpecialKartConfig
                 { 1479, new Dictionary<short, SkillMappingConfig> { {7, new SkillMappingConfig { TargetItemId = 131, Probability = 100 }} } }
             },
 
-            SkillMappingsDesc = "特殊道具车：使用指定道具后获得特殊道具",
+            SkillMappingsDesc = "特殊道具車：使用指定道具後獲得特殊道具",
             SkillMappings = new Dictionary<ushort, Dictionary<short, SkillMappingConfig>>
             {
                 { 1607, new Dictionary<short, SkillMappingConfig> { {5, new SkillMappingConfig { TargetItemId = 6, Probability = 100 }} } },
@@ -278,7 +278,7 @@ public class SpecialKartConfig
                 { 1479, new Dictionary<short, SkillMappingConfig> { {131, new SkillMappingConfig { TargetItemId = 5, Probability = 100 }} } }
             },
 
-            SkillAttackedDesc = "特殊道具车：被指定道具攻击后获得特殊道具",
+            SkillAttackedDesc = "特殊道具車：被指定道具攻擊後獲得特殊道具",
             SkillAttacked = new Dictionary<ushort, Dictionary<short, SkillMappingConfig>>
             {
                 { 1613, new Dictionary<short, SkillMappingConfig> { {5, new SkillMappingConfig { TargetItemId = 10, Probability = 100 }} } },

@@ -46,7 +46,7 @@ public static class ClientManager
         var clientGroup2 = ClientGroups[clientId];
         clientGroup2.RIV = IV;
         clientGroup2.SIV = IV;
-        Console.WriteLine($"客户端 {clientId} 已连接，当前在线数：{_clientSessions.Count}");
+        Console.WriteLine($"客戶端 {clientId} 已連接，目前在線數：{_clientSessions.Count}");
     }
 
     // 移除客户端会话（客户端断开时调用）
@@ -70,7 +70,7 @@ public static class ClientManager
                 MyRoomData.TryLeaveMyRoom(ClientGroup.Nickname);
             }
             ClientGroups.TryRemove(clientId, out _);
-            Console.WriteLine($"客户端 {clientId} 已断开，当前在线数：{_clientSessions.Count}");
+            Console.WriteLine($"客戶端 {clientId} 已斷開，目前在線數：{_clientSessions.Count}");
         }
     }
 

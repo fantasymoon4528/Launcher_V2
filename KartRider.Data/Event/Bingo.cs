@@ -57,11 +57,11 @@ namespace KartRider
                     }
                 }
 
-                Console.WriteLine($"成功加载 {RewardList.Count} 个奖励项，总概率为: {TotalProbability}");
+                Console.WriteLine($"成功載入 {RewardList.Count} 個獎勵項，總機率為: {TotalProbability}");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"加载XML文件出错: {ex.Message}");
+                Console.WriteLine($"載入XML文件出錯: {ex.Message}");
             }
         }
 
@@ -77,14 +77,14 @@ namespace KartRider
             // 检查是否已初始化
             if (RewardList.Count == 0)
             {
-                Console.WriteLine("请先调用Initialize方法加载数据");
+                Console.WriteLine("請先呼叫Initialize方法載入數據");
                 return result;
             }
 
             // 检查数量是否合理
             if (count <= 0)
             {
-                Console.WriteLine("请指定有效的获取数量");
+                Console.WriteLine("請指定有效的獲取數量");
                 return result;
             }
 
@@ -95,7 +95,7 @@ namespace KartRider
             // 检查请求数量是否超过可用奖励数量
             if (count > uniqueRewardCount)
             {
-                Console.WriteLine($"请求数量超过可用的不重复奖励数量，最多只能返回 {uniqueRewardCount} 个结果");
+                Console.WriteLine($"請求數量超過可用的不重複獎勵數量，最多只能返回 {uniqueRewardCount} 個結果");
                 count = uniqueRewardCount;
             }
 
@@ -142,7 +142,7 @@ namespace KartRider
             // 检查最终结果数量是否符合预期
             if (result.Count < count)
             {
-                Console.WriteLine($"警告：实际返回 {result.Count} 个结果，少于请求的 {count} 个");
+                Console.WriteLine($"警告：實際返回 {result.Count} 個結果，少於請求的 {count} 個");
             }
             return result;
         }
@@ -221,42 +221,42 @@ namespace KartRider
 
         public static void CheckLinesAsArray()
         {
-            // 验证字典包含25个元素
+            // 驗證字典包含25個元素
             if (BingoNums == null)
-                Console.WriteLine("BingoNums字典不能为null");
+                Console.WriteLine("BingoNums字典不能為null");
 
             if (BingoNums.Count != 25)
-                Console.WriteLine("Bingo宫格必须包含25个数字");
+                Console.WriteLine("Bingo宮格必須包含25個數字");
 
-            // 将字典转换为5x5的二维数组，左上角为坐标原点(0,0)
+            // 將字典轉換為5x5的二維數組，左上角為坐標原點(0,0)
             byte[,] grid = new byte[5, 5];
 
-            // 字典的Key是按从左上角开始的行优先顺序排列：0-24
+            // 字典的Key是按從左上角開始的行優先順序排列：0-24
             // 0: (0,0)  1: (0,1)  2: (0,2)  3: (0,3)  4: (0,4)  第一行(最上方)
             // 5: (1,0)  6: (1,1)  ...      9: (1,4)  第二行
             // ...
             // 20: (4,0) ...     24: (4,4)  第五行(最下方)
-            // 使用列表填充网格（确保索引顺序正确）
+            // 使用列表填充網格（確保索引順序正確）
             for (int index = 0; index < BingoNumsList.Count; index++)
             {
-                // 只处理前 25 个元素
+                // 只處理前 25 個元素
                 if (index >= 25)
                     break;
 
-                int row = index / 5; // 计算行（0-4）
-                int col = index % 5; // 计算列（0-4）
+                int row = index / 5; // 計算行（0-4）
+                int col = index % 5; // 計算列（0-4）
 
-                // 二次校验：确保row和col在有效范围内
+                // 二次校驗：確保row和col在有效範圍內
                 if (row < 0 || row >= 5 || col < 0 || col >= 5)
                 {
-                    Console.WriteLine($"计算出无效的网格坐标：index={index}, row={row}, col={col}");
+                    Console.WriteLine($"計算出無效的網格座標：index={index}, row={row}, col={col}");
                 }
 
-                grid[row, col] = BingoNums[BingoNumsList[index]]; // 0 = 未选中，1 = 已选中
+                grid[row, col] = BingoNums[BingoNumsList[index]]; // 0 = 未選中，1 = 已選中
             }
 
-            // 检查横线(0-4) - 0是最上方，4是最下方
-            // 与grid的行直接对应，无需反转
+            // 檢查橫線(0-4) - 0是最上方，4是最下方
+            // 與grid的行直接對應，無需反轉
             for (int row = 0; row < 5; row++)
             {
                 bool isCompleted = true;
@@ -272,8 +272,8 @@ namespace KartRider
                 BingoItems[item1] = (byte)(isCompleted ? 1 : 0);
             }
 
-            // 检查右上到左下对角线(索引5)
-            // 对应坐标: (0,4), (1,3), (2,2), (3,1), (4,0)
+            // 檢查右上到左下對角線(索引5)
+            // 對應座標: (0,4), (1,3), (2,2), (3,1), (4,0)
             bool antiDiagonalCompleted = true;
             for (int i = 0; i < 5; i++)
             {
@@ -286,7 +286,7 @@ namespace KartRider
             var item5 = BingoItemsList[5];
             BingoItems[item5] = (byte)(antiDiagonalCompleted ? 1 : 0);
 
-            // 检查竖线(6-10) - 6是最左方，10是最右方
+            // 檢查直線(6-10) - 6是最左方，10是最右方
             for (int col = 0; col < 5; col++)
             {
                 bool isCompleted = true;
@@ -302,8 +302,8 @@ namespace KartRider
                 BingoItems[item6] = (byte)(isCompleted ? 1 : 0);
             }
 
-            // 检查左上到右下对角线(索引11)
-            // 对应坐标: (0,0), (1,1), (2,2), (3,3), (4,4)
+            // 檢查左上到右下對角線(索引11)
+            // 對應座標: (0,0), (1,1), (2,2), (3,3), (4,4)
             bool mainDiagonalCompleted = true;
             for (int i = 0; i < 5; i++)
             {

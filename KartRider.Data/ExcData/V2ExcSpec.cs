@@ -143,19 +143,19 @@ namespace ExcData
 
                 V2Parts_TransAccelFactor = (float)((Get12Parts(Engine) * 1.0M - 800M) / 25000.0M + 0.4765M);
                 V2Default_TransAccelFactor = (float)((Get12Parts((short)Kart.defaultEngineType) * 1.0M - 800M) / 25000.0M + 0.4765M);
-                Console.WriteLine($"[{Nickname}]V2Parts_TransAccelFactor: {V2Parts_TransAccelFactor}");
+                Console.WriteLine($"[{Nickname}]V2零件_TransAccelFactor (引擎): {V2Parts_TransAccelFactor}");
 
                 V2Parts_SteerConstraint = (float)((Get12Parts(Handle) * 1.0M - 800M) / 250.0M + 2.7M);
                 V2Default_SteerConstraint = (float)((Get12Parts((short)Kart.defaultHandleType) * 1.0M - 800M) / 250.0M + 2.7M);
-                Console.WriteLine($"[{Nickname}]V2Parts_SteerConstraint: {V2Parts_SteerConstraint}");
+                Console.WriteLine($"[{Nickname}]V2零件_SteerConstraint (方向盤): {V2Parts_SteerConstraint}");
 
                 V2Parts_DriftEscapeForce = (float)(Get12Parts(Wheel) * 2.0M);
                 V2Default_DriftEscapeForce = (float)(Get12Parts((short)Kart.defaultWheelType) * 2.0M);
-                Console.WriteLine($"[{Nickname}]V2Parts_DriftEscapeForce: {V2Parts_DriftEscapeForce}");
+                Console.WriteLine($"[{Nickname}]V2零件_DriftEscapeForce (輪胎): {V2Parts_DriftEscapeForce}");
 
                 V2Parts_NormalBoosterTime = (float)(Get12Parts(Booster) * 1.0M - 260M);
                 V2Default_NormalBoosterTime = (float)(Get12Parts((short)Kart.defaultBoosterType) * 1.0M - 260M);
-                Console.WriteLine($"[{Nickname}]V2Parts_NormalBoosterTime: {V2Parts_NormalBoosterTime}");
+                Console.WriteLine($"[{Nickname}]V2零件_NormalBoosterTime (推進器): {V2Parts_NormalBoosterTime}");
 
                 Console.WriteLine("-------------------------------------------------------------");
 
@@ -180,19 +180,19 @@ namespace ExcData
                     {
                         typeof(V2Specs).GetProperty($"V2Level_{data1.Name}")?
                             .SetValue(this, data1.Values[existingLevel.SkillGrade1]);
-                        Console.WriteLine($"[{Nickname}]V2Level_{data1.Name}: {data1.Values[existingLevel.SkillGrade1]}");
+                        Console.WriteLine($"[{Nickname}]V2等級_{data1.Name}: {data1.Values[existingLevel.SkillGrade1]}");
                     }
                     if (skillData.TryGetValue(existingLevel.Skill2, out var data2))
                     {
                         typeof(V2Specs).GetProperty($"V2Level_{data2.Name}")?
                             .SetValue(this, data2.Values[existingLevel.SkillGrade2]);
-                        Console.WriteLine($"[{Nickname}]V2Level_{data2.Name}: {data2.Values[existingLevel.SkillGrade2]}");
+                        Console.WriteLine($"[{Nickname}]V2等級_{data2.Name}: {data2.Values[existingLevel.SkillGrade2]}");
                     }
                     if (skillData.TryGetValue(existingLevel.Skill3, out var data3))
                     {
                         typeof(V2Specs).GetProperty($"V2Level_{data3.Name}")?
                             .SetValue(this, data3.Values[existingLevel.SkillGrade3]);
-                        Console.WriteLine($"[{Nickname}]V2Level_{data3.Name}: {data3.Values[existingLevel.SkillGrade3]}");
+                        Console.WriteLine($"[{Nickname}]V2等級_{data3.Name}: {data3.Values[existingLevel.SkillGrade3]}");
                     }
                     Console.WriteLine("-------------------------------------------------------------");
                 }
